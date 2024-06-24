@@ -21,7 +21,7 @@ namespace IDFinder
 			}
 			return LerpMap(val, 1f, 0.5f, 1f, 0.5f, pushExponent);
 		}
-		public static float LerpMap(float val, float fromA, float toA, float fromB, float toB, float? exponent)
+		public static float LerpMap(float val, float fromA, float toA, float fromB, float toB, float? exponent = null)
 		{
 			if (exponent != null)
 			{

@@ -1,5 +1,4 @@
-﻿using MemoryPack;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace IDFinder
 {
@@ -50,7 +50,7 @@ namespace IDFinder
 			{
 				NPCStats s;
 				Personality p;
-				Dictionary<Food, float> fp;
+				FoodPreferences f;
 				string wr = "";
 				List<string> desiredCols = cols.GetDesiredColumnVals();
 				// I don't think GetProperties is suitable here, as DataColumnNames doesn't actually have properties, just constant fields. 
@@ -69,7 +69,7 @@ namespace IDFinder
 					wr = "";
 					s = sc.Stats;
 					p = sc.Personality;
-					fp = sc.FoodPreference;
+					f = sc.FoodPreferences;
 
 					Dictionary<string, PropertyInfo> sP = new();
                     foreach (PropertyInfo pi in typeof(NPCStats).GetProperties())
@@ -81,9 +81,20 @@ namespace IDFinder
 					{
 						pP.Add(pi.Name, pi);
 					}
-
+					Dictionary<string, PropertyInfo> fP = new();
+					foreach (PropertyInfo pi in typeof(FoodPreferences).GetProperties())
+					{
+						fP.Add(pi.Name, pi);
+					}
+					bool flag = false;
                     foreach (string c in desiredCols)
 					{
+						if (!flag && c == "ID")
+						{
+							wr += sc.ID + ",";
+							flag = true;
+							continue;
+						}
 						if (sP.ContainsKey(c))
 						{
 							wr += sP[c].GetValue(s) + ",";
@@ -94,39 +105,17 @@ namespace IDFinder
 							wr += pP[c].GetValue(p) + ",";
 							continue;
 						}
-						if (c == "ID")
+						if (fP.ContainsKey(c))
 						{
-							wr += sc.ID + ",";
+							wr += fP[c].GetValue(p) + ",";
 							continue;
 						}
-						bool exit = false;
-						foreach (KeyValuePair<Food, float> kp in fp)
-						{
-							if (kp.Key.ToString() == c)
-							{
-								wr += fp[kp.Key] + ",";
-								exit = true;
-								break;
-							}
-						}
-						if (exit) continue;
+						throw new Exception("Unknown desired column");
 					}
 					if (wr.EndsWith(',')) wr = wr.Remove(wr.Length - 1);
 
 					sw.WriteLine(wr);
 				}
-				/*foreach (KeyValuePair<int, NPCStats> kp in stats)
-				{
-					s = kp.Value;
-					p = s.Personality;
-					wr = $"{kp.Key},{p.Aggression},{p.Bravery},{p.Dominance},{p.Energy},{p.Nervous},{p.Sympathy},,{s.H},{s.S},{s.L},{s.Dark},{s.EyeColor},,{s.Size},{s.Wideness}";
-					foreach (float val in foodPreference.Values)
-					{
-						// fundamental problem here. SlugData class groups methods for handling multiple NPCStats. foodPreference should NOT be here, it should be in NPCStats, or in a class which
-						// has a single NPCStats and foodPreference. Like a "Slugcat" class, and rename SlugData to a more suitable name
-					}
-					sw.WriteLine(wr);
-				}*/
 			}
 		}
 	}

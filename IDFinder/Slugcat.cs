@@ -1,5 +1,4 @@
-﻿using MemoryPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,26 +8,22 @@ using Unity_XORShift;
 
 namespace IDFinder
 {
-	[MemoryPackable]
-	public partial class Slugcat
+	public class Slugcat
 	{
 		public int ID { get; private set; }
 		public Personality Personality { get; private set; }
 		public NPCStats Stats { get; private set; }
-		public Dictionary<Food, float> FoodPreference { get; private set; }
-		[MemoryPackConstructor]
-		public Slugcat() { }
+		public FoodPreferences FoodPreferences { get; private set; }
 		public Slugcat(int ID)
 		{
 			this.ID = ID;
 			Personality = new Personality(ID);
 			Stats = new NPCStats(ID);
-			FoodPreference = FoodPreferences.GetPreferences(Personality, ID);
+			FoodPreferences = new(Personality, ID);
 		}
 	}
 
-	[MemoryPackable]
-	public partial class Personality
+	public class Personality
 	{
 		public float Sympathy { get; private set; }
 		public float Energy { get; private set; }
@@ -36,8 +31,6 @@ namespace IDFinder
 		public float Nervous { get; private set; }
 		public float Aggression { get; private set; }
 		public float Dominance { get; private set; }
-		[MemoryPackConstructor]
-		public Personality() { }
 		public Personality(int seed)
 		{
 			XORShift128.InitSeed(seed);
@@ -68,8 +61,7 @@ namespace IDFinder
 
 		//public static int FindPersonality(Personality inP) { }
 	}
-	[MemoryPackable]
-	public partial class NPCStats
+	public class NPCStats
 	{
 		public float Met { get; private set; }
 		public float Bal { get; private set; }
@@ -81,8 +73,6 @@ namespace IDFinder
 		public float S { get; private set; }
 		public float L { get; private set; }
 		public float Wideness { get; private set; }
-		[MemoryPackConstructor]
-		public NPCStats() { }
 		public NPCStats(int ID)
 		{
 			XORShift128.InitSeed(ID);
@@ -123,35 +113,32 @@ namespace IDFinder
 	public class FoodPreferences
 	{
 		#region Properties
-		public float DangleFruit { get; set; }
-		public float WaterNut { get; set; }
-		public float JellyFish { get; set; }
-		public float SlimeMold { get; set; }
-		public float EggBugEgg { get; set; }
-		public float FireEgg { get; set; }
-		public float Popcorn { get; set; }
-		public float GooieDuck { get; set; }
-		public float LilyPuck { get; set; }
-		public float GlowWeed { get; set; }
-		public float DandelionPeach { get; set; }
-		public float Neuron { get; set; }
-		public float Centipede { get; set; }
-		public float SmallCentipede { get; set; }
-		public float VultureGrub { get; set; }
-		public float SmallNeedleWorm { get; set; }
-		public float Hazer { get; set; }
-		public float NotCounted { get; set; }
+		public float DangleFruit {get; private set; }
+		public float WaterNut {get; private set; }
+		public float JellyFish {get; private set; }
+		public float SlimeMold {get; private set; }
+		public float EggBugEgg {get; private set; }
+		public float FireEgg {get; private set; }
+		public float Popcorn {get; private set; }
+		public float GooieDuck {get; private set; }
+		public float LilyPuck {get; private set; }
+		public float GlowWeed {get; private set; }
+		public float DandelionPeach {get; private set; }
+		public float Neuron {get; private set; }
+		public float Centipede {get; private set; }
+		public float SmallCentipede {get; private set; }
+		public float VultureGrub {get; private set; }
+		public float SmallNeedleWorm {get; private set; }
+		public float Hazer {get; private set; }
+		public float NotCounted {get; private set; }
 		#endregion
 		public FoodPreferences(Personality p, int ID)
 		{
-			Dictionary<Food, float> prefs = GetPreferences(p, ID);
-			foreach (PropertyInfo pi in typeof(FoodPreferences).GetProperties())
+			float[] preferences = GetPreferences(p, ID).Values.ToArray();
+			PropertyInfo[] piArr = typeof(FoodPreferences).GetProperties();
+			for (int i = 0; i < piArr.Length; i++)
 			{
-				// necessary?
-				if (Enum.TryParse(typeof(Food), "str", out var f))
-				{
-
-				}
+				piArr[i].SetValue(this, preferences[i]);
 			}
 		}
 		public FoodPreferences(int ID) : this(new(ID), ID) { }
@@ -165,10 +152,12 @@ namespace IDFinder
 
 			foreach (var i in Enum.GetValues<Food>())
 			{
-				num = num2 = 0f;
 				f = i;
 				switch (f)
 				{
+					default:
+						num = num2 = 0f;
+						break;
 					case Food.DangleFruit:
 						num = p.Nervous;
 						num2 = p.Energy;
@@ -236,9 +225,6 @@ namespace IDFinder
 					case Food.Hazer:
 						num = p.Nervous;
 						num2 = p.Sympathy;
-						break;
-					case Food.NotCounted:
-						// uses default of num = num2 = 0f
 						break;
 				}
 				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
