@@ -59,7 +59,7 @@ namespace IDFinder
 		}
 		
 
-		//public static int FindPersonality(Personality inP) { }
+		//public static int FindPersonalityOwner(Personality inP) { }
 	}
 	public class NPCStats
 	{
@@ -135,11 +135,24 @@ namespace IDFinder
 		public FoodPreferences(Personality p, int ID)
 		{
 			float[] preferences = GetPreferences(p, ID).Values.ToArray();
-			PropertyInfo[] piArr = typeof(FoodPreferences).GetProperties();
-			for (int i = 0; i < piArr.Length; i++)
-			{
-				piArr[i].SetValue(this, preferences[i]);
-			}
+			DangleFruit = preferences[0];
+			WaterNut = preferences[1];
+			JellyFish = preferences[2];
+			SlimeMold = preferences[3];
+			EggBugEgg = preferences[4];
+			FireEgg = preferences[5];
+			Popcorn = preferences[6];
+			GooieDuck = preferences[7];
+			LilyPuck = preferences[8];
+			GlowWeed = preferences[9];
+			DandelionPeach = preferences[10];
+			Neuron = preferences[11];
+			Centipede = preferences[12];
+			SmallCentipede = preferences[13];
+			VultureGrub = preferences[14];
+			SmallNeedleWorm = preferences[15];
+			Hazer = preferences[16];
+			NotCounted = preferences[17];
 		}
 		public FoodPreferences(int ID) : this(new(ID), ID) { }
 		public static Dictionary<Food, float> GetPreferences(Personality p, int ID)
