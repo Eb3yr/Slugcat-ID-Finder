@@ -45,15 +45,15 @@ namespace IDFinder
 			bool exists = File.Exists(fileName);
 			if (exists && delete) File.Delete(fileName);
 
-			if (cols == null) cols = new SelectedColumns();
-			using (StreamWriter sw = new StreamWriter(fileName, true))
+			cols ??= new SelectedColumns();
+			using (StreamWriter sw = new(fileName, true))
 			{
 				NPCStats s;
 				Personality p;
 				FoodPreferences f;
 				string wr = "";
 				List<string> desiredCols = cols.GetDesiredColumnVals();
-				// I don't think GetProperties is suitable here, as DataColumnNames doesn't actually have properties, just constant fields. 
+
 				foreach (FieldInfo prop in typeof(ColumnNames).GetFields())
 				{
 					if (desiredCols.Contains(prop.Name))
@@ -87,7 +87,7 @@ namespace IDFinder
 						fP.Add(pi.Name, pi);
 					}
 					bool flag = false;
-                    foreach (string c in desiredCols)
+					foreach (string c in desiredCols)
 					{
 						if (!flag && c == "ID")
 						{
@@ -95,19 +95,19 @@ namespace IDFinder
 							flag = true;
 							continue;
 						}
-						if (sP.ContainsKey(c))
+						if (sP.TryGetValue(c, out PropertyInfo? value))
 						{
-							wr += sP[c].GetValue(s) + ",";
+							wr += value.GetValue(s) + ",";
 							continue;
 						}
-						if (pP.ContainsKey(c))
+						if (pP.TryGetValue(c, out value))
 						{
-							wr += pP[c].GetValue(p) + ",";
+							wr += value.GetValue(p) + ",";
 							continue;
 						}
-						if (fP.ContainsKey(c))
+						if (fP.TryGetValue(c, out value))
 						{
-							wr += fP[c].GetValue(p) + ",";
+							wr += value.GetValue(f) + ",";
 							continue;
 						}
 						throw new Exception("Unknown desired column");

@@ -10,7 +10,7 @@ namespace IDFinder
 	public static class ColumnNames
 	{
 		public const string ID = "ID";
-		public const string Sympathy = "agg";
+		public const string Sympathy = "sym";
 		public const string Energy = "nrg";
 		public const string Bravery = "brv";
 		public const string Nervous = "nrv";
