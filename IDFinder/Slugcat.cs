@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Unity_XORShift;
+﻿using Unity_XORShift;
 
 namespace IDFinder
 {
@@ -17,9 +11,19 @@ namespace IDFinder
 		public Slugcat(int ID)
 		{
 			this.ID = ID;
-			Personality = new Personality(ID);
-			Stats = new NPCStats(ID);
+			Personality = new(ID);
+			Stats = new(ID);
 			FoodPreferences = new(Personality, ID);
+		}
+		public Slugcat(int ID, bool personality, bool stats, bool foodPrefs)
+		{
+			this.ID = ID;
+			if (personality) Personality = new(ID);
+			if (stats) Stats = new(ID);
+			if(foodPrefs)
+			{
+				FoodPreferences = new(new(ID), ID);
+			}
 		}
 	}
 

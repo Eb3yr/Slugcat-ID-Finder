@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
+﻿using System.Reflection;
 
 namespace IDFinder
 {
 	public class SlugManager
 	{
-		public Dictionary<int, Slugcat> Cats { get; private set; }
+		public Dictionary<int, Slugcat> Scugs { get; private set; }
 		public SlugManager()
 		{
-			Cats = new();
+			Scugs = new();
 		}
 		public SlugManager(IEnumerable<Slugcat> Cats) : this()
 		{
 			foreach (Slugcat sc in Cats)
 			{
-				this.Cats.Add(sc.ID, sc);
+				this.Scugs.Add(sc.ID, sc);
 			}
 		}
 		public SlugManager(IEnumerable<int> IDs) : this()
@@ -30,7 +22,7 @@ namespace IDFinder
 		}
 		public void Add(int ID)
 		{
-			Cats.Add(ID, new(ID));
+			Scugs.Add(ID, new(ID));
 		}
 		public void Add(IEnumerable<int> IDs)
 		{
@@ -38,7 +30,7 @@ namespace IDFinder
 		}
 		public void Remove(int ID)
 		{
-			Cats.Remove(ID);
+			Scugs.Remove(ID);
 		}
 		public void WriteToCSV(string fileName, SelectedColumns cols, bool delete = true)
 		{
@@ -64,7 +56,7 @@ namespace IDFinder
 				if (wr.EndsWith(',')) wr = wr.Remove(wr.Length - 1);
 				if (!exists || delete) sw.WriteLine(wr);
 
-				foreach (Slugcat sc in Cats.Values)
+				foreach (Slugcat sc in Scugs.Values)
 				{
 					wr = "";
 					s = sc.Stats;

@@ -1,9 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using System.Reflection;
-using Microsoft.VisualBasic.FileIO;
-using System.Threading;
-using System.Runtime.Versioning;
-
+﻿using System.Text.Json;
+using System.IO;
 namespace IDFinder
 {
 	internal class Program
@@ -18,11 +14,31 @@ namespace IDFinder
 			//Console.WriteLine("Done");
 			//Console.ReadLine();
 
-			/*DateTime dt = DateTime.Now;
-			new SlugManager([FoodSearchNoReflection(1, int.MaxValue).ID]).WriteToCSV("LargestFoodSumPos.csv", new(), true);
+			/*
+			DateTime dt = DateTime.Now;
+			new SlugManager([FoodSearch(1, int.MaxValue - 1).ID]).WriteToCSV("LargestFoodSumPos.csv", new(), true);
 			Console.WriteLine("deltaTime (s) = " + DateTime.Now.Subtract(dt));
-			Console.ReadLine();*/
+			Console.ReadLine();
+			*/
 
+			/*
+			Console.WriteLine("Chunks: ");
+			foreach ((int startIndex, int stopIndex) c in Searcher.Chunk(0, 364000))
+			{
+				Console.WriteLine($"{c.startIndex}, {c.stopIndex}");
+			}*/
+
+			JsonSerializerOptions options = new JsonSerializerOptions()
+			{
+				WriteIndented = true,
+			};
+			string str = JsonSerializer.Serialize<Slugcat>(new(1000), options);
+			File.WriteAllText("out.json", str);
+
+			string str2 = JsonSerializer.Serialize<SlugManager>(new(Enumerable.Range(1000, 20)), options);
+			File.WriteAllText("outMany.json", str2);
+
+			Console.WriteLine("Done");
 			Console.ReadLine();
 		}
 		static (int ID, float foodSum) FoodSearch(int start, int stopInclusive)
