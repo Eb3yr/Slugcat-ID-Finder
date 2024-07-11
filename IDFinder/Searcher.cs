@@ -26,9 +26,10 @@
 
 			public (float target, float weight)? bodyWeightFac = null;
 			public (float target, float weight)? generalVisibilityBonus = null;
+			public (float target, float weight)? visualStealthInSneakMode = null;
 			public (float target, float weight)? loudnessFac = null;
 			public (float target, float weight)? lungsFac = null;
-			public (float target, float weight)? throwingSkill = null;
+			public (int target, float weight)? throwingSkill = null;
 			public (float target, float weight)? poleClimbSpeedFac = null;
 			public (float target, float weight)? corridorClimbSpeedFac = null;
 			public (float target, float weight)? runSpeedFac = null;

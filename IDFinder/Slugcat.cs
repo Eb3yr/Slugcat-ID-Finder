@@ -276,9 +276,9 @@ namespace IDFinder
 			throwingSkill = 0,
 			poleClimbSpeedFac = 0.8f,
 			corridorClimbSpeedFac = 0.8f,
-			runspeedFac = 0.8f
+			runSpeedFac = 0.8f
 		};
-		public float runspeedFac { get; private set; } = 1f;
+		public float runSpeedFac { get; private set; } = 1f;
 		public float bodyWeightFac { get; private set; } = 1f;
 		public float generalVisibilityBonus { get; private set; }
 		public float visualStealthInSneakMode { get; private set; } = 0.5f;
@@ -301,10 +301,10 @@ namespace IDFinder
 				throwingSkill = 0;
 				poleClimbSpeedFac = 0.8f;
 				corridorClimbSpeedFac = 0.8f;
-				runspeedFac = 0.8f;
+				runSpeedFac = 0.8f;
 			}
 
-			runspeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
+			runSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
 			bodyWeightFac *= 0.85f + 0.15f * stats.Wideness + 0.1f * stats.Met;
 			generalVisibilityBonus *= 0.8f + 0.2f * (1f - stats.Stealth) + 0.2f * stats.Met;
 			visualStealthInSneakMode *= 0.75f + 0.35f * stats.Stealth + 0.15f * (1f - stats.Met);

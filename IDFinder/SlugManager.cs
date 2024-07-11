@@ -42,7 +42,8 @@ namespace IDFinder
 			cols ??= new SelectedColumns();
 			using (StreamWriter sw = new(fileName, true))
 			{
-				NPCStats s;
+				NPCStats n;
+				SlugcatStats s;
 				Personality p;
 				FoodPreferences f;
 				string wr = "";
@@ -61,15 +62,21 @@ namespace IDFinder
 				foreach (Slugcat sc in Slugcats.Values)
 				{
 					wr = "";
-					s = sc.NPCStats;
+					n = sc.NPCStats;
+					s = sc.SlugcatStats;
 					p = sc.Personality;
 					f = sc.FoodPreferences;
 
-					Dictionary<string, PropertyInfo> sP = new();
+					Dictionary<string, PropertyInfo> nP = new();
                     foreach (PropertyInfo pi in typeof(NPCStats).GetProperties())
                     {
-                        sP.Add(pi.Name, pi);
+                        nP.Add(pi.Name, pi);
                     }
+					Dictionary<string, PropertyInfo> sP = new();
+					foreach (PropertyInfo pi in typeof(SlugcatStats).GetProperties())
+					{
+						sP.Add(pi.Name, pi);
+					}
 					Dictionary<string, PropertyInfo> pP = new();
 					foreach (PropertyInfo pi in typeof(Personality).GetProperties())
 					{
@@ -89,7 +96,12 @@ namespace IDFinder
 							flag = true;
 							continue;
 						}
-						if (sP.TryGetValue(c, out PropertyInfo? value))
+						if (nP.TryGetValue(c, out PropertyInfo? value))
+						{
+							wr += value.GetValue(n) + ",";
+							continue;
+						}
+						if (sP.TryGetValue(c, out value))
 						{
 							wr += value.GetValue(s) + ",";
 							continue;

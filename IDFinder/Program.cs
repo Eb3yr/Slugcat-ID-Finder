@@ -22,8 +22,10 @@ namespace IDFinder
 
 			//File.WriteAllText("outTest.json", SlugManager.GetJsonMany([1000, 1001, 1002]));
 
-			//Console.WriteLine("Done");
-			//Console.ReadLine();
+			SlugManager manager = new(Enumerable.Range(1000, 20000));
+			manager.WriteToCSV("newManagerTest.csv", SelectedColumns.All);
+			Console.WriteLine("Done");
+			Console.ReadLine();
 		}
 		static (int ID, float foodSum) FoodSearch(int start, int stopInclusive)
 		{

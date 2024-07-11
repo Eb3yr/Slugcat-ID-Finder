@@ -23,6 +23,16 @@ namespace IDFinder
 		public const string L = "L";
 		public const string Wideness = "Wide";
 
+		public const string bodyWeightFac = "Weight";
+		public const string generalVisibilityBonus = "StandStealth";
+		public const string visualStealthInSneakMode = "CrouchStealth";
+		public const string loudnessFac = "Loudness";
+		public const string lungsFac = "Lungs";
+		public const string throwingSkill = "ThrowSkill";
+		public const string poleClimbSpeedFac = "PoleClimb";
+		public const string corridorClimbSpeedFac = "CorridorClimb";
+		public const string runSpeedFac = "RunSpeed";
+
 		public const string DangleFruit = "BlueFruit";
 		public const string WaterNut = "BubbleFruit";
 		public const string JellyFish = "Jellyfish";
@@ -44,27 +54,117 @@ namespace IDFinder
 	}
 	public class SelectedColumns
 	{
+		public static readonly SelectedColumns All = new(true);
+		public static readonly SelectedColumns PersonalityOnly = new(false)
+		{
+			Sympathy = true,
+			Energy = true,
+			Bravery = true,
+			Nervous = true,
+			Aggression = true,
+			Dominance = true
+		};
+		public static readonly SelectedColumns NPCStatsOnly = new(false)
+		{
+			Met = true,
+			Bal = true,
+			Size = true,
+			Stealth = true,
+			Dark = true,
+			EyeColor = true,
+			H = true,
+			S = true,
+			L = true,
+			Wideness = true
+		};
+		public static readonly SelectedColumns SlugcatStatsOnly = new(false)
+		{
+			bodyWeightFac = true,
+			generalVisibilityBonus = true,
+			visualStealthInSneakMode = true,
+			loudnessFac = true,
+			lungsFac = true,
+			throwingSkill = true,
+			poleClimbSpeedFac = true,
+			corridorClimbSpeedFac = true,
+			runSpeedFac = true
+		};
+		public static readonly SelectedColumns FoodPrefsOnly = new(false)
+		{
+			DangleFruit = true,
+			WaterNut = true,
+			JellyFish = true,
+			SlimeMold = true,
+			EggBugEgg = true,
+			FireEgg = true,
+			Popcorn = true,
+			GooieDuck = true,
+			LilyPuck = true,
+			GlowWeed = true,
+			DandelionPeach = true,
+			Neuron = true,
+			Centipede = true,
+			SmallCentipede = true,
+			VultureGrub = true,
+			SmallNeedleWorm = true,
+			Hazer = true,
+			NotCounted = true
+		};
+		public static readonly SelectedColumns IDOnly = new(false) { ID = true };
 		public SelectedColumns() : this(true) { }
 		public SelectedColumns(bool all)
 		{
-			FieldInfo[] fiArr = typeof(SelectedColumns).GetFields();
-			foreach (FieldInfo fi in fiArr)
-			{
-				if (all)
-				{
-					fi.SetValue(this, true);
-				}
-				else
-				{
-					fi.SetValue(this, false);
-				}
-			}
+			ID = all;
+			Sympathy = all;
+			Energy = all;
+			Bravery = all;
+			Nervous = all;
+			Aggression = all;
+			Dominance = all;
+			Met = all;
+			Bal = all;
+			Size = all;
+			Stealth = all;
+			Dark = all;
+			EyeColor = all;
+			H = all;
+			S = all;
+			L = all;
+			Wideness = all;
+			bodyWeightFac = all;
+			generalVisibilityBonus = all;
+			visualStealthInSneakMode = all;
+			loudnessFac = all;
+			lungsFac = all;
+			throwingSkill = all;
+			poleClimbSpeedFac = all;
+			corridorClimbSpeedFac = all;
+			runSpeedFac = all;
+			DangleFruit = all;
+			WaterNut = all;
+			JellyFish = all;
+			SlimeMold = all;
+			EggBugEgg = all;
+			FireEgg = all;
+			Popcorn = all;
+			GooieDuck = all;
+			LilyPuck = all;
+			GlowWeed = all;
+			DandelionPeach = all;
+			Neuron = all;
+			Centipede = all;
+			SmallCentipede = all;
+			VultureGrub = all;
+			SmallNeedleWorm = all;
+			Hazer = all;
+			NotCounted = all;
 		}
 		public List<string> GetDesiredColumnVals()
 		{
 			List<string> desired = new();
 			foreach (FieldInfo name in typeof(SelectedColumns).GetFields())
 			{
+				if (name.IsStatic) continue;
 				if ((bool?)name.GetValue(this) == true)
 				{
 					desired.Add(name.Name);
@@ -87,65 +187,6 @@ namespace IDFinder
 			}
 			return sdc; 
 		}
-		public static SelectedColumns PersonalityOnly()
-		{
-			SelectedColumns sdc = new(false)
-			{
-				Sympathy = true,
-				Energy = true,
-				Bravery = true,
-				Nervous = true,
-				Aggression= true,
-				Dominance = true
-			};
-			return sdc;
-		}
-		public static SelectedColumns StatsOnly()
-		{
-			SelectedColumns sdc = new(false)
-			{
-				Met = true,
-				Bal = true,
-				Size = true,
-				Stealth = true,
-				Dark = true,
-				EyeColor = true,
-				H = true,
-				S = true,
-				L = true,
-				Wideness = true
-			};
-			return sdc;
-		}
-		public static SelectedColumns FoodPrefOnly()
-		{
-			SelectedColumns sdc = new(false)
-			{
-				DangleFruit = true,
-				WaterNut = true,
-				JellyFish = true,
-				SlimeMold = true,
-				EggBugEgg = true,
-				FireEgg = true,
-				Popcorn = true,
-				GooieDuck = true,
-				LilyPuck = true,
-				GlowWeed = true,
-				DandelionPeach = true,
-				Neuron = true,
-				Centipede = true,
-				SmallCentipede = true,
-				VultureGrub = true,
-				SmallNeedleWorm = true,
-				Hazer = true,
-				NotCounted = true
-			};
-			return sdc;
-		}
-		public static SelectedColumns IDOnly()
-		{
-			return new(false) { ID = true };
-		}
 		public bool ID;
 		public bool Sympathy;
 		public bool Energy;
@@ -164,6 +205,16 @@ namespace IDFinder
 		public bool S;
 		public bool L;
 		public bool Wideness;
+
+		public bool bodyWeightFac;
+		public bool generalVisibilityBonus;
+		public bool visualStealthInSneakMode;
+		public bool loudnessFac;
+		public bool lungsFac;
+		public bool throwingSkill;
+		public bool poleClimbSpeedFac;
+		public bool corridorClimbSpeedFac;
+		public bool runSpeedFac;
 
 		public bool DangleFruit;
 		public bool WaterNut;
