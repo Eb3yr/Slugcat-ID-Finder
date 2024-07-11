@@ -1,5 +1,6 @@
 ﻿namespace IDFinder
 {
+	// Could turn Searcher static. Consider it.
 	public class Searcher
 	{
 		public class SearchParams
@@ -22,6 +23,15 @@
 			public (float target, float weight)? S = null;
 			public (float target, float weight)? L = null;
 			public (float target, float weight)? Wideness = null;
+
+			public (float target, float weight)? bodyWeightFac = null;
+			public (float target, float weight)? generalVisibilityBonus = null;
+			public (float target, float weight)? loudnessFac = null;
+			public (float target, float weight)? lungsFac = null;
+			public (float target, float weight)? throwingSkill = null;
+			public (float target, float weight)? poleClimbSpeedFac = null;
+			public (float target, float weight)? corridorClimbSpeedFac = null;
+			public (float target, float weight)? runSpeedFac = null;
 
 			public (float target, float weight)? DangleFruit = null;
 			public (float target, float weight)? WaterNut = null;
@@ -97,6 +107,36 @@
 			}
 
 			#endregion
+		}
+		// Make this static
+		public IEnumerable<KeyValuePair<float, Slugcat>> NewSearch(int start, int stop, int numToStore)
+		{
+			SortedList<float, Slugcat> vals = [];	// smallest value at index 0
+
+			Slugcat sc;
+			float weight;
+			for (int i = start; i < stop; i++)
+			{
+				sc = new(i);
+				weight = 0f;
+
+				#region Iterating through everything
+				
+
+
+
+
+				#endregion
+
+				if (vals.Count < numToStore) vals.Add(weight, sc);
+				else if (vals.GetKeyAtIndex(0) < weight)
+				{
+					vals.RemoveAt(0);
+					vals.Add(weight, sc);
+				}
+			}
+
+			return vals.Reverse();
 		}
 	}
 }

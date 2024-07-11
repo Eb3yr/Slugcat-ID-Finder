@@ -1,19 +1,21 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 
 namespace IDFinder
 {
 	public class SlugManager
 	{
-		public Dictionary<int, Slugcat> Scugs { get; private set; }
+		private readonly static JsonSerializerOptions options = new JsonSerializerOptions() { WriteIndented = true };
+		public Dictionary<int, Slugcat> Slugcats { get; private set; }
 		public SlugManager()
 		{
-			Scugs = new();
+			Slugcats = new();
 		}
 		public SlugManager(IEnumerable<Slugcat> Cats) : this()
 		{
 			foreach (Slugcat sc in Cats)
 			{
-				this.Scugs.Add(sc.ID, sc);
+				this.Slugcats.Add(sc.ID, sc);
 			}
 		}
 		public SlugManager(IEnumerable<int> IDs) : this()
@@ -22,7 +24,7 @@ namespace IDFinder
 		}
 		public void Add(int ID)
 		{
-			Scugs.Add(ID, new(ID));
+			Slugcats.Add(ID, new(ID));
 		}
 		public void Add(IEnumerable<int> IDs)
 		{
@@ -30,7 +32,7 @@ namespace IDFinder
 		}
 		public void Remove(int ID)
 		{
-			Scugs.Remove(ID);
+			Slugcats.Remove(ID);
 		}
 		public void WriteToCSV(string fileName, SelectedColumns cols, bool delete = true)
 		{
@@ -56,10 +58,10 @@ namespace IDFinder
 				if (wr.EndsWith(',')) wr = wr.Remove(wr.Length - 1);
 				if (!exists || delete) sw.WriteLine(wr);
 
-				foreach (Slugcat sc in Scugs.Values)
+				foreach (Slugcat sc in Slugcats.Values)
 				{
 					wr = "";
-					s = sc.Stats;
+					s = sc.NPCStats;
 					p = sc.Personality;
 					f = sc.FoodPreferences;
 
@@ -109,6 +111,19 @@ namespace IDFinder
 					sw.WriteLine(wr);
 				}
 			}
+		}
+		public static string GetJsonMany(IEnumerable<int> IDs)
+		{
+			List<Slugcat> scugs = [];
+			foreach (int ID in IDs)
+			{
+				scugs.Add(new(ID));
+			}
+			return JsonSerializer.Serialize<List<Slugcat>>(scugs, options);
+		}
+		public static string GetJson(int ID)
+		{
+			return JsonSerializer.Serialize<Slugcat>(new(ID), options);
 		}
 	}
 }

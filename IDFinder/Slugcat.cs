@@ -1,28 +1,44 @@
-﻿using Unity_XORShift;
+﻿using System.ComponentModel;
+using Unity_XORShift;
 
 namespace IDFinder
 {
 	public class Slugcat
 	{
 		public int ID { get; private set; }
+		public bool IsPup { get; private set; } = true;
 		public Personality Personality { get; private set; }
-		public NPCStats Stats { get; private set; }
+		public NPCStats NPCStats { get; private set; }
+		public SlugcatStats SlugcatStats { get; private set; }
 		public FoodPreferences FoodPreferences { get; private set; }
 		public Slugcat(int ID)
 		{
 			this.ID = ID;
 			Personality = new(ID);
-			Stats = new(ID);
-			FoodPreferences = new(Personality, ID);
+			NPCStats = new(ID);
+			SlugcatStats = new(ID, NPCStats);
+			FoodPreferences = new(ID, Personality);
 		}
-		public Slugcat(int ID, bool personality, bool stats, bool foodPrefs)
+		public Slugcat(int ID, bool personality = false, bool npcStats = false, bool slugcatStats = false, bool foodPrefs = false)
 		{
 			this.ID = ID;
 			if (personality) Personality = new(ID);
-			if (stats) Stats = new(ID);
-			if(foodPrefs)
+			if (npcStats) NPCStats = new(ID);
+			if (NPCStats != null)
 			{
-				FoodPreferences = new(new(ID), ID);
+				if (slugcatStats) SlugcatStats = new(ID, NPCStats);
+			}
+			else
+			{
+				if (slugcatStats) SlugcatStats = new(ID);
+			}
+			if (Personality != null)
+			{
+				if (foodPrefs) FoodPreferences = new(ID, Personality);
+			}
+			else
+			{
+				if (foodPrefs) FoodPreferences = new(ID, new(ID));
 			}
 		}
 	}
@@ -61,9 +77,6 @@ namespace IDFinder
 			Personality p = new(seed);
 			return p;
 		}
-		
-
-		//public static int FindPersonalityOwner(Personality inP) { }
 	}
 	public class NPCStats
 	{
@@ -136,7 +149,7 @@ namespace IDFinder
 		public float Hazer {get; private set; }
 		public float NotCounted {get; private set; }
 		#endregion
-		public FoodPreferences(Personality p, int ID)
+		public FoodPreferences(int ID, Personality p)
 		{
 			float[] preferences = GetPreferences(p, ID).Values.ToArray();
 			DangleFruit = preferences[0];
@@ -158,7 +171,7 @@ namespace IDFinder
 			Hazer = preferences[16];
 			NotCounted = preferences[17];
 		}
-		public FoodPreferences(int ID) : this(new(ID), ID) { }
+		public FoodPreferences(int ID) : this(ID, new(ID)) { }
 		public static Dictionary<Food, float> GetPreferences(Personality p, int ID)
 		{
 			Dictionary<Food, float> foodPreference;
@@ -249,6 +262,56 @@ namespace IDFinder
 				foodPreference.Add(f, Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f));
 			}
 			return foodPreference;
+		}
+	}
+	public class SlugcatStats
+	{
+		private readonly static SlugcatStats slugpupBase = new()
+		{
+			bodyWeightFac = 0.65f,
+			generalVisibilityBonus = -0.2f,
+			visualStealthInSneakMode = 0.6f,
+			loudnessFac = 0.5f,
+			lungsFac = 0.8f,
+			throwingSkill = 0,
+			poleClimbSpeedFac = 0.8f,
+			corridorClimbSpeedFac = 0.8f,
+			runspeedFac = 0.8f
+		};
+		public float runspeedFac { get; private set; } = 1f;
+		public float bodyWeightFac { get; private set; } = 1f;
+		public float generalVisibilityBonus { get; private set; }
+		public float visualStealthInSneakMode { get; private set; } = 0.5f;
+		public float loudnessFac { get; private set; } = 1f;
+		public float lungsFac { get; private set; } = 1f;
+		public int throwingSkill { get; private set; } = 1;
+		public float poleClimbSpeedFac { get; private set; } = 1f;
+		public float corridorClimbSpeedFac { get; private set; } = 1f;
+		private SlugcatStats() { }
+		public SlugcatStats(int ID) : this(ID, new(ID)) { throw new WarningException("Less performant than using the NPCStats overload."); }
+		public SlugcatStats(int ID, NPCStats stats, bool isSlugpup = true)
+		{
+			if (isSlugpup)
+			{
+				bodyWeightFac = 0.65f;
+				generalVisibilityBonus = -0.2f;
+				visualStealthInSneakMode = 0.6f;
+				loudnessFac = 0.5f;
+				lungsFac = 0.8f;
+				throwingSkill = 0;
+				poleClimbSpeedFac = 0.8f;
+				corridorClimbSpeedFac = 0.8f;
+				runspeedFac = 0.8f;
+			}
+
+			runspeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
+			bodyWeightFac *= 0.85f + 0.15f * stats.Wideness + 0.1f * stats.Met;
+			generalVisibilityBonus *= 0.8f + 0.2f * (1f - stats.Stealth) + 0.2f * stats.Met;
+			visualStealthInSneakMode *= 0.75f + 0.35f * stats.Stealth + 0.15f * (1f - stats.Met);
+			loudnessFac *= 0.8f + 0.2f * stats.Wideness + 0.2f * (1f - stats.Stealth);
+			lungsFac *= 0.8f + 0.2f * (1f - stats.Met) + 0.2f * (1f - stats.Stealth);
+			poleClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * stats.Bal + 0.1f * (1f - stats.Stealth);
+			corridorClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
 		}
 	}
 }
