@@ -34,8 +34,9 @@ namespace IDFinder
 		{
 			Slugcats.Remove(ID);
 		}
-		public void WriteToCSV(string fileName, SelectedColumns cols, bool delete = true)
+		public void WriteToCSV(string fileName, SelectedColumns? cols = null, bool delete = true)
 		{
+			if (cols == null) cols = SelectedColumns.All;
 			bool exists = File.Exists(fileName);
 			if (exists && delete) File.Delete(fileName);
 

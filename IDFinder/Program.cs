@@ -22,8 +22,27 @@ namespace IDFinder
 
 			//File.WriteAllText("outTest.json", SlugManager.GetJsonMany([1000, 1001, 1002]));
 
-			SlugManager manager = new(Enumerable.Range(1000, 20000));
-			manager.WriteToCSV("newManagerTest.csv", SelectedColumns.All);
+			//SlugManager manager = new(Enumerable.Range(0, 1001));
+			//manager.WriteToCSV("newManagerTest.csv", SelectedColumns.All);
+
+			Searcher search = new(new Searcher.SearchParams()
+			{
+				Aggression = (1f, 1f),
+				Bravery = (1f, 1f),
+				Dominance = (1f, 1f),
+				Nervous = (1f, 1f),
+				Energy = (1f, 1f),
+				Sympathy = (1f, 1f)
+			});
+
+			Dictionary<float, Slugcat> result = new(search.Search(0, 1000000, 6));
+			foreach (KeyValuePair<float, Slugcat> kvp in result)
+			{
+				Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
+			}
+			SlugManager sm = new(result.Values);
+			sm.WriteToCSV("outSearched.csv");
+
 			Console.WriteLine("Done");
 			Console.ReadLine();
 		}

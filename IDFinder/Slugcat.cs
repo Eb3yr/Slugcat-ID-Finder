@@ -72,11 +72,6 @@ namespace IDFinder
 			Aggression = Custom.PushFromHalf(Aggression, 2.5f);
 			//XORShift128.InitSeed(seed);
 		}
-		public static Personality GetPersonality(int seed)
-		{
-			Personality p = new(seed);
-			return p;
-		}
 	}
 	public class NPCStats
 	{
