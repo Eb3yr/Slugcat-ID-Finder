@@ -9,11 +9,6 @@ namespace IDFinder
 		
 		static void Main(string[] args)
 		{
-			DateTime dt;
-			TimeSpan ts = TimeSpan.Zero;
-			
-			Console.WriteLine("e");
-			Console.ReadLine();
 			#region Search
 			Searcher search = new(new Searcher.SearchParams()
 			{
@@ -25,29 +20,42 @@ namespace IDFinder
 				Sympathy = (1f, 1f)
 			});
 
-			//DateTime dt;
+			/*DateTime dt;
 			dt = DateTime.Now;
-			Dictionary<float, Slugcat> result = new(search.Search(0, 1000000, 6));
+			Dictionary<float, Slugcat> result = new(search.Search(0, 100000000, 6));
 			Console.WriteLine("Completion time: " + DateTime.Now.Subtract(dt).TotalMilliseconds.ToString());
 			foreach (KeyValuePair<float, Slugcat> kvp in result)
 			{
 				Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
 			}
 			SlugManager sm = new(result.Values);
-			sm.WriteToCSV("outSearchedOld.csv");
+			sm.WriteToCSV("outSearched.csv")*/
 			#endregion
+			Run(0, 1000000000);
+			Console.WriteLine("Done");
+			Console.ReadLine();
+		}
+		static void Run(int start, int count)
+		{
+			Searcher search = new(new Searcher.SearchParams()
+			{
+				Aggression = (1f, 1f),
+				Bravery = (1f, 1f),
+				Dominance = (1f, 1f),
+				Nervous = (1f, 1f),
+				Energy = (1f, 1f),
+				Sympathy = (1f, 1f)
+			});
+			DateTime dt;
 			dt = DateTime.Now;
-			result = new(search.Search(0, 1000000, 6));
+			Dictionary<float, Slugcat> result = new(search.Search(start, count, 6));
 			Console.WriteLine("Completion time: " + DateTime.Now.Subtract(dt).TotalMilliseconds.ToString());
 			foreach (KeyValuePair<float, Slugcat> kvp in result)
 			{
 				Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
 			}
-			sm = new(result.Values);
-			sm.WriteToCSV("outSearchedNew.csv");
-
-			Console.WriteLine("Done");
-			Console.ReadLine();
+			SlugManager sm = new(result.Values);
+			sm.WriteToCSV($"outSearched{start}.csv");
 		}
 		static (int ID, float foodSum) FoodSearch(int start, int stopInclusive)
 		{

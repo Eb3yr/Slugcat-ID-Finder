@@ -157,7 +157,6 @@ namespace IDFinder
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		// Not yet fully improved. Still generates the entire slugcat, VS the individual components.
 		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int count, int numToStore)
 		{
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
@@ -177,7 +176,6 @@ namespace IDFinder
 			FoodPreferences? foodPref = null;
 			for (int i = start; i < start + count; i++)
 			{
-				//sc = new(i);
 				weight = 0f;
 				if (personality)
 				{
@@ -202,7 +200,6 @@ namespace IDFinder
 					weight += FoodPreferencesWeight(foodPref);
 				}
 
-				// Could make further optimisations by passing existing NPCStats, Personality etc as args to the Slugcat constructor to prevent them being generated again. Especially useful with FoodPreferences
 				if (!saturated && vals.Count < numToStore)
 				{
 					vals.Add(weight, new(i));
