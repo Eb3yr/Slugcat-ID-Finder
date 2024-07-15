@@ -157,7 +157,7 @@ namespace IDFinder
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int count, int numToStore)
+		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore)
 		{
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
 			float weight;
@@ -174,7 +174,7 @@ namespace IDFinder
 			NPCStats? npc = null;
 			SlugcatStats? slugStats = null;
 			FoodPreferences? foodPref = null;
-			for (int i = start; i < start + count; i++)
+			for (int i = start; i < stop; i++)
 			{
 				weight = 0f;
 				if (personality)
@@ -211,6 +211,45 @@ namespace IDFinder
 					vals.Add(weight, new(i));
 				}
 			}
+			if (stop == int.MaxValue)	// edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
+			{
+				// Duplicate of the previous for loop's contents. Should that loop be altered, so should here. Consider moving it out into an inlined method.
+				int i = stop;
+                weight = 0f;
+                if (personality)
+                {
+                    p = new(i);
+                    weight += PersonalityWeight(p);
+                }
+                if (npcStats)
+                {
+                    npc = new(i);
+                    weight += NPCStatsWeight(npc);
+                }
+                if (slugcatStats)
+                {
+                    if (!npcStats) npc = new(i);
+                    slugStats = new(i, npc);
+                    weight += SlugcatStatsWeight(slugStats);
+                }
+                if (foodPreferences)
+                {
+                    if (!personality) p = new(i);
+                    foodPref = new(i, p);
+                    weight += FoodPreferencesWeight(foodPref);
+                }
+
+                if (!saturated && vals.Count < numToStore)
+                {
+                    vals.Add(weight, new(i));
+                    if (vals.Count == vals.Capacity) saturated = true;
+                }
+                else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+                {
+                    vals.RemoveAt(vals.Capacity - 1);
+                    vals.Add(weight, new(i));
+                }
+            }
 			return vals;
 		}
 
