@@ -9,7 +9,6 @@ namespace IDFinder
 		
 		static void Main(string[] args)
 		{
-			#region Search
 			Searcher search = new(new Searcher.SearchParams()
 			{
 				Aggression = (1f, 1f),
@@ -30,7 +29,7 @@ namespace IDFinder
 			}
 			SlugManager sm = new(result.Values);
 			sm.WriteToCSV("outSearched.csv");
-			#endregion
+
 			Console.WriteLine("Done");
 			Console.ReadLine();
 		}
