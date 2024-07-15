@@ -1,4 +1,6 @@
-﻿namespace IDFinder
+﻿using System.Runtime.CompilerServices;
+
+namespace IDFinder
 {
 	public static class Custom
 	{

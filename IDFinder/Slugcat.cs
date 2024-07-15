@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Unity_XORShift;
 
 namespace IDFinder
@@ -18,28 +19,6 @@ namespace IDFinder
 			NPCStats = new(ID);
 			SlugcatStats = new(ID, NPCStats);
 			FoodPreferences = new(ID, Personality);
-		}
-		public Slugcat(int ID, bool personality = false, bool npcStats = false, bool slugcatStats = false, bool foodPrefs = false)
-		{
-			this.ID = ID;
-			if (personality) Personality = new(ID);
-			if (npcStats) NPCStats = new(ID);
-			if (NPCStats != null)
-			{
-				if (slugcatStats) SlugcatStats = new(ID, NPCStats);
-			}
-			else
-			{
-				if (slugcatStats) SlugcatStats = new(ID);
-			}
-			if (Personality != null)
-			{
-				if (foodPrefs) FoodPreferences = new(ID, Personality);
-			}
-			else
-			{
-				if (foodPrefs) FoodPreferences = new(ID, new(ID));
-			}
 		}
 	}
 
@@ -70,7 +49,6 @@ namespace IDFinder
 			Nervous = Custom.PushFromHalf(Nervous, 2.5f);
 
 			Aggression = Custom.PushFromHalf(Aggression, 2.5f);
-			//XORShift128.InitSeed(seed);
 		}
 	}
 	public class NPCStats
@@ -146,7 +124,7 @@ namespace IDFinder
 		#endregion
 		public FoodPreferences(int ID, Personality p)
 		{
-			float[] preferences = GetPreferences(p, ID).Values.ToArray();
+			float[] preferences = GetPreferences(ID, p);
 			DangleFruit = preferences[0];
 			WaterNut = preferences[1];
 			JellyFish = preferences[2];
@@ -167,15 +145,15 @@ namespace IDFinder
 			NotCounted = preferences[17];
 		}
 		public FoodPreferences(int ID) : this(ID, new(ID)) { }
-		public static Dictionary<Food, float> GetPreferences(Personality p, int ID)
+		public static float[] GetPreferences(int ID, Personality p)
 		{
-			Dictionary<Food, float> foodPreference;
+			float[] foodPreference = new float[18];
 			XORShift128.InitSeed(ID);
-			foodPreference = new();
 			Food f;
 			float num, num2;
 
-			foreach (var i in Enum.GetValues<Food>())
+			int c = 0;
+			foreach (Food i in Enum.GetValues<Food>())
 			{
 				f = i;
 				switch (f)
@@ -254,7 +232,8 @@ namespace IDFinder
 				}
 				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
 				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference.Add(f, Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f));
+				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+				c++;
 			}
 			return foodPreference;
 		}
@@ -283,7 +262,7 @@ namespace IDFinder
 		public float poleClimbSpeedFac { get; private set; } = 1f;
 		public float corridorClimbSpeedFac { get; private set; } = 1f;
 		private SlugcatStats() { }
-		public SlugcatStats(int ID) : this(ID, new(ID)) { throw new WarningException("Less performant than using the NPCStats overload."); }
+		public SlugcatStats(int ID) : this(ID, new(ID)) { }
 		public SlugcatStats(int ID, NPCStats stats, bool isSlugpup = true)
 		{
 			if (isSlugpup)
