@@ -6,7 +6,6 @@ namespace IDFinder
 {
 	public class Searcher
 	{
-		// This is such a bad way to do it
 		public class SearchParams
 		{
 			#region Properties
@@ -60,7 +59,6 @@ namespace IDFinder
 		}
 
 		SearchParams sParams;
-		//const int chunkSize = 100000;   // do I need this? Could be useful for multithreading, to either dynamically generate it based on thread count or let the user select it
 		public Searcher(SearchParams sParams)
 		{
 			this.sParams = sParams;
@@ -70,20 +68,7 @@ namespace IDFinder
 		{
 			this.sParams = sParams;
 		}
-		private IEnumerable<FieldInfo> GetRelevantFields(FieldInfo[] searchFields)
-		{
-			List<FieldInfo> relevantFields = [];
-			FieldInfo? f;
-			foreach (FieldInfo fi in searchFields)
-			{
-				f = typeof(Searcher).GetField(fi.Name);
-				if (f != null) relevantFields.Add(f);
-				else throw new Exception("Name discrepancy between Searcher and SearchParams fields");
-			}
-			return relevantFields;
-		}
 
-		// Split each class being searched into its own method. Eg Personality, NPCStats, etc and [MethodImpl(MethodImplOptions.AggressiveInlining)] them. This'll cut down on how many if statements I have to use. Maybe add some functionality to the sParams class to allow me to easily determine whether or not an instance contains certain groups, possibly also inline that.a
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float PersonalityWeight(Personality p)
 		{
@@ -152,7 +137,6 @@ namespace IDFinder
 			if (sParams.NotCounted != null) weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
 			return weight;
 		}
-		#region Searches
 		public static IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, SearchParams searchParams)
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
@@ -252,9 +236,5 @@ namespace IDFinder
             }
 			return vals;
 		}
-
-		// Poor idea to use IEnumerable<int> range for large collections. 1 billion int32s is 4GB of memory. Yikes.
-		// https://timdeschryver.dev/blog/process-your-list-in-parallel-to-make-it-faster-in-dotnet
-		#endregion
 	}
 }
