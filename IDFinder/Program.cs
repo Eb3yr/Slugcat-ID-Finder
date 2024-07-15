@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using System.IO;
+using System.ComponentModel;
+using Unity_XORShift;
 namespace IDFinder
 {
 	internal class Program
@@ -7,24 +9,12 @@ namespace IDFinder
 		
 		static void Main(string[] args)
 		{
-			/*
-			JsonSerializerOptions options = new JsonSerializerOptions()
-			{
-				WriteIndented = true,
-			};
-			string str = JsonSerializer.Serialize<Slugcat>(new(1000), options);
-			File.WriteAllText("out.json", str);
-
-			string str2 = JsonSerializer.Serialize<SlugManager>(new(Enumerable.Range(1000, 20)), options);
-			File.WriteAllText("outMany.json", str2);
-			*/
-
-
-			//File.WriteAllText("outTest.json", SlugManager.GetJsonMany([1000, 1001, 1002]));
-
-			//SlugManager manager = new(Enumerable.Range(0, 1001));
-			//manager.WriteToCSV("newManagerTest.csv", SelectedColumns.All);
-
+			DateTime dt;
+			TimeSpan ts = TimeSpan.Zero;
+			
+			Console.WriteLine("e");
+			Console.ReadLine();
+			#region Search
 			Searcher search = new(new Searcher.SearchParams()
 			{
 				Aggression = (1f, 1f),
@@ -35,13 +25,26 @@ namespace IDFinder
 				Sympathy = (1f, 1f)
 			});
 
+			//DateTime dt;
+			dt = DateTime.Now;
 			Dictionary<float, Slugcat> result = new(search.Search(0, 1000000, 6));
+			Console.WriteLine("Completion time: " + DateTime.Now.Subtract(dt).TotalMilliseconds.ToString());
 			foreach (KeyValuePair<float, Slugcat> kvp in result)
 			{
 				Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
 			}
 			SlugManager sm = new(result.Values);
-			sm.WriteToCSV("outSearched.csv");
+			sm.WriteToCSV("outSearchedOld.csv");
+			#endregion
+			dt = DateTime.Now;
+			result = new(search.Search(0, 1000000, 6));
+			Console.WriteLine("Completion time: " + DateTime.Now.Subtract(dt).TotalMilliseconds.ToString());
+			foreach (KeyValuePair<float, Slugcat> kvp in result)
+			{
+				Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
+			}
+			sm = new(result.Values);
+			sm.WriteToCSV("outSearchedNew.csv");
 
 			Console.WriteLine("Done");
 			Console.ReadLine();

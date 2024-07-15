@@ -1,11 +1,12 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace IDFinder
 {
-	// Could turn Searcher static. Consider it.
 	public class Searcher
 	{
+		// This is such a bad way to do it
 		public class SearchParams
 		{
 			#region Properties
@@ -59,7 +60,7 @@ namespace IDFinder
 		}
 
 		SearchParams sParams;
-		const int chunkSize = 100000;   // do I need this? Could be useful for multithreading, to either dynamically generate it based on thread count or let the user select it
+		//const int chunkSize = 100000;   // do I need this? Could be useful for multithreading, to either dynamically generate it based on thread count or let the user select it
 		public Searcher(SearchParams sParams)
 		{
 			this.sParams = sParams;
@@ -82,582 +83,142 @@ namespace IDFinder
 			return relevantFields;
 		}
 
-		// Split each class being searched into its own method. Eg Personality, NPCStats, etc and [MethodImpl(MethodImplOptions.AggressiveInlining)] them. This'll cut down on how many if statements I have to use. Maybe add some functionality to the sParams class to allow me to easily determine whether or not an instance contains certain groups, possibly also inline that.
+		// Split each class being searched into its own method. Eg Personality, NPCStats, etc and [MethodImpl(MethodImplOptions.AggressiveInlining)] them. This'll cut down on how many if statements I have to use. Maybe add some functionality to the sParams class to allow me to easily determine whether or not an instance contains certain groups, possibly also inline that.a
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private float PersonalityWeight(Personality p)
+		{
+			float weight = 0f;
+			if (sParams.Sympathy != null) weight += sParams.Sympathy.Value.weight * Math.Abs(p.Sympathy - sParams.Sympathy.Value.target);
+			if (sParams.Energy != null) weight += sParams.Energy.Value.weight * Math.Abs(p.Energy - sParams.Energy.Value.target);
+			if (sParams.Bravery != null) weight += sParams.Bravery.Value.weight * Math.Abs(p.Bravery - sParams.Bravery.Value.target);
+			if (sParams.Nervous != null) weight += sParams.Nervous.Value.weight * Math.Abs(p.Nervous - sParams.Nervous.Value.target);
+			if (sParams.Aggression != null) weight += sParams.Aggression.Value.weight * Math.Abs(p.Aggression - sParams.Aggression.Value.target);
+			if (sParams.Dominance != null) weight += sParams.Dominance.Value.weight * Math.Abs(p.Dominance - sParams.Dominance.Value.target);
+			return weight;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private float NPCStatsWeight(NPCStats npc)
+		{
+			float weight = 0f;
+			if (sParams.Met != null) weight += sParams.Met.Value.weight * Math.Abs(npc.Met - sParams.Met.Value.target);
+			if (sParams.Bal != null) weight += sParams.Bal.Value.weight * Math.Abs(npc.Bal - sParams.Bal.Value.target);
+			if (sParams.Size != null) weight += sParams.Size.Value.weight * Math.Abs(npc.Size - sParams.Size.Value.target);
+			if (sParams.Stealth != null) weight += sParams.Stealth.Value.weight * Math.Abs(npc.Stealth - sParams.Stealth.Value.target);
+			if (sParams.Dark != null) weight += sParams.Dark.Value.weight * (npc.Dark == sParams.Dark.Value.target ? 1 : 0);
+			if (sParams.EyeColor != null) weight += sParams.EyeColor.Value.weight * Math.Abs(npc.EyeColor - sParams.EyeColor.Value.target);
+			if (sParams.H != null) weight += sParams.H.Value.weight * Math.Abs(npc.H - sParams.H.Value.target);
+			if (sParams.S != null) weight += sParams.S.Value.weight * Math.Abs(npc.S - sParams.S.Value.target);
+			if (sParams.L != null) weight += sParams.L.Value.weight * Math.Abs(npc.L - sParams.L.Value.target);
+			if (sParams.Wideness != null) weight += sParams.Wideness.Value.weight * Math.Abs(npc.Wideness - sParams.Wideness.Value.target);
+			return weight;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private float SlugcatStatsWeight(SlugcatStats slug)
+		{
+			float weight = 0f;
+			if (sParams.BodyWeightFac != null) weight += sParams.BodyWeightFac.Value.weight * Math.Abs(slug.bodyWeightFac - sParams.BodyWeightFac.Value.target);
+			if (sParams.GeneralVisibilityBonus != null) weight += sParams.GeneralVisibilityBonus.Value.weight * Math.Abs(slug.generalVisibilityBonus - sParams.GeneralVisibilityBonus.Value.target);
+			if (sParams.VisualStealthInSneakMode != null) weight += sParams.VisualStealthInSneakMode.Value.weight * Math.Abs(slug.visualStealthInSneakMode - sParams.VisualStealthInSneakMode.Value.target);
+			if (sParams.LoudnessFac != null )weight += sParams.LoudnessFac.Value.weight * Math.Abs(slug.loudnessFac - sParams.LoudnessFac.Value.target);
+			if (sParams.LungsFac != null) weight += sParams.LungsFac.Value.weight * Math.Abs(slug.lungsFac - sParams.LungsFac.Value.target);
+			if (sParams.ThrowingSkill != null) weight += sParams.ThrowingSkill.Value.weight * Math.Abs(slug.throwingSkill - sParams.ThrowingSkill.Value.target);
+			if (sParams.PoleClimbSpeedFac != null) weight += sParams.PoleClimbSpeedFac.Value.weight * Math.Abs(slug.poleClimbSpeedFac - sParams.PoleClimbSpeedFac.Value.target);
+			if (sParams.CorridorClimbSpeedFac != null) weight += sParams.CorridorClimbSpeedFac.Value.weight * Math.Abs(slug.corridorClimbSpeedFac - sParams.CorridorClimbSpeedFac.Value.target);
+			if (sParams.RunSpeedFac != null) weight += sParams.RunSpeedFac.Value.weight * Math.Abs(slug.runSpeedFac - sParams.RunSpeedFac.Value.target);
+			return weight;
+		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private float FoodPreferencesWeight(FoodPreferences foodPref)
+		{
+			float weight = 0f;
+			if (sParams.DangleFruit != null) weight += sParams.DangleFruit.Value.weight * Math.Abs(foodPref.DangleFruit - sParams.DangleFruit.Value.target);
+			if (sParams.WaterNut != null) weight += sParams.WaterNut.Value.weight * Math.Abs(foodPref.WaterNut - sParams.WaterNut.Value.target);
+			if (sParams.JellyFish != null) weight += sParams.JellyFish.Value.weight * Math.Abs(foodPref.JellyFish - sParams.JellyFish.Value.target);
+			if (sParams.SlimeMold != null) weight += sParams.SlimeMold.Value.weight * Math.Abs(foodPref.SlimeMold - sParams.SlimeMold.Value.target);
+			if (sParams.EggBugEgg != null) weight += sParams.EggBugEgg.Value.weight * Math.Abs(foodPref.EggBugEgg - sParams.EggBugEgg.Value.target);
+			if (sParams.FireEgg != null) weight += sParams.FireEgg.Value.weight * Math.Abs(foodPref.FireEgg - sParams.FireEgg.Value.target);
+			if (sParams.Popcorn != null) weight += sParams.Popcorn.Value.weight * Math.Abs(foodPref.Popcorn - sParams.Popcorn.Value.target);
+			if (sParams.GooieDuck != null) weight += sParams.GooieDuck.Value.weight * Math.Abs(foodPref.GooieDuck - sParams.GooieDuck.Value.target);
+			if (sParams.LilyPuck != null) weight += sParams.LilyPuck.Value.weight * Math.Abs(foodPref.LilyPuck - sParams.LilyPuck.Value.target);
+			if (sParams.GlowWeed != null) weight += sParams.GlowWeed.Value.weight * Math.Abs(foodPref.GlowWeed - sParams.GlowWeed.Value.target);
+			if (sParams.DandelionPeach != null) weight += sParams.DandelionPeach.Value.weight * Math.Abs(foodPref.DandelionPeach - sParams.DandelionPeach.Value.target);
+			if (sParams.Neuron != null) weight += sParams.Neuron.Value.weight * Math.Abs(foodPref.Neuron - sParams.Neuron.Value.target);
+			if (sParams.Centipede != null) weight += sParams.Centipede.Value.weight * Math.Abs(foodPref.Centipede - sParams.Centipede.Value.target);
+			if (sParams.SmallCentipede != null) weight += sParams.SmallCentipede.Value.weight * Math.Abs(foodPref.SmallCentipede - sParams.SmallCentipede.Value.target);
+			if (sParams.VultureGrub != null) weight += sParams.VultureGrub.Value.weight * Math.Abs(foodPref.VultureGrub - sParams.VultureGrub.Value.target);
+			if (sParams.SmallNeedleWorm != null) weight += sParams.SmallNeedleWorm.Value.weight * Math.Abs(foodPref.SmallNeedleWorm - sParams.SmallNeedleWorm.Value.target);
+			if (sParams.Hazer != null) weight += sParams.Hazer.Value.weight * Math.Abs(foodPref.Hazer - sParams.Hazer.Value.target);
+			if (sParams.NotCounted != null) weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
+			return weight;
+		}
 		#region Searches
 		public static IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, SearchParams searchParams)
 		{
-			return Search(Enumerable.Range(start, stop - start + 1), numToStore, searchParams);
+			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		public static IEnumerable<KeyValuePair<float, Slugcat>> Search(IEnumerable<int> range, int numToStore, SearchParams searchParams)
-		{
-			return new Searcher(searchParams).Search(range, numToStore);
-		}
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore)
-		{
-			return Search(Enumerable.Range(start, stop - start + 1), numToStore);
-		}
-		
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(IEnumerable<int> range, int numToStore)
+		// Not yet fully improved. Still generates the entire slugcat, VS the individual components.
+		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int count, int numToStore)
 		{
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
-
-			Slugcat sc;
 			float weight;
 			bool saturated = false;
 			vals.Capacity = numToStore;
-			foreach (int i in range)
+
+			bool personality, npcStats, slugcatStats, foodPreferences;
+			personality = !(sParams.Sympathy is null && sParams.Energy is null && sParams.Bravery is null && sParams.Nervous is null && sParams.Aggression is null && sParams.Dominance is null);
+			npcStats = !(sParams.Met is null && sParams.Bal is null && sParams.Size is null && sParams.Stealth is null && sParams.Dark is null && sParams.EyeColor is null && sParams.H is null && sParams.S is null && sParams.L is null && sParams.Wideness is null);
+			slugcatStats = !(sParams.BodyWeightFac is null && sParams.GeneralVisibilityBonus is null && sParams.VisualStealthInSneakMode is null && sParams.LoudnessFac is null && sParams.LungsFac is null && sParams.ThrowingSkill is null && sParams.PoleClimbSpeedFac is null && sParams.CorridorClimbSpeedFac is null && sParams.RunSpeedFac is null);
+			foodPreferences = !(sParams.DangleFruit is null && sParams.WaterNut is null && sParams.JellyFish is null && sParams.SlimeMold is null && sParams.EggBugEgg is null && sParams.FireEgg is null && sParams.Popcorn is null && sParams.GooieDuck is null && sParams.LilyPuck is null && sParams.GlowWeed is null && sParams.DandelionPeach is null && sParams.Neuron is null && sParams.Centipede is null && sParams.SmallCentipede is null && sParams.VultureGrub is null && sParams.SmallNeedleWorm is null && sParams.Hazer is null && sParams.NotCounted is null);
+
+			Personality? p = null;
+			NPCStats? npc = null;
+			SlugcatStats? slugStats = null;
+			FoodPreferences? foodPref = null;
+			for (int i = start; i < start + count; i++)
 			{
-				sc = new(i);
+				//sc = new(i);
 				weight = 0f;
-
-				// The following is why chunking might be useful. Is it faster to pre-generate groups of slugcats? Possibly threading to generate the slugcats and enqueue them to be searched? Or assigning set subregions between start and stop to multiple threads?
-				#region Iterating through everything
-
-				if (sParams.Sympathy != null)
+				if (personality)
 				{
-					weight += sParams.Sympathy.Value.weight * Math.Abs(sc.Personality.Sympathy - sParams.Sympathy.Value.target);
+					p = new(i);
+					weight += PersonalityWeight(p);
 				}
-				if (sParams.Energy != null)
+				if (npcStats)
 				{
-					weight += sParams.Energy.Value.weight * Math.Abs(sc.Personality.Energy - sParams.Energy.Value.target);
+					npc = new(i);
+					weight += NPCStatsWeight(npc);
 				}
-				if (sParams.Bravery != null)
+				if (slugcatStats) 
 				{
-					weight += sParams.Bravery.Value.weight * Math.Abs(sc.Personality.Bravery - sParams.Bravery.Value.target);
+					if (!npcStats) npc = new(i);
+					slugStats = new(i, npc);
+					weight += SlugcatStatsWeight(slugStats);
 				}
-				if (sParams.Nervous != null)
+				if (foodPreferences)
 				{
-					weight += sParams.Nervous.Value.weight * Math.Abs(sc.Personality.Nervous - sParams.Nervous.Value.target);
-				}
-				if (sParams.Aggression != null)
-				{
-					weight += sParams.Aggression.Value.weight * Math.Abs(sc.Personality.Aggression - sParams.Aggression.Value.target);
-				}
-				if (sParams.Dominance != null)
-				{
-					weight += sParams.Dominance.Value.weight * Math.Abs(sc.Personality.Dominance - sParams.Dominance.Value.target);
+					if (!personality) p = new(i);
+					foodPref = new(i, p);
+					weight += FoodPreferencesWeight(foodPref);
 				}
 
-				if (sParams.Met != null)
-				{
-					weight += sParams.Met.Value.weight * Math.Abs(sc.NPCStats.Met - sParams.Met.Value.target);
-				}
-				if (sParams.Bal != null)
-				{
-					weight += sParams.Bal.Value.weight * Math.Abs(sc.NPCStats.Bal - sParams.Bal.Value.target);
-				}
-				if (sParams.Size != null)
-				{
-					weight += sParams.Size.Value.weight * Math.Abs(sc.NPCStats.Size - sParams.Size.Value.target);
-				}
-				if (sParams.Stealth != null)
-				{
-					weight += sParams.Stealth.Value.weight * Math.Abs(sc.NPCStats.Stealth - sParams.Stealth.Value.target);
-				}
-				if (sParams.Dark != null)
-				{
-					weight += sParams.Dark.Value.weight * (sc.NPCStats.Dark == sParams.Dark.Value.target ? 1 : 0);
-				}
-				if (sParams.EyeColor != null)
-				{
-					weight += sParams.EyeColor.Value.weight * Math.Abs(sc.NPCStats.EyeColor - sParams.EyeColor.Value.target);
-				}
-				if (sParams.H != null)
-				{
-					weight += sParams.H.Value.weight * Math.Abs(sc.NPCStats.H - sParams.H.Value.target);
-				}
-				if (sParams.S != null)
-				{
-					weight += sParams.S.Value.weight * Math.Abs(sc.NPCStats.S - sParams.S.Value.target);
-				}
-				if (sParams.L != null)
-				{
-					weight += sParams.L.Value.weight * Math.Abs(sc.NPCStats.L - sParams.L.Value.target);
-				}
-				if (sParams.Wideness != null)
-				{
-					weight += sParams.Wideness.Value.weight * Math.Abs(sc.NPCStats.Wideness - sParams.Wideness.Value.target);
-				}
-
-				if (sParams.BodyWeightFac != null)
-				{
-					weight += sParams.BodyWeightFac.Value.weight * Math.Abs(sc.SlugcatStats.bodyWeightFac - sParams.BodyWeightFac.Value.target);
-				}
-				if (sParams.GeneralVisibilityBonus != null)
-				{
-					weight += sParams.GeneralVisibilityBonus.Value.weight * Math.Abs(sc.SlugcatStats.generalVisibilityBonus - sParams.GeneralVisibilityBonus.Value.target);
-				}
-				if (sParams.VisualStealthInSneakMode != null)
-				{
-					weight += sParams.VisualStealthInSneakMode.Value.weight * Math.Abs(sc.SlugcatStats.visualStealthInSneakMode - sParams.VisualStealthInSneakMode.Value.target);
-				}
-				if (sParams.LoudnessFac != null)
-				{
-					weight += sParams.LoudnessFac.Value.weight * Math.Abs(sc.SlugcatStats.loudnessFac - sParams.LoudnessFac.Value.target);
-				}
-				if (sParams.LungsFac != null)
-				{
-					weight += sParams.LungsFac.Value.weight * Math.Abs(sc.SlugcatStats.lungsFac - sParams.LungsFac.Value.target);
-				}
-				if (sParams.ThrowingSkill != null)
-				{
-					weight += sParams.ThrowingSkill.Value.weight * Math.Abs(sc.SlugcatStats.throwingSkill - sParams.ThrowingSkill.Value.target);
-				}
-				if (sParams.PoleClimbSpeedFac != null)
-				{
-					weight += sParams.PoleClimbSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.poleClimbSpeedFac - sParams.PoleClimbSpeedFac.Value.target);
-				}
-				if (sParams.CorridorClimbSpeedFac != null)
-				{
-					weight += sParams.CorridorClimbSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.corridorClimbSpeedFac - sParams.CorridorClimbSpeedFac.Value.target);
-				}
-				if (sParams.RunSpeedFac != null)
-				{
-					weight += sParams.RunSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.runSpeedFac - sParams.RunSpeedFac.Value.target);
-				}
-
-				if (sParams.DangleFruit != null)
-				{
-					weight += sParams.DangleFruit.Value.weight * Math.Abs(sc.FoodPreferences.DangleFruit - sParams.DangleFruit.Value.target);
-				}
-				if (sParams.WaterNut != null)
-				{
-					weight += sParams.WaterNut.Value.weight * Math.Abs(sc.FoodPreferences.WaterNut - sParams.WaterNut.Value.target);
-				}
-				if (sParams.JellyFish != null)
-				{
-					weight += sParams.JellyFish.Value.weight * Math.Abs(sc.FoodPreferences.JellyFish - sParams.JellyFish.Value.target);
-				}
-				if (sParams.SlimeMold != null)
-				{
-					weight += sParams.SlimeMold.Value.weight * Math.Abs(sc.FoodPreferences.SlimeMold - sParams.SlimeMold.Value.target);
-				}
-				if (sParams.EggBugEgg != null)
-				{
-					weight += sParams.EggBugEgg.Value.weight * Math.Abs(sc.FoodPreferences.EggBugEgg - sParams.EggBugEgg.Value.target);
-				}
-				if (sParams.FireEgg != null)
-				{
-					weight += sParams.FireEgg.Value.weight * Math.Abs(sc.FoodPreferences.FireEgg - sParams.FireEgg.Value.target);
-				}
-				if (sParams.Popcorn != null)
-				{
-					weight += sParams.Popcorn.Value.weight * Math.Abs(sc.FoodPreferences.Popcorn - sParams.Popcorn.Value.target);
-				}
-				if (sParams.GooieDuck != null)
-				{
-					weight += sParams.GooieDuck.Value.weight * Math.Abs(sc.FoodPreferences.GooieDuck - sParams.GooieDuck.Value.target);
-				}
-				if (sParams.LilyPuck != null)
-				{
-					weight += sParams.LilyPuck.Value.weight * Math.Abs(sc.FoodPreferences.LilyPuck - sParams.LilyPuck.Value.target);
-				}
-				if (sParams.GlowWeed != null)
-				{
-					weight += sParams.GlowWeed.Value.weight * Math.Abs(sc.FoodPreferences.GlowWeed - sParams.GlowWeed.Value.target);
-				}
-				if (sParams.DandelionPeach != null)
-				{
-					weight += sParams.DandelionPeach.Value.weight * Math.Abs(sc.FoodPreferences.DandelionPeach - sParams.DandelionPeach.Value.target);
-				}
-				if (sParams.Neuron != null)
-				{
-					weight += sParams.Neuron.Value.weight * Math.Abs(sc.FoodPreferences.Neuron - sParams.Neuron.Value.target);
-				}
-				if (sParams.Centipede != null)
-				{
-					weight += sParams.Centipede.Value.weight * Math.Abs(sc.FoodPreferences.Centipede - sParams.Centipede.Value.target);
-				}
-				if (sParams.SmallCentipede != null)
-				{
-					weight += sParams.SmallCentipede.Value.weight * Math.Abs(sc.FoodPreferences.SmallCentipede - sParams.SmallCentipede.Value.target);
-				}
-				if (sParams.VultureGrub != null)
-				{
-					weight += sParams.VultureGrub.Value.weight * Math.Abs(sc.FoodPreferences.VultureGrub - sParams.VultureGrub.Value.target);
-				}
-				if (sParams.SmallNeedleWorm != null)
-				{
-					weight += sParams.SmallNeedleWorm.Value.weight * Math.Abs(sc.FoodPreferences.SmallNeedleWorm - sParams.SmallNeedleWorm.Value.target);
-				}
-				if (sParams.Hazer != null)
-				{
-					weight += sParams.Hazer.Value.weight * Math.Abs(sc.FoodPreferences.Hazer - sParams.Hazer.Value.target);
-				}
-				if (sParams.NotCounted != null)
-				{
-					weight += sParams.NotCounted.Value.weight * Math.Abs(sc.FoodPreferences.NotCounted - sParams.NotCounted.Value.target);
-				}
-
-				#endregion
-
+				// Could make further optimisations by passing existing NPCStats, Personality etc as args to the Slugcat constructor to prevent them being generated again. Especially useful with FoodPreferences
 				if (!saturated && vals.Count < numToStore)
 				{
-					vals.Add(weight, sc);
+					vals.Add(weight, new(i));
 					if (vals.Count == vals.Capacity) saturated = true;
 				}
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
 				{
 					vals.RemoveAt(vals.Capacity - 1);
-					vals.Add(weight, sc);
+					vals.Add(weight, new(i));
 				}
 			}
-
 			return vals;
 		}
 
+		// Poor idea to use IEnumerable<int> range for large collections. 1 billion int32s is 4GB of memory. Yikes.
 		// https://timdeschryver.dev/blog/process-your-list-in-parallel-to-make-it-faster-in-dotnet
-		public IEnumerable<KeyValuePair<float, Slugcat>> BatchSearch(IEnumerable<int> range, int batchSize, int numToStore)
-		{
-			throw new NotImplementedException("Batch searching has not yet been implemented.");
-			IEnumerable<int[]> chunks = range.Chunk(batchSize);
-			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
-
-			Dictionary<Slugcat, float> scugs = [];
-			float weight;
-			bool saturated = false;
-			vals.Capacity = numToStore;
-
-			foreach (int[] i in chunks)
-			{
-				scugs = [];
-				// Run a for loop 
-				foreach (int j in i)
-				{
-					scugs.Add(new(j), 0f);
-				}
-
-				#region Iterating through everything
-
-				if (sParams.Sympathy != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Sympathy.Value.weight * Math.Abs(sc.Personality.Sympathy - sParams.Sympathy.Value.target);
-					}
-				}
-				if (sParams.Energy != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Energy.Value.weight * Math.Abs(sc.Personality.Energy - sParams.Energy.Value.target);
-					}
-				}
-				if (sParams.Bravery != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Bravery.Value.weight * Math.Abs(sc.Personality.Bravery - sParams.Bravery.Value.target);
-					}
-				}
-				if (sParams.Nervous != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Nervous.Value.weight * Math.Abs(sc.Personality.Nervous - sParams.Nervous.Value.target);
-					}
-				}
-				if (sParams.Aggression != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Aggression.Value.weight * Math.Abs(sc.Personality.Aggression - sParams.Aggression.Value.target);
-					}
-				}
-				if (sParams.Dominance != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Dominance.Value.weight * Math.Abs(sc.Personality.Dominance - sParams.Dominance.Value.target);
-					}
-				}
-
-				if (sParams.Met != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Met.Value.weight * Math.Abs(sc.NPCStats.Met - sParams.Met.Value.target);
-					}
-				}
-				if (sParams.Bal != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Bal.Value.weight * Math.Abs(sc.NPCStats.Bal - sParams.Bal.Value.target);
-					}
-				}
-				if (sParams.Size != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Size.Value.weight * Math.Abs(sc.NPCStats.Size - sParams.Size.Value.target);
-					}
-				}
-				if (sParams.Stealth != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Stealth.Value.weight * Math.Abs(sc.NPCStats.Stealth - sParams.Stealth.Value.target);
-					}
-				}
-				if (sParams.Dark != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Dark.Value.weight * (sc.NPCStats.Dark == sParams.Dark.Value.target ? 1 : 0);
-					}
-				}
-				if (sParams.EyeColor != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.EyeColor.Value.weight * Math.Abs(sc.NPCStats.EyeColor - sParams.EyeColor.Value.target);
-					}
-				}
-				if (sParams.H != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.H.Value.weight * Math.Abs(sc.NPCStats.H - sParams.H.Value.target);
-					}
-				}
-				if (sParams.S != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.S.Value.weight * Math.Abs(sc.NPCStats.S - sParams.S.Value.target);
-					}
-				}
-				if (sParams.L != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.L.Value.weight * Math.Abs(sc.NPCStats.L - sParams.L.Value.target);
-					}
-				}
-				if (sParams.Wideness != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Wideness.Value.weight * Math.Abs(sc.NPCStats.Wideness - sParams.Wideness.Value.target);
-					}
-				}
-
-				if (sParams.BodyWeightFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.BodyWeightFac.Value.weight * Math.Abs(sc.SlugcatStats.bodyWeightFac - sParams.BodyWeightFac.Value.target);
-					}
-				}
-				if (sParams.GeneralVisibilityBonus != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.GeneralVisibilityBonus.Value.weight * Math.Abs(sc.SlugcatStats.generalVisibilityBonus - sParams.GeneralVisibilityBonus.Value.target);
-					}
-				}
-				if (sParams.VisualStealthInSneakMode != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.VisualStealthInSneakMode.Value.weight * Math.Abs(sc.SlugcatStats.visualStealthInSneakMode - sParams.VisualStealthInSneakMode.Value.target);
-					}
-				}
-				if (sParams.LoudnessFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.LoudnessFac.Value.weight * Math.Abs(sc.SlugcatStats.loudnessFac - sParams.LoudnessFac.Value.target);
-					}
-				}
-				if (sParams.LungsFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.LungsFac.Value.weight * Math.Abs(sc.SlugcatStats.lungsFac - sParams.LungsFac.Value.target);
-					}
-				}
-				if (sParams.ThrowingSkill != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.ThrowingSkill.Value.weight * Math.Abs(sc.SlugcatStats.throwingSkill - sParams.ThrowingSkill.Value.target);
-					}
-				}
-				if (sParams.PoleClimbSpeedFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.PoleClimbSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.poleClimbSpeedFac - sParams.PoleClimbSpeedFac.Value.target);
-					}
-				}
-				if (sParams.CorridorClimbSpeedFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.CorridorClimbSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.corridorClimbSpeedFac - sParams.CorridorClimbSpeedFac.Value.target);
-					}
-				}
-				if (sParams.RunSpeedFac != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.RunSpeedFac.Value.weight * Math.Abs(sc.SlugcatStats.runSpeedFac - sParams.RunSpeedFac.Value.target);
-					}
-				}
-
-				if (sParams.DangleFruit != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.DangleFruit.Value.weight * Math.Abs(sc.FoodPreferences.DangleFruit - sParams.DangleFruit.Value.target);
-					}
-				}
-				if (sParams.WaterNut != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.WaterNut.Value.weight * Math.Abs(sc.FoodPreferences.WaterNut - sParams.WaterNut.Value.target);
-					}
-				}
-				if (sParams.JellyFish != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.JellyFish.Value.weight * Math.Abs(sc.FoodPreferences.JellyFish - sParams.JellyFish.Value.target);
-					}
-				}
-				if (sParams.SlimeMold != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.SlimeMold.Value.weight * Math.Abs(sc.FoodPreferences.SlimeMold - sParams.SlimeMold.Value.target);
-					}
-				}
-				if (sParams.EggBugEgg != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.EggBugEgg.Value.weight * Math.Abs(sc.FoodPreferences.EggBugEgg - sParams.EggBugEgg.Value.target);
-					}
-				}
-				if (sParams.FireEgg != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.FireEgg.Value.weight * Math.Abs(sc.FoodPreferences.FireEgg - sParams.FireEgg.Value.target);
-					}
-				}
-				if (sParams.Popcorn != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Popcorn.Value.weight * Math.Abs(sc.FoodPreferences.Popcorn - sParams.Popcorn.Value.target);
-					}
-				}
-				if (sParams.GooieDuck != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.GooieDuck.Value.weight * Math.Abs(sc.FoodPreferences.GooieDuck - sParams.GooieDuck.Value.target);
-					}
-				}
-				if (sParams.LilyPuck != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.LilyPuck.Value.weight * Math.Abs(sc.FoodPreferences.LilyPuck - sParams.LilyPuck.Value.target);
-					}
-				}
-				if (sParams.GlowWeed != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.GlowWeed.Value.weight * Math.Abs(sc.FoodPreferences.GlowWeed - sParams.GlowWeed.Value.target);
-					}
-				}
-				if (sParams.DandelionPeach != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.DandelionPeach.Value.weight * Math.Abs(sc.FoodPreferences.DandelionPeach - sParams.DandelionPeach.Value.target);
-					}
-				}
-				if (sParams.Neuron != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Neuron.Value.weight * Math.Abs(sc.FoodPreferences.Neuron - sParams.Neuron.Value.target);
-					}
-				}
-				if (sParams.Centipede != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Centipede.Value.weight * Math.Abs(sc.FoodPreferences.Centipede - sParams.Centipede.Value.target);
-					}
-				}
-				if (sParams.SmallCentipede != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.SmallCentipede.Value.weight * Math.Abs(sc.FoodPreferences.SmallCentipede - sParams.SmallCentipede.Value.target);
-					}
-				}
-				if (sParams.VultureGrub != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.VultureGrub.Value.weight * Math.Abs(sc.FoodPreferences.VultureGrub - sParams.VultureGrub.Value.target);
-					}
-				}
-				if (sParams.SmallNeedleWorm != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.SmallNeedleWorm.Value.weight * Math.Abs(sc.FoodPreferences.SmallNeedleWorm - sParams.SmallNeedleWorm.Value.target);
-					}
-				}
-				if (sParams.Hazer != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.Hazer.Value.weight * Math.Abs(sc.FoodPreferences.Hazer - sParams.Hazer.Value.target);
-					}
-				}
-				if (sParams.NotCounted != null)
-				{
-					foreach (Slugcat sc in scugs.Keys)
-					{
-						scugs[sc] += sParams.NotCounted.Value.weight * Math.Abs(sc.FoodPreferences.NotCounted - sParams.NotCounted.Value.target);
-					}
-				}
-
-				#endregion
-
-
-
-
-			}
-
-			if (!saturated && vals.Count < numToStore)
-			{
-				//vals.Add(weight, sc);
-				if (vals.Count == vals.Capacity) saturated = true;
-			}
-			else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
-			{
-				vals.RemoveAt(vals.Capacity - 1);
-				//vals.Add(weight, sc);
-			}
-
-
-
-			
-			return vals;
-		}
 		#endregion
 	}
 }

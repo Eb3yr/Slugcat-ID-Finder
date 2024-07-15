@@ -21,4 +21,12 @@
 		Hazer,
 		NotCounted
 	}
+	// I don't know if this is necessary
+	public enum SearchArgs
+	{
+		Personality,
+		NPCStats,
+		SlugcatStats,
+		FoodPreferences
+	}
 }
