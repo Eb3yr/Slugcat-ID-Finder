@@ -69,7 +69,6 @@ namespace IDFinder
 			this.sParams = sParams;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float PersonalityWeight(Personality p)
 		{
 			float weight = 0f;
@@ -81,7 +80,6 @@ namespace IDFinder
 			if (sParams.Dominance != null) weight += sParams.Dominance.Value.weight * Math.Abs(p.Dominance - sParams.Dominance.Value.target);
 			return weight;
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float NPCStatsWeight(NPCStats npc)
 		{
 			float weight = 0f;
@@ -97,7 +95,6 @@ namespace IDFinder
 			if (sParams.Wideness != null) weight += sParams.Wideness.Value.weight * Math.Abs(npc.Wideness - sParams.Wideness.Value.target);
 			return weight;
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float SlugcatStatsWeight(SlugcatStats slug)
 		{
 			float weight = 0f;
@@ -113,7 +110,6 @@ namespace IDFinder
 			return weight;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float FoodPreferencesWeight(FoodPreferences foodPref)
 		{
 			float weight = 0f;
