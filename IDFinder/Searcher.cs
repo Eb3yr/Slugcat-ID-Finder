@@ -239,7 +239,7 @@ namespace IDFinder
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
 				{
 					vals.RemoveAt(vals.Capacity - 1);
-					vals.Add(weight, new(i));
+					vals.TryAdd(weight, new(i));
 				}
 			}
 			if (stop == int.MaxValue)	// edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
