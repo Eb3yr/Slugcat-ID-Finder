@@ -72,65 +72,108 @@ namespace IDFinder
 		private float PersonalityWeight(Personality p)
 		{
 			float weight = 0f;
-			if (sParams.Sympathy != null) weight += sParams.Sympathy.Value.weight * Math.Abs(p.Sympathy - sParams.Sympathy.Value.target);
-			if (sParams.Energy != null) weight += sParams.Energy.Value.weight * Math.Abs(p.Energy - sParams.Energy.Value.target);
-			if (sParams.Bravery != null) weight += sParams.Bravery.Value.weight * Math.Abs(p.Bravery - sParams.Bravery.Value.target);
-			if (sParams.Nervous != null) weight += sParams.Nervous.Value.weight * Math.Abs(p.Nervous - sParams.Nervous.Value.target);
-			if (sParams.Aggression != null) weight += sParams.Aggression.Value.weight * Math.Abs(p.Aggression - sParams.Aggression.Value.target);
-			if (sParams.Dominance != null) weight += sParams.Dominance.Value.weight * Math.Abs(p.Dominance - sParams.Dominance.Value.target);
+			if (sParams.Sympathy != null)
+				weight += sParams.Sympathy.Value.weight * Math.Abs(p.Sympathy - sParams.Sympathy.Value.target);
+			if (sParams.Energy != null)
+				weight += sParams.Energy.Value.weight * Math.Abs(p.Energy - sParams.Energy.Value.target);
+			if (sParams.Bravery != null)
+				weight += sParams.Bravery.Value.weight * Math.Abs(p.Bravery - sParams.Bravery.Value.target);
+			if (sParams.Nervous != null)
+				weight += sParams.Nervous.Value.weight * Math.Abs(p.Nervous - sParams.Nervous.Value.target);
+			if (sParams.Aggression != null)
+				weight += sParams.Aggression.Value.weight * Math.Abs(p.Aggression - sParams.Aggression.Value.target);
+			if (sParams.Dominance != null)
+				weight += sParams.Dominance.Value.weight * Math.Abs(p.Dominance - sParams.Dominance.Value.target);
 			return weight;
 		}
 		private float NPCStatsWeight(NPCStats npc)
 		{
 			float weight = 0f;
-			if (sParams.Met != null) weight += sParams.Met.Value.weight * Math.Abs(npc.Met - sParams.Met.Value.target);
-			if (sParams.Bal != null) weight += sParams.Bal.Value.weight * Math.Abs(npc.Bal - sParams.Bal.Value.target);
-			if (sParams.Size != null) weight += sParams.Size.Value.weight * Math.Abs(npc.Size - sParams.Size.Value.target);
-			if (sParams.Stealth != null) weight += sParams.Stealth.Value.weight * Math.Abs(npc.Stealth - sParams.Stealth.Value.target);
-			if (sParams.Dark != null) weight += sParams.Dark.Value.weight * (npc.Dark == sParams.Dark.Value.target ? 1 : 0);
-			if (sParams.EyeColor != null) weight += sParams.EyeColor.Value.weight * Math.Abs(npc.EyeColor - sParams.EyeColor.Value.target);
-			if (sParams.H != null) weight += sParams.H.Value.weight * Math.Abs(npc.H - sParams.H.Value.target);
-			if (sParams.S != null) weight += sParams.S.Value.weight * Math.Abs(npc.S - sParams.S.Value.target);
-			if (sParams.L != null) weight += sParams.L.Value.weight * Math.Abs(npc.L - sParams.L.Value.target);
-			if (sParams.Wideness != null) weight += sParams.Wideness.Value.weight * Math.Abs(npc.Wideness - sParams.Wideness.Value.target);
+			if (sParams.Met != null)
+				weight += sParams.Met.Value.weight * Math.Abs(npc.Met - sParams.Met.Value.target);
+			if (sParams.Bal != null)
+				weight += sParams.Bal.Value.weight * Math.Abs(npc.Bal - sParams.Bal.Value.target);
+			if (sParams.Size != null)
+				weight += sParams.Size.Value.weight * Math.Abs(npc.Size - sParams.Size.Value.target);
+			if (sParams.Stealth != null)
+				weight += sParams.Stealth.Value.weight * Math.Abs(npc.Stealth - sParams.Stealth.Value.target);
+			if (sParams.Dark != null)
+				weight += sParams.Dark.Value.weight * (npc.Dark == sParams.Dark.Value.target ? 1 : 0);
+			if (sParams.EyeColor != null)
+				weight += sParams.EyeColor.Value.weight * Math.Abs(npc.EyeColor - sParams.EyeColor.Value.target);
+			if (sParams.H != null)
+				weight += sParams.H.Value.weight * Math.Abs(npc.H - sParams.H.Value.target);
+			if (sParams.S != null)
+				weight += sParams.S.Value.weight * Math.Abs(npc.S - sParams.S.Value.target);
+			if (sParams.L != null)
+				weight += sParams.L.Value.weight * Math.Abs(npc.L - sParams.L.Value.target);
+			if (sParams.Wideness != null)
+				weight += sParams.Wideness.Value.weight * Math.Abs(npc.Wideness - sParams.Wideness.Value.target);
 			return weight;
 		}
 		private float SlugcatStatsWeight(SlugcatStats slug)
 		{
 			float weight = 0f;
-			if (sParams.BodyWeightFac != null) weight += sParams.BodyWeightFac.Value.weight * Math.Abs(slug.bodyWeightFac - sParams.BodyWeightFac.Value.target);
-			if (sParams.GeneralVisibilityBonus != null) weight += sParams.GeneralVisibilityBonus.Value.weight * Math.Abs(slug.generalVisibilityBonus - sParams.GeneralVisibilityBonus.Value.target);
-			if (sParams.VisualStealthInSneakMode != null) weight += sParams.VisualStealthInSneakMode.Value.weight * Math.Abs(slug.visualStealthInSneakMode - sParams.VisualStealthInSneakMode.Value.target);
-			if (sParams.LoudnessFac != null )weight += sParams.LoudnessFac.Value.weight * Math.Abs(slug.loudnessFac - sParams.LoudnessFac.Value.target);
-			if (sParams.LungsFac != null) weight += sParams.LungsFac.Value.weight * Math.Abs(slug.lungsFac - sParams.LungsFac.Value.target);
-			if (sParams.ThrowingSkill != null) weight += sParams.ThrowingSkill.Value.weight * Math.Abs(slug.throwingSkill - sParams.ThrowingSkill.Value.target);
-			if (sParams.PoleClimbSpeedFac != null) weight += sParams.PoleClimbSpeedFac.Value.weight * Math.Abs(slug.poleClimbSpeedFac - sParams.PoleClimbSpeedFac.Value.target);
-			if (sParams.CorridorClimbSpeedFac != null) weight += sParams.CorridorClimbSpeedFac.Value.weight * Math.Abs(slug.corridorClimbSpeedFac - sParams.CorridorClimbSpeedFac.Value.target);
-			if (sParams.RunSpeedFac != null) weight += sParams.RunSpeedFac.Value.weight * Math.Abs(slug.runSpeedFac - sParams.RunSpeedFac.Value.target);
+			if (sParams.BodyWeightFac != null)
+				weight += sParams.BodyWeightFac.Value.weight * Math.Abs(slug.bodyWeightFac - sParams.BodyWeightFac.Value.target);
+			if (sParams.GeneralVisibilityBonus != null)
+				weight += sParams.GeneralVisibilityBonus.Value.weight * Math.Abs(slug.generalVisibilityBonus - sParams.GeneralVisibilityBonus.Value.target);
+			if (sParams.VisualStealthInSneakMode != null)
+				weight += sParams.VisualStealthInSneakMode.Value.weight * Math.Abs(slug.visualStealthInSneakMode - sParams.VisualStealthInSneakMode.Value.target);
+			if (sParams.LoudnessFac != null )
+				weight += sParams.LoudnessFac.Value.weight * Math.Abs(slug.loudnessFac - sParams.LoudnessFac.Value.target);
+			if (sParams.LungsFac != null)
+				weight += sParams.LungsFac.Value.weight * Math.Abs(slug.lungsFac - sParams.LungsFac.Value.target);
+			if (sParams.ThrowingSkill != null)
+				weight += sParams.ThrowingSkill.Value.weight * Math.Abs(slug.throwingSkill - sParams.ThrowingSkill.Value.target);
+			if (sParams.PoleClimbSpeedFac != null)
+				weight += sParams.PoleClimbSpeedFac.Value.weight * Math.Abs(slug.poleClimbSpeedFac - sParams.PoleClimbSpeedFac.Value.target);
+			if (sParams.CorridorClimbSpeedFac != null)
+				weight += sParams.CorridorClimbSpeedFac.Value.weight * Math.Abs(slug.corridorClimbSpeedFac - sParams.CorridorClimbSpeedFac.Value.target);
+			if (sParams.RunSpeedFac != null)
+				weight += sParams.RunSpeedFac.Value.weight * Math.Abs(slug.runSpeedFac - sParams.RunSpeedFac.Value.target);
 			return weight;
 		}
 
 		private float FoodPreferencesWeight(FoodPreferences foodPref)
 		{
 			float weight = 0f;
-			if (sParams.DangleFruit != null) weight += sParams.DangleFruit.Value.weight * Math.Abs(foodPref.DangleFruit - sParams.DangleFruit.Value.target);
-			if (sParams.WaterNut != null) weight += sParams.WaterNut.Value.weight * Math.Abs(foodPref.WaterNut - sParams.WaterNut.Value.target);
-			if (sParams.JellyFish != null) weight += sParams.JellyFish.Value.weight * Math.Abs(foodPref.JellyFish - sParams.JellyFish.Value.target);
-			if (sParams.SlimeMold != null) weight += sParams.SlimeMold.Value.weight * Math.Abs(foodPref.SlimeMold - sParams.SlimeMold.Value.target);
-			if (sParams.EggBugEgg != null) weight += sParams.EggBugEgg.Value.weight * Math.Abs(foodPref.EggBugEgg - sParams.EggBugEgg.Value.target);
-			if (sParams.FireEgg != null) weight += sParams.FireEgg.Value.weight * Math.Abs(foodPref.FireEgg - sParams.FireEgg.Value.target);
-			if (sParams.Popcorn != null) weight += sParams.Popcorn.Value.weight * Math.Abs(foodPref.Popcorn - sParams.Popcorn.Value.target);
-			if (sParams.GooieDuck != null) weight += sParams.GooieDuck.Value.weight * Math.Abs(foodPref.GooieDuck - sParams.GooieDuck.Value.target);
-			if (sParams.LilyPuck != null) weight += sParams.LilyPuck.Value.weight * Math.Abs(foodPref.LilyPuck - sParams.LilyPuck.Value.target);
-			if (sParams.GlowWeed != null) weight += sParams.GlowWeed.Value.weight * Math.Abs(foodPref.GlowWeed - sParams.GlowWeed.Value.target);
-			if (sParams.DandelionPeach != null) weight += sParams.DandelionPeach.Value.weight * Math.Abs(foodPref.DandelionPeach - sParams.DandelionPeach.Value.target);
-			if (sParams.Neuron != null) weight += sParams.Neuron.Value.weight * Math.Abs(foodPref.Neuron - sParams.Neuron.Value.target);
-			if (sParams.Centipede != null) weight += sParams.Centipede.Value.weight * Math.Abs(foodPref.Centipede - sParams.Centipede.Value.target);
-			if (sParams.SmallCentipede != null) weight += sParams.SmallCentipede.Value.weight * Math.Abs(foodPref.SmallCentipede - sParams.SmallCentipede.Value.target);
-			if (sParams.VultureGrub != null) weight += sParams.VultureGrub.Value.weight * Math.Abs(foodPref.VultureGrub - sParams.VultureGrub.Value.target);
-			if (sParams.SmallNeedleWorm != null) weight += sParams.SmallNeedleWorm.Value.weight * Math.Abs(foodPref.SmallNeedleWorm - sParams.SmallNeedleWorm.Value.target);
-			if (sParams.Hazer != null) weight += sParams.Hazer.Value.weight * Math.Abs(foodPref.Hazer - sParams.Hazer.Value.target);
-			if (sParams.NotCounted != null) weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
+			if (sParams.DangleFruit != null)
+				weight += sParams.DangleFruit.Value.weight * Math.Abs(foodPref.DangleFruit - sParams.DangleFruit.Value.target);
+			if (sParams.WaterNut != null)
+				weight += sParams.WaterNut.Value.weight * Math.Abs(foodPref.WaterNut - sParams.WaterNut.Value.target);
+			if (sParams.JellyFish != null)
+				weight += sParams.JellyFish.Value.weight * Math.Abs(foodPref.JellyFish - sParams.JellyFish.Value.target);
+			if (sParams.SlimeMold != null)
+				weight += sParams.SlimeMold.Value.weight * Math.Abs(foodPref.SlimeMold - sParams.SlimeMold.Value.target);
+			if (sParams.EggBugEgg != null)
+				weight += sParams.EggBugEgg.Value.weight * Math.Abs(foodPref.EggBugEgg - sParams.EggBugEgg.Value.target);
+			if (sParams.FireEgg != null)
+				weight += sParams.FireEgg.Value.weight * Math.Abs(foodPref.FireEgg - sParams.FireEgg.Value.target);
+			if (sParams.Popcorn != null)
+				weight += sParams.Popcorn.Value.weight * Math.Abs(foodPref.Popcorn - sParams.Popcorn.Value.target);
+			if (sParams.GooieDuck != null)
+				weight += sParams.GooieDuck.Value.weight * Math.Abs(foodPref.GooieDuck - sParams.GooieDuck.Value.target);
+			if (sParams.LilyPuck != null)
+				weight += sParams.LilyPuck.Value.weight * Math.Abs(foodPref.LilyPuck - sParams.LilyPuck.Value.target);
+			if (sParams.GlowWeed != null)
+				weight += sParams.GlowWeed.Value.weight * Math.Abs(foodPref.GlowWeed - sParams.GlowWeed.Value.target);
+			if (sParams.DandelionPeach != null)
+				weight += sParams.DandelionPeach.Value.weight * Math.Abs(foodPref.DandelionPeach - sParams.DandelionPeach.Value.target);
+			if (sParams.Neuron != null)
+				weight += sParams.Neuron.Value.weight * Math.Abs(foodPref.Neuron - sParams.Neuron.Value.target);
+			if (sParams.Centipede != null)
+				weight += sParams.Centipede.Value.weight * Math.Abs(foodPref.Centipede - sParams.Centipede.Value.target);
+			if (sParams.SmallCentipede != null)
+				weight += sParams.SmallCentipede.Value.weight * Math.Abs(foodPref.SmallCentipede - sParams.SmallCentipede.Value.target);
+			if (sParams.VultureGrub != null)
+				weight += sParams.VultureGrub.Value.weight * Math.Abs(foodPref.VultureGrub - sParams.VultureGrub.Value.target);
+			if (sParams.SmallNeedleWorm != null) 
+				weight += sParams.SmallNeedleWorm.Value.weight * Math.Abs(foodPref.SmallNeedleWorm - sParams.SmallNeedleWorm.Value.target);
+			if (sParams.Hazer != null)
+				weight += sParams.Hazer.Value.weight * Math.Abs(foodPref.Hazer - sParams.Hazer.Value.target);
+			if (sParams.NotCounted != null) 
+				weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
 			return weight;
 		}
 		public static IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, SearchParams searchParams)
@@ -231,6 +274,35 @@ namespace IDFinder
                 }
             }
 			return vals;
+		}
+		public async IEnumerable<KeyValuePair<float, Slugcat>> SearchMultithreaded(int start, int stop, int numToStore, int threads = 1)
+		{
+			if (threads == 1)
+				return Search(start, stop, numToStore);
+
+			SortedList<float, Slugcat> slugs = [];
+			IEnumerable<KeyValuePair<float, Slugcat>> results = [];
+            int[] markers = new int[threads + 1];
+            int count = stop - start;
+            int interval = count / threads;
+
+            for (int i = 0; i < threads; i++)
+            {
+                markers[i] = start + i * interval;
+            }
+            markers[threads] = stop;
+
+			for (int i = 0; i < markers.Length - 1; i++)
+			{
+				// I don't know if this will work. Since I'm writing to results, will it wait until this task finishes before starting the next iteration?
+				results = results.Concat(await Task.Run(() => Search(markers[i], markers[i + 1], numToStore)));
+			}
+
+
+            foreach (KeyValuePair<float, Slugcat> kvp in results)
+				slugs.Add(kvp.Key, kvp.Value);
+
+			return slugs.Take(numToStore);
 		}
 	}
 }
