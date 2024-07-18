@@ -238,8 +238,11 @@ namespace IDFinder
 				}
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
 				{
-					vals.RemoveAt(vals.Capacity - 1);
-					vals.TryAdd(weight, new(i));
+					if (!vals.ContainsKey(weight))
+					{
+                        vals.RemoveAt(vals.Capacity - 1);
+						vals.Add(weight, new(i));
+                    }
 				}
 			}
 			if (stop == int.MaxValue)	// edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
@@ -277,9 +280,12 @@ namespace IDFinder
                 }
                 else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
                 {
-                    vals.RemoveAt(vals.Capacity - 1);
-					vals.TryAdd(weight, new(i));	// TryAdd to avoid rare occassions where two identical weights are generated. SortedList does not allow duplicate keys and throws an Exception.
-				}
+                    if (!vals.ContainsKey(weight))
+                    {
+                        vals.RemoveAt(vals.Capacity - 1);
+                        vals.Add(weight, new(i));
+                    }
+                }
             }
 			return vals;
 		}
