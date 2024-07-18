@@ -233,7 +233,7 @@ namespace IDFinder
 
 				if (!saturated && vals.Count < numToStore)
 				{
-					vals.Add(weight, new(i));
+					vals.TryAdd(weight, new(i));
 					if (vals.Count == vals.Capacity) saturated = true;
 				}
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
@@ -275,7 +275,7 @@ namespace IDFinder
 
                 if (!saturated && vals.Count < numToStore)
                 {
-                    vals.Add(weight, new(i));
+                    vals.TryAdd(weight, new(i));
                     if (vals.Count == vals.Capacity) saturated = true;
                 }
                 else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
