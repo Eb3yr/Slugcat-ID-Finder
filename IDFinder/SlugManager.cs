@@ -134,7 +134,11 @@ namespace IDFinder
 			}
 			return JsonSerializer.Serialize<List<Slugcat>>(scugs, options);
 		}
-		public static string GetJson(int ID)
+        public string GetJsonThis()
+        {
+            return JsonSerializer.Serialize(this, options);
+        }
+        public static string GetJson(int ID)
 		{
 			return JsonSerializer.Serialize<Slugcat>(new(ID), options);
 		}

@@ -240,18 +240,6 @@ namespace IDFinder
 	}
 	public class SlugcatStats
 	{
-		private readonly static SlugcatStats slugpupBase = new()
-		{
-			bodyWeightFac = 0.65f,
-			generalVisibilityBonus = -0.2f,
-			visualStealthInSneakMode = 0.6f,
-			loudnessFac = 0.5f,
-			lungsFac = 0.8f,
-			throwingSkill = 0,
-			poleClimbSpeedFac = 0.8f,
-			corridorClimbSpeedFac = 0.8f,
-			runSpeedFac = 0.8f
-		};
 		public float runSpeedFac { get; private set; } = 1f;
 		public float bodyWeightFac { get; private set; } = 1f;
 		public float generalVisibilityBonus { get; private set; }
