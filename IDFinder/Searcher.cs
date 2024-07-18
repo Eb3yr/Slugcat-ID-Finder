@@ -278,8 +278,8 @@ namespace IDFinder
                 else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
                 {
                     vals.RemoveAt(vals.Capacity - 1);
-                    vals.Add(weight, new(i));
-                }
+					vals.TryAdd(weight, new(i));	// TryAdd to avoid rare occassions where two identical weights are generated. SortedList does not allow duplicate keys and throws an Exception.
+				}
             }
 			return vals;
 		}
