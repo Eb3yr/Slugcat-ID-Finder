@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -180,12 +181,14 @@ namespace IDFinder
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore)
+		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, bool logPercents = false)
 		{
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
 			float weight;
 			bool saturated = false;
 			vals.Capacity = numToStore;
+			long percentInterval = ((long)stop - (long)start) / 100;	// long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
+			int percentTracker = 0;
 
 			bool personality, npcStats, slugcatStats, foodPreferences;
 			personality = !(sParams.Sympathy is null && sParams.Energy is null && sParams.Bravery is null && sParams.Nervous is null && sParams.Aggression is null && sParams.Dominance is null);
@@ -199,6 +202,11 @@ namespace IDFinder
 			FoodPreferences? foodPref = null;
 			for (int i = start; i < stop; i++)
 			{
+				if (logPercents && (i - start) % percentInterval == 0)
+				{
+					percentTracker++;
+					Console.WriteLine($"{percentTracker}%");
+				}
 				weight = 0f;
 				if (personality)
 				{
@@ -275,7 +283,7 @@ namespace IDFinder
             }
 			return vals;
 		}
-		public async IEnumerable<KeyValuePair<float, Slugcat>> SearchMultithreaded(int start, int stop, int numToStore, int threads = 1)
+		/*public async IEnumerable<KeyValuePair<float, Slugcat>> SearchMultithreaded(int start, int stop, int numToStore, int threads = 1)
 		{
 			if (threads == 1)
 				return Search(start, stop, numToStore);
@@ -303,6 +311,6 @@ namespace IDFinder
 				slugs.Add(kvp.Key, kvp.Value);
 
 			return slugs.Take(numToStore);
-		}
+		}*/
 	}
 }
