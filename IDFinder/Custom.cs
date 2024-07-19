@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity_XORShift;
 
 namespace IDFinder
@@ -50,11 +53,76 @@ namespace IDFinder
             k = -1f - k;
             return 0.5f + k * x / (k - x + 1f) * 0.5f;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 DegToFloat2(float ang)
+        {
+            float x = float.DegreesToRadians(ang);
+            return new Vector2(float.Sin(x), float.Cos(x));
+        }
+        public static Color HSL2RGB(float h, float sl, float l)
+        {
+            float r = l;
+            float g = l;
+            float b = l;
+            float num = ((double)l <= 0.5) ? (l * (1f + sl)) : (l + sl - l * sl);
+            if (num > 0f)
+            {
+                float num2 = l + l - num;
+                float num3 = (num - num2) / num;
+                h *= 6f;
+                int num4 = (int)h;
+                float num5 = h - (float)num4;
+                float num6 = num * num3 * num5;
+                float num7 = num2 + num6;
+                float num8 = num - num6;
+                switch (num4)
+                {
+                    case 0:
+                        r = num;
+                        g = num7;
+                        b = num2;
+                        break;
+                    case 1:
+                        r = num8;
+                        g = num;
+                        b = num2;
+                        break;
+                    case 2:
+                        r = num2;
+                        g = num;
+                        b = num7;
+                        break;
+                    case 3:
+                        r = num2;
+                        g = num8;
+                        b = num;
+                        break;
+                    case 4:
+                        r = num7;
+                        g = num2;
+                        b = num;
+                        break;
+                    case 5:
+                        r = num;
+                        g = num2;
+                        b = num8;
+                        break;
+                }
+            }
+            return new Color(r, g, b);
+        }
+        public static float Decimal(float f)
+        {
+            return f - float.Floor(f);
+        }
+        public static float DistanceBetweenZeroToOneFloats(float a, float b)
+        {
+            return Math.Min(Math.Min(Math.Abs(a - b), Math.Abs(a + 1f - b)), Math.Abs(a - 1f - b));
+        }
         public static float InverseLerp(float a, float b, float value)
 		{
-			// A value between zero and one, representing where value falls inbetween the range between a and b. 
-			return (value - a) / (b - a);
+            // A value between zero and one, representing where value falls inbetween the range between a and b.
+			return float.Clamp((value - a) / (b - a), 0f, 1f);
 		}
 	}
 }

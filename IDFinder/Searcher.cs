@@ -245,6 +245,7 @@ namespace IDFinder
                     }
 				}
 			}
+			
 			if (stop == int.MaxValue)	// edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
 			{
 				// Duplicate of the previous for loop's contents. Should that loop be altered, so should here. Consider moving it out into an inlined method.
