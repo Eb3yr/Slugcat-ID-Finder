@@ -273,11 +273,10 @@ namespace IDFinder
             Scruffy = 1f;
         }
     }
-    // Spelling it this way causes me psychic damage. I really hope some Americans come along and use this library to make it worth it.
     public class ScavColors
     {
         public HSLColor BellyColor { get; private set; }
-        public Color BlackColor { get; private set; }   // RGB Color, not HSLColor
+        //public Color BlackColor { get; private set; }   // This is dependent on the room pallete, not the scavenger, and is used for the blended color properties in ScavengerGraphics. 
         public HSLColor BodyColor { get; private set; }
         public HSLColor DecorationColor { get; private set; }
         public HSLColor EyeColor { get; private set; }
@@ -285,11 +284,9 @@ namespace IDFinder
         public float BellyColorBlack { get; private set; }
         public float BodyColorBlack { get; private set; }
         public float HeadColorBlack { get; private set; }
-
-        // There's a few others not included in the IDFinder mod BUT present in the code. Not entirely sure how they're used but they are. 
-        // Also consider blended colours. They're properties with a getter but no setter. Need to look into where it's used and what visual effects it has.
         public ScavColors(Personality Personality, IndividualVariations Variations, bool Elite)
         {
+            HSLColor BellyColor, BodyColor, DecorationColor, EyeColor, HeadColor;
             float num = XORShift128.NextFloat() * 0.1f;
             if (XORShift128.NextFloat() < 0.025f)
             {
@@ -403,6 +400,13 @@ namespace IDFinder
                 HeadColorBlack *= float.Lerp(1f, 0.8f, XORShift128.NextFloat());
                 BellyColor.H = float.Lerp(BellyColor.H, HeadColor.H, float.Pow(XORShift128.NextFloat(), 0.5f));
             }
+
+            // Only struct fields can have their fields written to. Struct properties cannot. As this implementation of ScavColors (which is not a class in Rain World's source) uses properties, these assignments are required.
+            this.BellyColor = BellyColor;
+            this.BodyColor = BodyColor;
+            this.DecorationColor = DecorationColor;
+            this.EyeColor = EyeColor;
+            this.HeadColor = HeadColor;
         }
     }
     public class ScavSkills

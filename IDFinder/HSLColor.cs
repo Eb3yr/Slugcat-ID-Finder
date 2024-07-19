@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace IDFinder
 {
-    // I don't like having this as a class since it's a small object being put onto the heap, but this avoids compiler error CS1612. At some point this should be rewritten to function correctly as a struct. 
-    public class HSLColor
+    public struct HSLColor
     {
         public float H;
         public float S;
