@@ -11,17 +11,19 @@ namespace IDFinder
 		{
             Searcher search = new(new Searcher.SearchParams()
             {
-                Aggression = (0f, 1f),
-                Bravery = (0f, 1f),
-                Dominance = (0f, 1f),
-                Nervous = (0f, 1f),
-                Energy = (0f, 1f),
-                Sympathy = (0f, 1f)
+                //Aggression = (0f, 1f),
+                //Bravery = (0f, 1f),
+                //Dominance = (0f, 1f),
+                //Nervous = (0f, 1f),
+                Energy = (1f, 1f),
+                //Sympathy = (0f, 1f)
+                S = (1f, 1f),
+                L = (0.65f, 1f)
             });
 
             DateTime dt;
             dt = DateTime.Now;
-            Dictionary<float, Slugcat> result = new(search.Search(0, 100000000, 1200, true));
+            Dictionary<float, Slugcat> result = new(search.Search(0, 10000000, 1200, true));
             TimeSpan completion = DateTime.Now.Subtract(dt);
             Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
             foreach (KeyValuePair<float, Slugcat> kvp in result)

@@ -21,4 +21,9 @@
 		Hazer,
 		NotCounted
 	}
+    public enum ScavBackType
+    {
+        HardBackSpikes,
+        WobblyBackTufts
+    }
 }
