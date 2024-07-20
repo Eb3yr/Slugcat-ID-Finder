@@ -9,7 +9,7 @@ namespace IDFinder
 	{
 		public class SearchParams
 		{
-			#region Properties
+			#region Fields
 			public (float target, float weight)? Sympathy = null;
 			public (float target, float weight)? Energy = null;
 			public (float target, float weight)? Bravery = null;

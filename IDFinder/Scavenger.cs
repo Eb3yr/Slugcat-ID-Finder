@@ -48,7 +48,7 @@ namespace IDFinder
                 BackType = ScavBackType.WobblyBackTufts;
             }
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
-            float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];
+            float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];  // As a quirk of the JSON serializer, this cannot be serialized. While it has a visual impact on the scavengers, it unfortunately cannot be included as a property or field of this class unless a different serializer is used.
             float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
             num2 = float.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
             float num3 = float.Lerp(num2 + 0.2f, float.Lerp(0.7f, 1.2f, XORShift128.NextFloat()), XORShift128.NextFloat());
@@ -77,7 +77,7 @@ namespace IDFinder
     }
     public class Eartlers
     {
-        List<Vertex[]> points;
+        public List<Vertex[]> points { get; private set; }
         public Eartlers(bool elite)
         {
             points = [];
@@ -270,7 +270,7 @@ namespace IDFinder
             {
                 Scruffy = float.Pow(XORShift128.NextFloat(), 0.3f);
             }
-            Scruffy = 1f;
+            Scruffy = 1f;   // This is how it's done in the code. I don't understand why Scruffy is assigned to three times sequentially, it feels pointless.
         }
     }
     public class ScavColors
@@ -308,7 +308,7 @@ namespace IDFinder
             BodyColor = new HSLColor(num, float.Lerp(0.05f, 1f, float.Pow(XORShift128.NextFloat(), 0.85f)), float.Lerp(0.05f, 0.8f, XORShift128.NextFloat()));
             BodyColor.S = BodyColor.S * (1f - Variations.GeneralMelanin);
             BodyColor.L = float.Lerp(BodyColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
-            BodyColorBlack = Custom.LerpMap((BodyColor.rgb.R + BodyColor.rgb.G + BodyColor.rgb.B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
+            BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
             BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
             BodyColorBlack *= Variations.GeneralMelanin;
             Vector2 @float = new Vector2(BodyColor.S, float.Lerp(-1f, 1f, BodyColor.L * (1f - BodyColorBlack)));
@@ -316,7 +316,7 @@ namespace IDFinder
             {
                 @float = Vector2.Lerp(@float, Vector2.Normalize(@float), Custom.InverseLerp(0.5f, 0.3f, @float.Length()));
                 BodyColor = new HSLColor(BodyColor.H, Custom.InverseLerp(-1f, 1f, @float.X), Custom.InverseLerp(-1f, 1f, @float.Y));
-                BodyColorBlack = Custom.LerpMap((BodyColor.rgb.R + BodyColor.rgb.G + BodyColor.rgb.B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
+                BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
                 BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
                 BodyColorBlack *= Variations.GeneralMelanin;
             }
@@ -358,7 +358,7 @@ namespace IDFinder
             {
                 HeadColor.L = HeadColor.L * (0.5f + 0.5f * Custom.InverseLerp(0.2f, 0.05f, Custom.DistanceBetweenZeroToOneFloats(BodyColor.H, HeadColor.H)));
             }
-            HeadColorBlack = Custom.LerpMap((HeadColor.rgb.R + HeadColor.rgb.G + HeadColor.rgb.B) / 3f, 0.035f, 0.26f, 0.7f, 0.95f, 0.25f);
+            HeadColorBlack = Custom.LerpMap((HeadColor.RGB().R + HeadColor.RGB().G + HeadColor.RGB().B) / 3f, 0.035f, 0.26f, 0.7f, 0.95f, 0.25f);
             HeadColorBlack = float.Lerp(HeadColorBlack, float.Lerp(0.8f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
             HeadColorBlack *= 0.2f + 0.7f * Variations.GeneralMelanin;
             HeadColorBlack = float.Max(HeadColorBlack, BodyColorBlack);

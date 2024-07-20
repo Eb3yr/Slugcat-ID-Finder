@@ -12,13 +12,6 @@ namespace IDFinder
         public float H;
         public float S;
         public float L;
-        public Color rgb
-        {
-            get
-            {
-                return Custom.HSL2RGB(H, S, L);
-            }
-        }
         public HSLColor(float H, float S, float L)
         {
             this.H = H;
@@ -30,6 +23,10 @@ namespace IDFinder
             H = 0;
             S = 0;
             L = 0;
+        }
+        public Color RGB()
+        {
+            return Custom.HSL2RGB(H, S, L);
         }
     }
     public struct Color

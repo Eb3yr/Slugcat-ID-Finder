@@ -37,12 +37,10 @@ namespace IDFinder
 
             JsonSerializerOptions options = new()
             {
-                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals,
                 WriteIndented = true,
                 IncludeFields = true
             };
-            Scavenger aScav = new Scavenger(1000000);
-            Console.WriteLine("aScav blocking: " + aScav.Skills.BlockingSkill);
+            Scavenger aScav = new Scavenger(10000);
             File.WriteAllText("ScavOutTest.txt", JsonSerializer.Serialize(aScav, options));
             Console.WriteLine("Done");
             Console.ReadLine();
