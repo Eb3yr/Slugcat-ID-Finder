@@ -4,7 +4,7 @@ using Unity_XORShift;
 
 namespace IDFinder
 {
-	public struct Slugcat
+	public class Slugcat
 	{
 		public int ID { get; private set; }
 		public bool IsPup { get; private set; } = true;
