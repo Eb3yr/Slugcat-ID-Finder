@@ -181,7 +181,7 @@ namespace IDFinder
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, bool logPercents = false)
+		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, bool logPercents = false)	// logPercents is primitive and doesn't fit anything other than console. Consider async task implementation and progress tracking that way. Does any responsibility for this fall onto the library or only whatever program utilises it?
 		{
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
 			float weight;

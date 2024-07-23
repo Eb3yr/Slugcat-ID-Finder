@@ -75,18 +75,18 @@ namespace IDFinder
     }
     public class EartlersGroup : ISearchGroup
     {
-
+        // Does this even need to be visible? The data itself is quite abstracted from its in-game appearance. It could be searched for some more interesting observations though, like eartler size, complexity, etc. Needs to be thought over and experimented with ingame. 
     }
     public class ScavColorsGroup : ISearchGroup
     { 
         
     }
-    public class ScavSkillGroup : ISearchGroup
+    public class ScavSkillsGroup : ISearchGroup
     {
 
     }
     public class ScavBackPatternsGroup : ISearchGroup
     {
-
+        // Remember that this isn't a 1-to-1 recreation of the properties & fields of the respective classes. The information presented needs to be useful to the user, an array of spine sizes is less useful than an averaging of the spine sizes and another for the total number of spines. 
     }
 }
