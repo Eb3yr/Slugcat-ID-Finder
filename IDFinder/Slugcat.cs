@@ -22,7 +22,7 @@ namespace IDFinder
 		}
 	}
 
-	public class Personality
+	public struct Personality
 	{
 		public float Sympathy { get; private set; }
 		public float Energy { get; private set; }
@@ -51,7 +51,7 @@ namespace IDFinder
 			Aggression = Custom.PushFromHalf(Aggression, 2.5f);
 		}
 	}
-	public class NPCStats
+	public struct NPCStats
 	{
 		public float Met { get; private set; }
 		public float Bal { get; private set; }
@@ -100,7 +100,7 @@ namespace IDFinder
 			}
 		}
 	}
-	public class FoodPreferences
+	public struct FoodPreferences
 	{
 		#region Properties
 		public float DangleFruit {get; private set; }
@@ -238,7 +238,7 @@ namespace IDFinder
 			return foodPreference;
 		}
 	}
-	public class SlugcatStats
+	public struct SlugcatStats
 	{
 		public float runSpeedFac { get; private set; } = 1f;
 		public float bodyWeightFac { get; private set; } = 1f;
@@ -249,7 +249,6 @@ namespace IDFinder
 		public int throwingSkill { get; private set; } = 1;
 		public float poleClimbSpeedFac { get; private set; } = 1f;
 		public float corridorClimbSpeedFac { get; private set; } = 1f;
-		private SlugcatStats() { }
 		public SlugcatStats(int ID) : this(ID, new(ID)) { }
 		public SlugcatStats(int ID, NPCStats stats, bool isSlugpup = true)
 		{

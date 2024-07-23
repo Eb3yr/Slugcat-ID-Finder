@@ -24,7 +24,7 @@ namespace IDFinder
         public Eartlers Eartlers { get; private set; }
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
-        public ScavBackType BackType { get; private set; }  // re-assess property name
+        public ScavBackPatterns BackPatterns { get; private set; }
         // Make sure the RNG is initialised correctly. I may need to go back to Personality's implementation and add back that return to the initial RNG state once the properties are all generated for example. 
         // There is a problem here. IndividualVariations doesn't initialise RNG in itself. The RNG is initialised in the Scavenger constructor just prior to its call, then followed up by this.GenerateColors(); and so on. The RNG state is very important so I can't simply instantiate, say, ScavColors without accounting for the effects of Variations' instantiation on RNG
         // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter. 
@@ -34,19 +34,17 @@ namespace IDFinder
             Elite = isElite;
             Personality = new(ID);
             Skills = new(ID, Personality, Elite);
+            BackPatterns = new();
 
             #region ScavengerGraphics
             XORShift128.InitSeed(ID);
             Variations = new(Personality);
             Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
-            if (XORShift128.NextFloat() < 0.1f || isElite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-            {
-                BackType = ScavBackType.HardBackSpikes;
-            }
+            if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
+                BackPatterns.BackType = ScavBackPatterns.ScavBackType.HardBackSpikes;
             else
-            {
-                BackType = ScavBackType.WobblyBackTufts;
-            }
+                BackPatterns.BackType = ScavBackPatterns.ScavBackType.WobblyBackTufts;
+
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
             float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];  // As a quirk of the JSON serializer, this cannot be serialized. While it has a visual impact on the scavengers, it unfortunately cannot be included as a property or field of this class unless a different serializer is used.
             float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
@@ -74,6 +72,37 @@ namespace IDFinder
             // CentipedeShellCosmetic[] shells is instantiated next. The class's constructor uses UnityEngine.Random.value, however unless the scavenger is a king, shells.Length = 0 so no objects are instantiated and the constructor is never called. 
             #endregion
         }
+    }
+    public class ScavBackPatterns
+    {
+        public enum ScavBackType
+        {
+            HardBackSpikes,
+            WobblyBackTufts
+        }
+        public enum ColorTypes
+        {
+            None,
+            Decoration,
+            Head
+        }
+        public enum Patterns
+        {
+            SpineRidge,
+            DoubleSpineRidge,
+            RandomBackBlotch
+        }
+        // These properties aren't necessarily the info I want to store, rather they're the searching info. I'm not sure where I should draw the line. Perhaps getting a creature's info should match the searching stuff? IDK
+        // setters are public to circumvent inaccessibility when setting the values of properties in Scavenger constructor.
+        public ScavBackType BackType { get; set; }
+        public ColorTypes ColorType { get; set; }
+        public float ColorStrength { get; set; }    // 0f to 1f. Not sure what of, yet.
+        public Patterns Pattern { get; set; }   
+        public float RangeTop { get; set; }    // 0.02 to 0.30. Not sure what of, yet
+        public float RangeBottom { get; set; }     // 0.40 to 1f. Not sure what of, yet
+        public int NumSpines { get; set; }   // Spineridge:  [2, 37], doublespineridge: [2, 40], randombackblotch: [4, 40] ranges
+        public float GeneralSpineSize { get; set; }    // 0f to 1f. Mean of all the spine lengths? 
+        public ScavBackPatterns() { }
     }
     public class Eartlers
     {

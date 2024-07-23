@@ -21,9 +21,16 @@
 		Hazer,
 		NotCounted
 	}
-    public enum ScavBackType
-    {
-        HardBackSpikes,
-        WobblyBackTufts
-    }
+	public enum SearchGroups
+	{
+		Personality,
+		NPCStats,
+		SlugcatStats,
+		FoodPreferences,
+		IndividualVariations,
+		Eartlers,
+		ScavColors,
+		ScavSkills,
+		ScavBackPatterns
+	}
 }
