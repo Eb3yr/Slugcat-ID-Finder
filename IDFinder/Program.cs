@@ -24,7 +24,7 @@ namespace IDFinder
             
             DateTime dt;
             dt = DateTime.Now;
-            Dictionary<float, Slugcat> result = new(search.Search(0, 10000000, 1200, true));
+            Dictionary<float, Slugcat> result = new(search.Search(0, 10000000, 12, true));
             TimeSpan completion = DateTime.Now.Subtract(dt);
             Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
             foreach (KeyValuePair<float, Slugcat> kvp in result)
