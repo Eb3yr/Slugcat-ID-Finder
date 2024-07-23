@@ -196,10 +196,10 @@ namespace IDFinder
 			slugcatStats = !(sParams.BodyWeightFac is null && sParams.GeneralVisibilityBonus is null && sParams.VisualStealthInSneakMode is null && sParams.LoudnessFac is null && sParams.LungsFac is null && sParams.ThrowingSkill is null && sParams.PoleClimbSpeedFac is null && sParams.CorridorClimbSpeedFac is null && sParams.RunSpeedFac is null);
 			foodPreferences = !(sParams.DangleFruit is null && sParams.WaterNut is null && sParams.JellyFish is null && sParams.SlimeMold is null && sParams.EggBugEgg is null && sParams.FireEgg is null && sParams.Popcorn is null && sParams.GooieDuck is null && sParams.LilyPuck is null && sParams.GlowWeed is null && sParams.DandelionPeach is null && sParams.Neuron is null && sParams.Centipede is null && sParams.SmallCentipede is null && sParams.VultureGrub is null && sParams.SmallNeedleWorm is null && sParams.Hazer is null && sParams.NotCounted is null);
 
-			Personality? p = null;
-			NPCStats? npc = null;
-			SlugcatStats? slugStats = null;
-			FoodPreferences? foodPref = null;
+			Personality p = new(0);
+			NPCStats npc = new(0);
+			SlugcatStats slugStats = new(0);
+			FoodPreferences foodPref = new(0);
 			for (int i = start; i < stop; i++)
 			{
 				if (logPercents && (i - start) % percentInterval == 0)
