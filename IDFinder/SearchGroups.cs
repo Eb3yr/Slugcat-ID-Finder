@@ -13,6 +13,42 @@ namespace IDFinder
         // I need to consider this architecture. How do I get this information to the searcher? How do I, once I've determined which search groups are given, pass those search groups to their respective functions? Do I use a dictionary? I could use an enum for example. This needs to be expandable. SearchParams isn't, but neither is this without considerable thought.
         // Something like Dictionary<SearchGroups enum, SearchGroup object> and each if() statement that calls a weighting function passes the value for its corresponding key. if bool personality = true, Dictionary[SearchGroups.personality] gets passed to PersonalityWeight() alongside the actual Personality object with its property values. This may be the cleanest way to do so.
     }
+    // I'm not sure how much I like this
+    public class SearchArgs
+    {
+        // I REALLY don't like this dictionary approach. It feels horrible to invoke every time. Then I have to cast ISearchGroup to a method that implements it and it just sucks. Yuck. 
+        public Dictionary<SearchGroups, ISearchGroup?> args;
+        public SearchArgs() { args = new(); }
+        public SearchArgs(
+            PersonalityGroup? personality = null,
+            NPCStatsGroup? npcStats = null,
+            SlugcatStatsGroup? slugcatStats = null,
+            FoodPreferencesGroup? foodPrefs = null,
+            IndividualVariationsGroup? scavVariations = null,
+            EartlersGroup? scavEartlers = null,
+            ScavColorsGroup? scavColors = null,
+            ScavSkillsGroup? scavSkills = null,
+            ScavBackPatternsGroup? scavBack = null
+            ) : this()
+        {
+            // Setting non-implemented ones to null
+            scavBack = null;
+            scavColors = null;
+            scavEartlers = null;
+            scavSkills = null;
+            scavVariations = null;
+            //
+            args.Add(SearchGroups.Personality, personality);
+		    args.Add(SearchGroups.NPCStats, npcStats);
+            args.Add(SearchGroups.SlugcatStats, slugcatStats);
+            args.Add(SearchGroups.FoodPreferences, foodPrefs);
+            args.Add(SearchGroups.IndividualVariations, scavVariations);
+            args.Add(SearchGroups.Eartlers, scavEartlers);
+            args.Add(SearchGroups.ScavColors, scavColors);
+            args.Add(SearchGroups.ScavSkills, scavSkills);
+            args.Add(SearchGroups.ScavBackPatterns, scavBack);
+        }
+    }
     public class PersonalityGroup : ISearchGroup
     {
         public (float target, float weight)? Sympathy = null;
@@ -71,7 +107,7 @@ namespace IDFinder
 
     public class IndividualVariationsGroup : ISearchGroup
     {
-        
+        public bool Elite = false;
     }
     public class EartlersGroup : ISearchGroup
     {

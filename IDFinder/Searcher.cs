@@ -181,8 +181,11 @@ namespace IDFinder
 		{
 			return new Searcher(searchParams).Search(start, stop, numToStore);
 		}
-		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, bool logPercents = false)	// logPercents is primitive and doesn't fit anything other than console. Consider async task implementation and progress tracking that way. Does any responsibility for this fall onto the library or only whatever program utilises it?
+		public IEnumerable<KeyValuePair<float, Slugcat>> Search(int start, int stop, int numToStore, bool logPercents = false)	// logPercents is primitive and doesn't fit anything other than console.
 		{
+			// Why am I storing an object? Store the ID. All the structs in slugcat need to be instantiated otherwise. ID is also more expandable for other creatures. 
+			// I could use stackalloc spans of float key, int ID value, and use another variable to keep track of the position of the largest float instead of searching each time, which would be expensive with high numToStore.
+			// --> I could use a queue! Item gets added to the collection to return, the element its added at is added to the queue. This means that when I add the smallest float's position, everything before it has to be dequeued first before it's on the chopping block. This would be perfect. Just need to know if it's efficient. 
 			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
 			float weight;
 			bool saturated = false;
@@ -290,34 +293,109 @@ namespace IDFinder
             }
 			return vals;
 		}
-		/*public async IEnumerable<KeyValuePair<float, Slugcat>> SearchMultithreaded(int start, int stop, int numToStore, int threads = 1)
+
+		#region search bools
+		bool personality = false;
+		bool npcStats = false;
+		bool slugcatStats = false;
+		bool foodPreferences = false;
+
+        #endregion
+        public async Task<IEnumerable<KeyValuePair<float, int>>> MULTISearch(int start, int stop, int numToStore, bool logPercents = false, int threads = 6)  // logPercents is primitive and doesn't fit anything other than console. Consider async task implementation and progress tracking that way. Does any responsibility for this fall onto the library or only whatever program utilises it?
+        {
+            SortedList<float, int> vals = [];
+
+			// Do bools here, pass them to SearchIterationsAsync
+			// Maybe they should be fields? Searcher gets instantiated anyway
+
+			
+			
+
+
+			// Address edge case int.MaxValue here
+            return vals;
+        }
+		private void SearchIterations(SortedList<float, int> vals, int start, int stop, int numToStore, bool logPercents = false)
 		{
-			if (threads == 1)
-				return Search(start, stop, numToStore);
+            float weight;
+            bool saturated = false;
+            vals.Capacity = numToStore;
+            long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
+            int percentTracker = 0;
 
-			SortedList<float, Slugcat> slugs = [];
-			IEnumerable<KeyValuePair<float, Slugcat>> results = [];
-            int[] markers = new int[threads + 1];
-            int count = stop - start;
-            int interval = count / threads;
+            personality = !(sParams.Sympathy is null && sParams.Energy is null && sParams.Bravery is null && sParams.Nervous is null && sParams.Aggression is null && sParams.Dominance is null);
+            npcStats = !(sParams.Met is null && sParams.Bal is null && sParams.Size is null && sParams.Stealth is null && sParams.Dark is null && sParams.EyeColor is null && sParams.H is null && sParams.S is null && sParams.L is null && sParams.Wideness is null);
+            slugcatStats = !(sParams.BodyWeightFac is null && sParams.GeneralVisibilityBonus is null && sParams.VisualStealthInSneakMode is null && sParams.LoudnessFac is null && sParams.LungsFac is null && sParams.ThrowingSkill is null && sParams.PoleClimbSpeedFac is null && sParams.CorridorClimbSpeedFac is null && sParams.RunSpeedFac is null);
+            foodPreferences = !(sParams.DangleFruit is null && sParams.WaterNut is null && sParams.JellyFish is null && sParams.SlimeMold is null && sParams.EggBugEgg is null && sParams.FireEgg is null && sParams.Popcorn is null && sParams.GooieDuck is null && sParams.LilyPuck is null && sParams.GlowWeed is null && sParams.DandelionPeach is null && sParams.Neuron is null && sParams.Centipede is null && sParams.SmallCentipede is null && sParams.VultureGrub is null && sParams.SmallNeedleWorm is null && sParams.Hazer is null && sParams.NotCounted is null);
 
+            Personality p = new(0);
+            NPCStats npc = new(0);
+            SlugcatStats slugStats = new(0);
+            FoodPreferences foodPref = new(0);
+            for (int i = start; i < stop; i++)
+            {
+                if (logPercents && (i - start) % percentInterval == 0)
+                {
+                    percentTracker++;
+                    Console.WriteLine($"{percentTracker}%");
+                }
+                weight = 0f;
+                if (personality)
+                {
+                    p = new(i);
+                    weight += PersonalityWeight(p);
+                }
+                if (npcStats)
+                {
+                    npc = new(i);
+                    weight += NPCStatsWeight(npc);
+                }
+                if (slugcatStats)
+                {
+                    if (!npcStats) npc = new(i);
+                    slugStats = new(i, npc);
+                    weight += SlugcatStatsWeight(slugStats);
+                }
+                if (foodPreferences)
+                {
+                    if (!personality) p = new(i);
+                    foodPref = new(i, p);
+                    weight += FoodPreferencesWeight(foodPref);
+                }
+
+                if (!saturated && vals.Count < numToStore)
+                {
+					lock (vals)
+					{
+						vals.TryAdd(weight, i);
+						if (vals.Count == vals.Capacity) saturated = true;
+					}
+                }
+                else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+                {
+                    if (!vals.ContainsKey(weight))
+                    {
+						lock (vals)
+						{
+							vals.RemoveAt(vals.Capacity - 1);
+							vals.Add(weight, i);
+						}
+                    }
+                }
+            }
+        }
+		private static int[][] Chunking(int start, int stop, int threads)
+        {
+            int[][] chunks = new int[threads][];
+            int chunkSize = (stop - start) / threads;
             for (int i = 0; i < threads; i++)
             {
-                markers[i] = start + i * interval;
+                chunks[i] = [start + i * chunkSize + 1, start + (i + 1) * chunkSize];
             }
-            markers[threads] = stop;
+            chunks[0][0] = start;
+            chunks[threads - 1][1] = stop;
 
-			for (int i = 0; i < markers.Length - 1; i++)
-			{
-				// I don't know if this will work. Since I'm writing to results, will it wait until this task finishes before starting the next iteration?
-				results = results.Concat(await Task.Run(() => Search(markers[i], markers[i + 1], numToStore)));
-			}
-
-
-            foreach (KeyValuePair<float, Slugcat> kvp in results)
-				slugs.Add(kvp.Key, kvp.Value);
-
-			return slugs.Take(numToStore);
-		}*/
-	}
+            return chunks;
+        }
+    }
 }

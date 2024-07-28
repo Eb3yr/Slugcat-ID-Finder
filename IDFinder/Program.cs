@@ -13,31 +13,20 @@ namespace IDFinder
             Searcher search = new(new Searcher.SearchParams()
             {
                 Aggression = (1f, 1f),
-                H = (1f, 1f),
-                RunSpeedFac = (1f, 1f),
-                DangleFruit = (1f, 1f)
+                L = (0.65f, 3f),
+                //RunSpeedFac = (1f, 1f),
+                //DangleFruit = (1f, 1f)
             });
-            
-            DateTime dt;
-            dt = DateTime.Now;
-            Dictionary<float, Slugcat> result = new(search.Search(0, 1000000, 12, true));
-            TimeSpan completion = DateTime.Now.Subtract(dt);
-            Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
-            foreach (KeyValuePair<float, Slugcat> kvp in result)
-            {
-                Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
-            }
-            Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
-            SlugManager sm = new(result.Values);
-            sm.WriteToCSV("outSearched.csv");
 
-            //JsonSerializerOptions options = new()
-            //{
-            //    WriteIndented = true,
-            //    IncludeFields = true
-            //};
-            //Scavenger aScav = new Scavenger(10000);
-            //File.WriteAllText("ScavOutTest.txt", JsonSerializer.Serialize(aScav, options));
+            foreach (KeyValuePair<float, Slugcat> sc in search.Search(0, 10000000, 3))
+            {
+                Console.WriteLine($"Old, ID: {sc.Value.ID}, weight: {sc.Key}");
+            }
+            foreach (KeyValuePair<float, int> sc in search.MULTISearch(0, 10000000, 3).Result)
+            {
+                Console.WriteLine($"New, ID: {sc.Value}, weight: {sc.Key}");
+            }
+
             Console.WriteLine("Done");
             Console.ReadLine();
         }

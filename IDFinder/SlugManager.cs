@@ -5,6 +5,15 @@ namespace IDFinder
 {
 	public class SlugManager
 	{
+		public Slugcat? this[int ID]
+		{
+			get
+			{
+				if (!Slugcats.TryGetValue(ID, out Slugcat? value))
+					return null;
+				return value;
+			}
+		}
 		private readonly static JsonSerializerOptions options = new JsonSerializerOptions() { WriteIndented = true };
 		public Dictionary<int, Slugcat> Slugcats { get; private set; }
 		public SlugManager()
@@ -15,7 +24,7 @@ namespace IDFinder
 		{
 			foreach (Slugcat sc in Cats)
 			{
-				this.Slugcats.Add(sc.ID, sc);
+				Slugcats.Add(sc.ID, sc);
 			}
 		}
 		public SlugManager(IEnumerable<int> IDs) : this()
@@ -41,7 +50,7 @@ namespace IDFinder
 			if (exists && delete) File.Delete(fileName);
 
 			cols ??= new SelectedColumns();
-			using (StreamWriter sw = new(fileName, true))
+            using (StreamWriter sw = new(fileName, true))
 			{
 				NPCStats n;
 				SlugcatStats s;

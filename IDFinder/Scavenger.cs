@@ -72,6 +72,74 @@ namespace IDFinder
             // CentipedeShellCosmetic[] shells is instantiated next. The class's constructor uses UnityEngine.Random.value, however unless the scavenger is a king, shells.Length = 0 so no objects are instantiated and the constructor is never called. 
             #endregion
         }
+        
+        // Liberal use of gotos to try and minimise how much expensive code needs to be ran
+        public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, ScavBackPatterns? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
+        {
+            // This is such a fucking mess I hate it so much
+
+            // Yucky hack
+            Personality Personality = default;
+            ScavSkills Skills = default;
+            ScavBackPatterns BackPatterns = default;
+            IndividualVariations Variations = default;
+            ScavColors Colors = default;
+            Eartlers Eartlers = default;
+            
+            Personality = new(ID);
+            if (!(skills || variations || colors || eartlers || Elite)) goto End;
+            Skills = new(ID, Personality, Elite);
+            if (!(back || variations || colors || eartlers || Elite)) goto End;
+            BackPatterns = new();
+
+            #region ScavengerGraphics
+            XORShift128.InitSeed(ID);
+            if (!(variations || colors || back || eartlers || Elite)) goto End;
+            Variations = new(Personality);
+            if (!(colors || back || eartlers || Elite)) goto End;
+            Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
+            if (!(back || eartlers || Elite)) goto End;
+            if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
+                BackPatterns.BackType = ScavBackPatterns.ScavBackType.HardBackSpikes;
+            else
+                BackPatterns.BackType = ScavBackPatterns.ScavBackType.WobblyBackTufts;
+
+            if (!(eartlers || Elite)) goto End;
+            Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
+            if (!Elite) goto End;
+            float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];
+            float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
+            num2 = float.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
+            float num3 = float.Lerp(num2 + 0.2f, float.Lerp(0.7f, 1.2f, XORShift128.NextFloat()), XORShift128.NextFloat());
+            num3 = float.Lerp(num3, Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1.5f, 0.2f), 0.4f);
+            float a = 0.3f + 0.7f * XORShift128.NextFloat();
+            for (int l = 0; l < teeth.GetLength(0); l++)
+            {
+                float num4 = (float)l / (teeth.GetLength(0) - 1);
+                teeth[1, 0] = float.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
+                if (XORShift128.NextFloat() < Variations.Scruffy && XORShift128.NextFloat() < 0.2f)
+                {
+                    teeth[l, 0] = 0f;
+                }
+                teeth[l, 1] = float.Lerp(0.5f, 1f, float.Sin(num4 * 3.1415927f)) * num3;
+            }
+            
+            if (Elite)
+            {
+                int num8 = XORShift128.NextIntRange(0, 4);
+            }
+            #endregion
+
+            End:
+            return (
+                personality ? Personality : null,
+                variations ? Variations : null,
+                eartlers ? Eartlers : null,
+                colors ? Colors : null,
+                skills ? Skills : null,
+                back ? BackPatterns : null
+            );
+        }
     }
     public class ScavBackPatterns
     {
@@ -102,7 +170,10 @@ namespace IDFinder
         public float RangeBottom { get; set; }     // 0.40 to 1f. Not sure what of, yet
         public int NumSpines { get; set; }   // Spineridge:  [2, 37], doublespineridge: [2, 40], randombackblotch: [4, 40] ranges
         public float GeneralSpineSize { get; set; }    // 0f to 1f. Mean of all the spine lengths? 
-        public ScavBackPatterns() { }
+        public ScavBackPatterns()
+        { 
+            // Sobbing wheezing crying
+        }
     }
     public class Eartlers
     {
