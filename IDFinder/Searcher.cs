@@ -1,9 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-
-namespace IDFinder
+﻿namespace IDFinder
 {
 	public class Searcher
 	{

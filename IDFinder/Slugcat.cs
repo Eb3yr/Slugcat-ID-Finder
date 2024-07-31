@@ -1,8 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Unity_XORShift;
-
-namespace IDFinder
+﻿namespace IDFinder
 {
 	public class Slugcat
 	{

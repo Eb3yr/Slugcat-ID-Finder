@@ -1,9 +1,4 @@
-﻿using System.Text.Json;
-using System.IO;
-using System.ComponentModel;
-using Unity_XORShift;
-using System;
-namespace IDFinder
+﻿namespace IDFinder
 {
 	internal class Program
 	{
