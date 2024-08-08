@@ -15,6 +15,7 @@ namespace IDFinder
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
         public ScavBackPatterns BackPatterns { get; private set; }
+
         // Make sure the RNG is initialised correctly. I may need to go back to Personality's implementation and add back that return to the initial RNG state once the properties are all generated for example. 
         // There is a problem here. IndividualVariations doesn't initialise RNG in itself. The RNG is initialised in the Scavenger constructor just prior to its call, then followed up by this.GenerateColors(); and so on. The RNG state is very important so I can't simply instantiate, say, ScavColors without accounting for the effects of Variations' instantiation on RNG
         // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter. 
@@ -66,9 +67,8 @@ namespace IDFinder
         // Liberal use of gotos to try and minimise how much expensive code needs to be ran
         public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, ScavBackPatterns? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
         {
-            // This is such a fucking mess I hate it so much
+            // Nastiness allows skipping unecessary generations to accelerate searching. This appears to work, but testing has not been thorough.
 
-            // Yucky hack
             Personality Personality = default;
             ScavSkills Skills = default;
             ScavBackPatterns BackPatterns = default;
@@ -131,7 +131,7 @@ namespace IDFinder
             );
         }
     }
-    public class ScavBackPatterns
+    public class ScavBackPatterns   // Not a struct to avoid issues assigning to properties
     {
         public enum ScavBackType
         {
@@ -165,7 +165,7 @@ namespace IDFinder
             // Sobbing wheezing crying
         }
     }
-    public class Eartlers
+    public struct Eartlers
     {
         public List<Vertex[]> points { get; private set; }
         public Eartlers(bool elite)
@@ -267,7 +267,7 @@ namespace IDFinder
             public float rad;
         }
     }
-    public class IndividualVariations
+    public struct IndividualVariations
     {
         public float WaistWidth
         {
@@ -363,7 +363,7 @@ namespace IDFinder
             Scruffy = 1f;   // This is how it's done in the code. I don't understand why Scruffy is assigned to three times sequentially, it feels pointless.
         }
     }
-    public class ScavColors
+    public struct ScavColors
     {
         public HSLColor BellyColor { get; private set; }
         //public Color BlackColor { get; private set; }   // This is dependent on the room pallete, not the scavenger, and is used for the blended color properties in ScavengerGraphics. 
@@ -499,7 +499,7 @@ namespace IDFinder
             this.HeadColor = HeadColor;
         }
     }
-    public class ScavSkills
+    public struct ScavSkills
     {
         public float BlockingSkill { get; private set; }
         public float DodgeSkill { get; private set; }

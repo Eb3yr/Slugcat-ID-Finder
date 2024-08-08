@@ -30,10 +30,10 @@
         public float A;
         public Color(float R, float G, float B, float A = 1f)
         {
-            this.R = float.Clamp(R, 0f, 1f);
-            this.G = float.Clamp(G, 0f, 1f);
-            this.B = float.Clamp(B, 0f, 1f);
-            this.A = float.Clamp(A, 0f, 1f);
+            this.R = Math.Clamp(R, 0f, 1f);
+            this.G = Math.Clamp(G, 0f, 1f);
+            this.B = Math.Clamp(B, 0f, 1f);
+            this.A = Math.Clamp(A, 0f, 1f);
         }
     }
 }
