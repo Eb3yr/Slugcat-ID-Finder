@@ -19,10 +19,4 @@
     <PackageReference Include="MemoryPack" Version="1.21.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Unity-XORShift">
-      <HintPath>Unity-XORShift.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
