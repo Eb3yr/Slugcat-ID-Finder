@@ -152,7 +152,8 @@ namespace IDFinder
         }
         // These properties aren't necessarily the info I want to store, rather they're the searching info. I'm not sure where I should draw the line. Perhaps getting a creature's info should match the searching stuff? IDK
         // setters are public to circumvent inaccessibility when setting the values of properties in Scavenger constructor.
-        public ScavBackType BackType { get; set; }
+        // Not private set to act upon in the Scavenger constructor
+        public ScavBackType BackType { get; set; }  // There are two separate classes in the game's code for this. 
         public ColorTypes ColorType { get; set; }
         public float ColorStrength { get; set; }    // 0f to 1f. Not sure what of, yet.
         public Patterns Pattern { get; set; }   

@@ -135,6 +135,125 @@
 		{
 			throw new NotImplementedException();
 		}
+		public static IEnumerable<KeyValuePair<float, int>> NEWSearch(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents is primitive and doesn't fit anything other than console.
+		{
+			SortedList<float, int> vals = [];   // smallest value at index 0
+			float weight;
+			bool saturated = false;
+			vals.Capacity = numToStore;
+			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
+			int percentTracker = 0;
+
+			bool personality, npcStats, slugcatStats, foodPreferences;
+			personality = !(SearchParams.Sympathy is null && SearchParams.Energy is null && SearchParams.Bravery is null && SearchParams.Nervous is null && SearchParams.Aggression is null && SearchParams.Dominance is null);
+			npcStats = !(SearchParams.Met is null && SearchParams.Bal is null && SearchParams.Size is null && SearchParams.Stealth is null && SearchParams.Dark is null && SearchParams.EyeColor is null && SearchParams.H is null && SearchParams.S is null && SearchParams.L is null && SearchParams.Wideness is null);
+			slugcatStats = !(SearchParams.BodyWeightFac is null && SearchParams.GeneralVisibilityBonus is null && SearchParams.VisualStealthInSneakMode is null && SearchParams.LoudnessFac is null && SearchParams.LungsFac is null && SearchParams.ThrowingSkill is null && SearchParams.PoleClimbSpeedFac is null && SearchParams.CorridorClimbSpeedFac is null && SearchParams.RunSpeedFac is null);
+			foodPreferences = !(SearchParams.DangleFruit is null && SearchParams.WaterNut is null && SearchParams.JellyFish is null && SearchParams.SlimeMold is null && SearchParams.EggBugEgg is null && SearchParams.FireEgg is null && SearchParams.Popcorn is null && SearchParams.GooieDuck is null && SearchParams.LilyPuck is null && SearchParams.GlowWeed is null && SearchParams.DandelionPeach is null && SearchParams.Neuron is null && SearchParams.Centipede is null && SearchParams.SmallCentipede is null && SearchParams.VultureGrub is null && SearchParams.SmallNeedleWorm is null && SearchParams.Hazer is null && SearchParams.NotCounted is null);
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			Personality p = new(0);
+			NPCStats npc = new(0);
+			SlugcatStats slugStats = new(0);
+			FoodPreferences foodPref = new(0);
+			for (int i = start; i < stop; i++)
+			{
+				if (logPercents && (i - start) % percentInterval == 0)
+				{
+					percentTracker++;
+					Console.WriteLine($"{percentTracker}%");
+				}
+				weight = 0f;
+				//if (personality)
+				//{
+				//	p = new(i);
+				//	weight += PersonalityWeight(p);
+				//}
+				//if (npcStats)
+				//{
+				//	npc = new(i);
+				//	weight += NPCStatsWeight(npc);
+				//}
+				//if (slugcatStats)
+				//{
+				//	if (!npcStats) npc = new(i);
+				//	slugStats = new(i, npc);
+				//	weight += SlugcatStatsWeight(slugStats);
+				//}
+				//if (foodPreferences)
+				//{
+				//	if (!personality) p = new(i);
+				//	foodPref = new(i, p);
+				//	weight += FoodPreferencesWeight(foodPref);
+				//}
+
+				if (!saturated && vals.Count < numToStore)
+				{
+					vals.TryAdd(weight, i);
+					if (vals.Count == vals.Capacity) saturated = true;
+				}
+				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+				{
+					if (!vals.ContainsKey(weight))
+					{
+						vals.RemoveAt(vals.Capacity - 1);
+						vals.Add(weight, i);
+					}
+				}
+			}
+
+			if (stop == int.MaxValue)   // edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
+			{
+				// Duplicate of the previous for loop's contents. Should that loop be altered, so should here. Consider moving it out into an inlined method.
+				int i = stop;
+				weight = 0f;
+				//if (personality)
+				//{
+				//	p = new(i);
+				//	weight += PersonalityWeight(p);
+				//}
+				//if (npcStats)
+				//{
+				//	npc = new(i);
+				//	weight += NPCStatsWeight(npc);
+				//}
+				//if (slugcatStats)
+				//{
+				//	if (!npcStats) npc = new(i);
+				//	slugStats = new(i, npc);
+				//	weight += SlugcatStatsWeight(slugStats);
+				//}
+				//if (foodPreferences)
+				//{
+				//	if (!personality) p = new(i);
+				//	foodPref = new(i, p);
+				//	weight += FoodPreferencesWeight(foodPref);
+				//}
+
+				if (!saturated && vals.Count < numToStore)
+				{
+					vals.TryAdd(weight, i);
+					if (vals.Count == vals.Capacity) saturated = true;
+				}
+				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+				{
+					if (!vals.ContainsKey(weight))
+					{
+						vals.RemoveAt(vals.Capacity - 1);
+						vals.Add(weight, i);
+					}
+				}
+			}
+			return vals;
+		}
 	}
 	public class SlugSearcher
 	{
@@ -394,7 +513,7 @@
 			// Address edge case int.MaxValue here
             return vals;
         }
-		private void SearchIterations(SortedList<float, int> vals, int start, int stop, int numToStore, bool logPercents = false)
+		private void SearchIterations(SortedList<float, int> vals, int start, int stop, int numToStore, bool logPercents = false)	// What was this one for again? Can't remember what I was doing
 		{
             float weight;
             bool saturated = false;
@@ -476,5 +595,5 @@
 
             return chunks;
         }
-    }
+	}
 }

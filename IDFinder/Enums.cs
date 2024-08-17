@@ -21,7 +21,7 @@
 		Hazer,
 		NotCounted
 	}
-	public enum SearchParams
+	public enum SearchParamsEnum
 	{
 		Personality,
 		NPCStats,

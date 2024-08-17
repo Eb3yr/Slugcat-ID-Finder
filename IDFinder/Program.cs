@@ -24,16 +24,19 @@ namespace IDFinder
             //    Console.WriteLine($"New, ID: {sc.Value}, weight: {sc.Key}");
             //}
 
-            var options = new JsonSerializerOptions()
-            {
-                IncludeFields = true,
-                WriteIndented = true
-            };
-            Scavenger scav = new(0);
-            string scavStr = JsonSerializer.Serialize(scav, options);
-            File.WriteAllText("scavWhole.json", scavStr);
-            scavStr = JsonSerializer.Serialize(Scavenger.Get(0, false, true, true, true, false, true, false), options);
-            File.WriteAllText("scavPart.json", scavStr);
+            //var options = new JsonSerializerOptions()
+            //{
+            //    IncludeFields = true,
+            //    WriteIndented = true
+            //};
+            //Scavenger scav = new(0);
+            //string scavStr = JsonSerializer.Serialize(scav, options);
+            //File.WriteAllText("scavWhole.json", scavStr);
+            //scavStr = JsonSerializer.Serialize(Scavenger.Get(0, false, true, true, true, false, true, false), options);
+            //File.WriteAllText("scavPart.json", scavStr);
+
+            PersonalityParams pp = new();
+            ((ISearchParams)pp).AllNull();
 
             Console.WriteLine("Done");
             Console.ReadLine();

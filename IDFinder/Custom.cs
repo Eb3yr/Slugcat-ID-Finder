@@ -123,5 +123,15 @@ namespace IDFinder
             // A value between zero and one, representing where value falls inbetween the range between a and b.
 			return float.Clamp((value - a) / (b - a), 0f, 1f);
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 RNV()
+		{
+			return Custom.DegToVec(XORShift128.NextFloat() * 360f);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 DegToVec(float ang)
+		{
+			return new Vector2(float.Sin(ang * 0.017453292f), float.Cos(ang * 0.017453292f));
+		}
 	}
 }
