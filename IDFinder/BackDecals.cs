@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Text.Json.Serialization;
 namespace IDFinder
 {
 	
@@ -14,7 +15,7 @@ namespace IDFinder
 		public float Top { get; protected set; }
 		public float Bottom { get; protected set; }
 		public BackPattern Pattern { get; protected set; }
-		public Vector2[] Positions { get; protected set; }
+		public Vector2[] Positions { get; protected set; } = null!;
 		public BackDecals() { }
 		public void GeneratePattern(BackPattern inPattern, IndividualVariations iVars)
 		{
@@ -87,7 +88,7 @@ namespace IDFinder
 		public float GeneralSize { get; protected set; }
 		public float XFlip { get; protected set; }
 		public float Colored { get; protected set; }
-		public float[] ColorAlphas { get; protected set; }
+		public float[] ColorAlphas { get; protected set; } = null!;
 		public bool UseDetailColor { get; protected set; }
 		public BackTuftsAndRidges(IndividualVariations iVars)
 		{
@@ -123,7 +124,7 @@ namespace IDFinder
 				Pattern = BackPattern.RandomBackBlotch;
 			}
 			GeneratePattern(Pattern, iVars);
-			int totalSprites = Positions.Length * (IsColored ? 2 : 1);	// Is this necessary?
+			//int totalSprites = Positions.Length * (IsColored ? 2 : 1);	// Is this necessary?
 			if (XORShift128.NextFloat() < 0.5f)
 			{
 				if (XORShift128.NextFloat() < 0.85f)
@@ -173,6 +174,7 @@ namespace IDFinder
 		public float DownAlongSpine { get; private set; }
 		public float OutToSides { get; private set; }
 		public Vector2[] RandomDirs { get; private set; }
+		[JsonIgnore]
 		public Scale[] Scales { get; private set; }
 		public WobblyBackTufts(IndividualVariations iVars, Personality personality) : base(iVars)
 		{

@@ -14,27 +14,34 @@ namespace IDFinder
         public Eartlers Eartlers { get; private set; }
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
-        public ScavBackPatterns BackPatterns { get; private set; }
+        public BackDecals BackPatterns { get; private set; }    // Cannot be a struct due to inheritance
 
         // Make sure the RNG is initialised correctly. I may need to go back to Personality's implementation and add back that return to the initial RNG state once the properties are all generated for example. 
         // There is a problem here. IndividualVariations doesn't initialise RNG in itself. The RNG is initialised in the Scavenger constructor just prior to its call, then followed up by this.GenerateColors(); and so on. The RNG state is very important so I can't simply instantiate, say, ScavColors without accounting for the effects of Variations' instantiation on RNG
-        // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter. 
+        // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter.
+        public string AsJson()
+        {
+            
+
+            throw new NotImplementedException();
+        }
         public Scavenger(int ID, bool isElite = false)
         {
             this.ID = ID;
             Elite = isElite;
             Personality = new(ID);
             Skills = new(ID, Personality, Elite);
-            BackPatterns = new();
+            //BackPatterns = new();
 
             #region ScavengerGraphics
             XORShift128.InitSeed(ID);
             Variations = new(Personality);
             Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
+            // In this position the tail segments are generated. This might be a searching option later? Consider it.
             if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-                BackPatterns.BackType = ScavBackPatterns.ScavBackType.HardBackSpikes;
+                BackPatterns = new HardBackSpikes(Variations, Personality);
             else
-                BackPatterns.BackType = ScavBackPatterns.ScavBackType.WobblyBackTufts;
+                BackPatterns = new WobblyBackTufts(Variations, Personality);
 
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
             float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];  // As a quirk of the JSON serializer, this cannot be serialized. While it has a visual impact on the scavengers, it unfortunately cannot be included as a property or field of this class unless a different serializer is used.
@@ -65,13 +72,13 @@ namespace IDFinder
         }
         
         // Liberal use of gotos to try and minimise how much expensive code needs to be ran
-        public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, ScavBackPatterns? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
+        public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, BackDecals? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
         {
             // Nastiness allows skipping unecessary generations to accelerate searching. This appears to work, but testing has not been thorough.
 
             Personality Personality = default;
             ScavSkills Skills = default;
-            ScavBackPatterns BackPatterns = default;
+            BackDecals BackPatterns = default!;
             IndividualVariations Variations = default;
             ScavColors Colors = default;
             Eartlers Eartlers = default;
@@ -80,7 +87,7 @@ namespace IDFinder
             if (!(skills || variations || colors || eartlers || Elite)) goto End;
             Skills = new(ID, Personality, Elite);
             if (!(back || variations || colors || eartlers || Elite)) goto End;
-            BackPatterns = new();
+            //BackPatterns = new();
 
             #region ScavengerGraphics
             XORShift128.InitSeed(ID);
@@ -89,12 +96,13 @@ namespace IDFinder
             if (!(colors || back || eartlers || Elite)) goto End;
             Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
             if (!(back || eartlers || Elite)) goto End;
-            if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-                BackPatterns.BackType = ScavBackPatterns.ScavBackType.HardBackSpikes;
-            else
-                BackPatterns.BackType = ScavBackPatterns.ScavBackType.WobblyBackTufts;
+			if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
+				BackPatterns = new HardBackSpikes(Variations, Personality);
+			else
+				BackPatterns = new WobblyBackTufts(Variations, Personality);
 
-            if (!(eartlers || Elite)) goto End;
+
+			if (!(eartlers || Elite)) goto End;
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
             if (!Elite) goto End;
             float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];
@@ -144,26 +152,24 @@ namespace IDFinder
             Decoration,
             Head
         }
-        public enum Patterns
-        {
-            SpineRidge,
-            DoubleSpineRidge,
-            RandomBackBlotch
-        }
         // These properties aren't necessarily the info I want to store, rather they're the searching info. I'm not sure where I should draw the line. Perhaps getting a creature's info should match the searching stuff? IDK
         // setters are public to circumvent inaccessibility when setting the values of properties in Scavenger constructor.
         // Not private set to act upon in the Scavenger constructor
-        public ScavBackType BackType { get; set; }  // There are two separate classes in the game's code for this. 
+        public ScavBackType BackType { get; private set; }  // There are two separate classes in the game's code for this. 
         public ColorTypes ColorType { get; set; }
         public float ColorStrength { get; set; }    // 0f to 1f. Not sure what of, yet.
-        public Patterns Pattern { get; set; }   
+        public BackDecals.BackPattern Pattern { get; set; }   
         public float RangeTop { get; set; }    // 0.02 to 0.30. Not sure what of, yet
         public float RangeBottom { get; set; }     // 0.40 to 1f. Not sure what of, yet
         public int NumSpines { get; set; }   // Spineridge:  [2, 37], doublespineridge: [2, 40], randombackblotch: [4, 40] ranges
         public float GeneralSpineSize { get; set; }    // 0f to 1f. Mean of all the spine lengths? 
-        public ScavBackPatterns()
-        { 
-            // Sobbing wheezing crying
+        public ScavBackPatterns(BackDecals decals)
+        {
+            // Calculate these params using the BackPatterns property in the Scavenger class. 
+            if (decals is HardBackSpikes)
+                BackType = ScavBackType.HardBackSpikes;
+            else
+                BackType = ScavBackType.WobblyBackTufts;
         }
     }
     public struct Eartlers
