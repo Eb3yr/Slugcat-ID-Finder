@@ -12,7 +12,7 @@ namespace IDFinder
             PersonalityParams pp = new();
             ((ISearchParams)pp).AllNull();
 
-			Scavenger scav = new(14);
+			Scavenger scav = new(0);
 
 			JsonSerializerOptions opt = new()
 			{
@@ -38,3 +38,15 @@ namespace IDFinder
 // TODO: back patterns class, colors properly formatted with JSON, searching scavs
 // !! BackDecals isn't matching up with what's shown by the ingame finder.
 // Colours, variations, skills, personality all are fine. Back Patterns is getting __EVERYTHING__ wrong, including the subclass and pattern.
+// There's some RNG in the tailsegments part of the scavengergraphics constructor. Not sure where yet, but the state changes from before to after it. 
+
+
+//
+//
+//
+//
+// FOUND IT: BodyPart.Reset calls UnityEngine.Random.value once, so once for each tail segment.
+//
+//
+//
+//

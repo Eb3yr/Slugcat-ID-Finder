@@ -173,6 +173,7 @@ namespace IDFinder
 	{
 		public float DownAlongSpine { get; private set; }
 		public float OutToSides { get; private set; }
+		[JsonIgnore]
 		public Vector2[] RandomDirs { get; private set; }
 		[JsonIgnore]
 		public Scale[] Scales { get; private set; }

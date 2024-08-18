@@ -36,8 +36,11 @@ namespace IDFinder
             #region ScavengerGraphics
             XORShift128.InitSeed(ID);
             Variations = new(Personality);
-            Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
-            // In this position the tail segments are generated. This might be a searching option later? Consider it.
+            Colors = new(Personality, Variations, Elite);
+
+            for (int i = 0; i < Variations.TailSegs; i++)
+                XORShift128.NextFloat();    // TailSegment constructor calls BodyChunks.Reset(), which has a single UnityEngine.Random.value call. 
+
             if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
                 BackPatterns = new HardBackSpikes(Variations, Personality);
             else
