@@ -1,6 +1,6 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json.Serialization;
+
 namespace IDFinder
 {
 	
@@ -15,6 +15,7 @@ namespace IDFinder
 		public float Top { get; protected set; }
 		public float Bottom { get; protected set; }
 		public BackPattern Pattern { get; protected set; }
+		[JsonIgnore]
 		public Vector2[] Positions { get; protected set; } = null!;
 		public BackDecals() { }
 		public void GeneratePattern(BackPattern inPattern, IndividualVariations iVars)
@@ -82,12 +83,35 @@ namespace IDFinder
 	}
 	public abstract class BackTuftsAndRidges : BackDecals
 	{
+		public enum ColorTypeEnum
+		{
+			None,
+			Decoration,
+			Head
+		}
+		public string Type { get => this.GetType().Name; }
+		public ColorTypeEnum ColorType { get => IsColored ? (UseDetailColor ? ColorTypeEnum.Decoration : ColorTypeEnum.Head) : ColorTypeEnum.None; }
 		public bool IsColored { get => Colored > 0f; }
 		public int ScaleGraf { get; protected set; }
 		public float ScaleGrafHeight { get; protected set; }
 		public float GeneralSize { get; protected set; }
+		[JsonIgnore]
 		public float XFlip { get; protected set; }
 		public float Colored { get; protected set; }
+		public int NumberOfSpines
+		{
+			get
+			{
+				if (ColorAlphas is not null)
+					return ColorAlphas.Length;
+				if (this is WobblyBackTufts tufts)
+					return tufts.Scales.Length;
+				if (this is HardBackSpikes spikes)
+					return spikes.Sizes.Length;
+				throw new Exception("NumberOfSpines failed to be counted.");
+			}
+		}
+		[JsonIgnore]
 		public float[] ColorAlphas { get; protected set; } = null!;
 		public bool UseDetailColor { get; protected set; }
 		public BackTuftsAndRidges(IndividualVariations iVars)
@@ -115,6 +139,7 @@ namespace IDFinder
 	}
 	public class HardBackSpikes : BackTuftsAndRidges
 	{
+		[JsonIgnore]
 		public float[] Sizes { get; private set; }
 		public HardBackSpikes(IndividualVariations iVars, Personality personality) : base(iVars)
 		{

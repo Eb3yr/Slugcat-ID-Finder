@@ -1,4 +1,7 @@
 ﻿using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Dynamic;
 
 namespace IDFinder
 {
@@ -11,6 +14,7 @@ namespace IDFinder
         public bool Elite { get; private set; }
         public Personality Personality { get; private set; }
         public IndividualVariations Variations { get; private set; }
+        [JsonIgnore]
         public Eartlers Eartlers { get; private set; }
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
@@ -21,9 +25,26 @@ namespace IDFinder
         // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter.
         public string AsJson()
         {
-            
-
-            throw new NotImplementedException();
+			JsonSerializerOptions opt = new()
+			{
+				WriteIndented = true,
+				Converters =
+				{
+					new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+				},
+				IncludeFields = true
+			};
+            //object[] arr = [ID, Elite, Personality, Variations, Colors, Skills, BackPatterns];
+            //return JsonSerializer.Serialize(arr, opt);
+            dynamic scav = new ExpandoObject();
+            scav.ID = ID;
+            scav.Elite = Elite;
+            scav.Personality = Personality;
+            scav.Variations = Variations;
+            scav.Colors = Colors;
+            scav.Skills = Skills;
+            scav.BackPatterns = BackPatterns;
+            return JsonSerializer.Serialize(scav, opt);
         }
         public Scavenger(int ID, bool isElite = false)
         {
@@ -77,6 +98,7 @@ namespace IDFinder
         // Liberal use of gotos to try and minimise how much expensive code needs to be ran
         public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, BackDecals? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
         {
+            throw new NotImplementedException("Currently faulty, has not been updated with the changes that make the regular Scavenger constructor function correctly.");
             // Nastiness allows skipping unecessary generations to accelerate searching. This appears to work, but testing has not been thorough.
 
             Personality Personality = default;
