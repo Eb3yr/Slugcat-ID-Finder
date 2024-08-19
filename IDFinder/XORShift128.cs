@@ -1,8 +1,7 @@
 ﻿namespace IDFinder
 {
-    // From https://gist.github.com/macklinb/a00be6b616cbf20fa95e4227575fe50b
-    internal static class XORShift128
-    {
+    internal static class XORShift128 // From https://gist.github.com/macklinb/a00be6b616cbf20fa95e4227575fe50b
+	{
         public static uint x = 0, y = 0, z = 0, w = 0;
 
         const uint MT19937 = 1812433253;
@@ -109,4 +108,76 @@
             return (min - max) * ((float)(XORShift() << 9) / 0xFFFFFFFF) + max;
         }
     }
+	internal class InstanceXORShift128  // For when I implement multithreading, to prevent the static XORShift128 from becoming a bottleneck. 
+	{
+		public uint x = 0, y = 0, z = 0, w = 0;
+		const uint MT19937 = 1812433253;
+		public void InitSeed(int seed)
+		{
+			x = (uint)seed;
+			y = (uint)(MT19937 * x + 1);
+			z = (uint)(MT19937 * y + 1);
+			w = (uint)(MT19937 * z + 1);
+		}
+		public void InitState(uint x, uint y, uint z, uint w)
+		{
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.w = w;
+		}
+		public uint XORShift()
+		{
+			uint t = x ^ (x << 11);
+			x = y; y = z; z = w;
+			return w = w ^ (w >> 19) ^ t ^ (t >> 8);
+		}
+		public uint NextUInt()
+		{
+			return XORShift();
+		}
+		public uint NextUIntMax(uint max)
+		{
+			if (max == 0) return 0;
+			return XORShift() % max;
+		}
+		public uint NextUIntRange(uint min, uint max)
+		{
+			if (max - min == 0) return min;
+
+			if (max < min)
+				return min - XORShift() % (max + min);
+			else
+				return min + XORShift() % (max - min);
+		}
+		public int NextInt()
+		{
+			return (int)(XORShift() % int.MaxValue);
+		}
+		public int NextIntMax(int max)
+		{
+			return NextInt() % max;
+		}
+		public int NextIntRange(int min, int max)
+		{
+			if (max - min == 0) return min;
+
+			long minLong = (long)min;
+			long maxLong = (long)max;
+			long r = XORShift();
+
+			if (max < min)
+				return (int)(minLong - r % (maxLong - minLong));
+			else
+				return (int)(minLong + r % (maxLong - minLong));
+		}
+		public float NextFloat()
+		{
+			return 1.0f - NextFloatRange(0.0f, 1.0f);
+		}
+		public float NextFloatRange(float min, float max)
+		{
+			return (min - max) * ((float)(XORShift() << 9) / 0xFFFFFFFF) + max;
+		}
+	}
 }
