@@ -93,6 +93,7 @@ namespace IDFinder
 		public ColorTypeEnum ColorType { get => IsColored ? (UseDetailColor ? ColorTypeEnum.Decoration : ColorTypeEnum.Head) : ColorTypeEnum.None; }
 		public bool IsColored { get => Colored > 0f; }
 		public int ScaleGraf { get; protected set; }
+		[JsonIgnore]
 		public float ScaleGrafHeight { get; protected set; }
 		public float GeneralSize { get; protected set; }
 		[JsonIgnore]
