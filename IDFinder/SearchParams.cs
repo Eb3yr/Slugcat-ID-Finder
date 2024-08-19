@@ -50,7 +50,6 @@ namespace IDFinder
 		public (float target, float weight)? SmallNeedleWorm { get; set; }
 		public (float target, float weight)? Hazer { get; set; }
 		public (float target, float weight)? NotCounted { get; set; }
-		public (bool target, float weight)? Elite { get; set; }
 		public (float target, float weight)? WaistWidth { get; set; }
 		public (float target, float weight)? HeadSize { get; set; }
 		public (float target, float weight)? EartlerWidth { get; set; }
@@ -158,7 +157,6 @@ namespace IDFinder
 		public (float target, float weight)? Nervous { get; set; }
 		public (float target, float weight)? Aggression { get; set; }
 		public (float target, float weight)? Dominance { get; set; }
-		public bool Elite { get; set; }
 		public (float target, float weight)? WaistWidth { get; set; }
 		public (float target, float weight)? HeadSize { get; set; }
 		public (float target, float weight)? EartlerWidth { get; set; }
@@ -280,7 +278,6 @@ namespace IDFinder
 
 	public class IndividualVariationsParams : ISearchParams
 	{
-		public bool Elite { get; set; }
 	}
 	public class EartlersParams : ISearchParams
 	{
@@ -370,6 +367,7 @@ namespace IDFinder
 
     public interface IIndividualVariationsParams : ISearchParams
     {
+		// Elites not here as it's a parameter in the Scavenger constructor, and influences other traits. Like slugcats and scavs are different, scavs and elite scavs are also different.
 		public (float target, float weight)? WaistWidth { get; set; }
 		public (float target, float weight)? HeadSize { get; set; }
 		public (float target, float weight)? EartlerWidth { get; set; }
