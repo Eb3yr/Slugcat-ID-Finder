@@ -8,6 +8,7 @@ namespace IDFinder
 	// Add implicit casts to SearchParams from SlugParams and ScavParams. That way the latter can be passed as a parameter without breaking anything in Search.cs
 	public class SearchParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams	 // H, S, L should be more clear that it's slugcat npcstats. Likewise for some others. So long as everything has unique names no bugs should arise, but I wouldn't recommend directly assigning properties in this class, rather use SlugParams, ScavParams etc once I implement operators. 
 	{
+		public SearchParams Clone() => (SearchParams)this.MemberwiseClone();
 		public (float target, float weight)? Sympathy { get; set; }
 		public (float target, float weight)? Energy { get; set; }
 		public (float target, float weight)? Bravery { get; set; }
