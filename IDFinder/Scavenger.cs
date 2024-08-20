@@ -84,7 +84,7 @@ namespace IDFinder
             //}
             #endregion
         }
-        public static (IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) GetGraphics(int ID, bool Elite = false, bool genVariations = false, bool genColors = false, bool genBack = false, Personality? inPersonality = null)
+        internal static (IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) GetGraphics(int ID, bool Elite = false, bool genVariations = false, bool genColors = false, bool genBack = false, Personality? inPersonality = null)
         {
             // Only graphics
             // Excludes eartlers as I don't (yet?) have any way to get meaningful information out of them. Maybe in the future.
