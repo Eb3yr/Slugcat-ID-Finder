@@ -1,8 +1,10 @@
-﻿namespace IDFinder
+﻿using System.Drawing;
+
+namespace IDFinder
 {
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
-	public abstract class Searcher
-	{ 
+	public class Searcher
+	{
 		internal static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -109,34 +111,144 @@
 				weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
 			return weight;
 		}
-		public static IEnumerable<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, HashSet<ISearchParams> sParams)
+		internal static float IndividualVariationsWeight(IndividualVariations iVars, IIndividualVariationsParams sParams)
 		{
+			float weight = 0f;
+			if (sParams.WaistWidth != null)
+				weight += sParams.WaistWidth.Value.weight * Math.Abs(sParams.WaistWidth.Value.target - iVars.WaistWidth);
+			if (sParams.HeadSize != null)
+				weight += sParams.HeadSize.Value.weight * Math.Abs(sParams.HeadSize.Value.target - iVars.HeadSize);
+			if (sParams.EartlerWidth != null)
+				weight += sParams.EartlerWidth.Value.weight * Math.Abs(sParams.EartlerWidth.Value.target - iVars.EartlerWidth);
+			if (sParams.NeckThickness != null)
+				weight += sParams.NeckThickness.Value.weight * Math.Abs(sParams.NeckThickness.Value.target - iVars.NeckThickness);
+			if (sParams.HandsHeadColor != null)
+				weight += sParams.HandsHeadColor.Value.weight * Math.Abs(sParams.HandsHeadColor.Value.target - iVars.HandsHeadColor);
+			if (sParams.EyeSize != null)
+				weight += sParams.EyeSize.Value.weight * Math.Abs(sParams.EyeSize.Value.target - iVars.EyeSize);
+			if (sParams.NarrowEyes != null)
+				weight += sParams.NarrowEyes.Value.weight * Math.Abs(sParams.NarrowEyes.Value.target - iVars.NarrowEyes);
+			if (sParams.EyesAngle != null)
+				weight += sParams.EyesAngle.Value.weight * Math.Abs(sParams.EyesAngle.Value.target - iVars.EyesAngle);
+			if (sParams.Fatness != null)
+				weight += sParams.Fatness.Value.weight * Math.Abs(sParams.Fatness.Value.target - iVars.Fatness);
+			if (sParams.NarrowWaist != null)
+				weight += sParams.NarrowWaist.Value.weight * Math.Abs(sParams.NarrowWaist.Value.target - iVars.NarrowWaist);
+			if (sParams.LegsSize != null)
+				weight += sParams.LegsSize.Value.weight * Math.Abs(sParams.LegsSize.Value.target - iVars.LegsSize);
+			if (sParams.ArmThickness != null)
+				weight += sParams.ArmThickness.Value.weight * Math.Abs(sParams.ArmThickness.Value.target - iVars.ArmThickness);
+			if (sParams.WideTeeth != null)
+				weight += sParams.WideTeeth.Value.weight * Math.Abs(sParams.WideTeeth.Value.target - iVars.WideTeeth);
+			if (sParams.PupilSize != null)
+				weight += sParams.PupilSize.Value.weight * Math.Abs(sParams.PupilSize.Value.target - iVars.PupilSize);
+			if (sParams.Scruffy != null)
+				weight += sParams.Scruffy.Value.weight * Math.Abs(sParams.Scruffy.Value.target - iVars.Scruffy);
+			if (sParams.ColoredEartlerTips != null)
+				weight += sParams.ColoredEartlerTips.Value.weight * (sParams.ColoredEartlerTips.Value.target == iVars.ColoredEartlerTips ? 0f : 1f);
+			if (sParams.DeepPupils != null)
+				weight += sParams.DeepPupils.Value.weight * (sParams.DeepPupils.Value.target == iVars.DeepPupils ? 0f : 1f);
+			if (sParams.ColoredPupils != null)
+				weight += sParams.ColoredPupils.Value.weight * Math.Abs(sParams.ColoredPupils.Value.target - iVars.ColoredPupils);
+			if (sParams.TailSegs != null)
+				weight += sParams.TailSegs.Value.weight * Math.Abs(sParams.TailSegs.Value.target - iVars.TailSegs);
+			if (sParams.GeneralMelanin != null)
+				weight += sParams.GeneralMelanin.Value.weight * Math.Abs(sParams.GeneralMelanin.Value.target - iVars.GeneralMelanin);
+			return weight;
+		}
+		internal static float EartlersWeight() => throw new NotImplementedException();
+		internal static float ScavColorsWeight(ScavColors colors, IScavColorsParams sParams)
+		{
+			float weight = 0f;
+			if (sParams.BellyColorH != null)
+				weight += sParams.BellyColorH.Value.weight * Math.Abs(sParams.BellyColorH.Value.target - colors.BellyColor.H);
+			if (sParams.BellyColorS != null)
+					weight += sParams.BellyColorS.Value.weight * Math.Abs(sParams.BellyColorS.Value.target - colors.BellyColor.S);
+			if (sParams.BellyColorL != null)
+			weight += sParams.BellyColorL.Value.weight * Math.Abs(sParams.BellyColorL.Value.target - colors.BellyColor.L);
+			if (sParams.BodyColorH != null)
+				weight += sParams.BodyColorH.Value.weight * Math.Abs(sParams.BodyColorH.Value.target - colors.BodyColor.H);
+			if (sParams.BodyColorS != null)
+					weight += sParams.BodyColorS.Value.weight * Math.Abs(sParams.BodyColorS.Value.target - colors.BodyColor.S);
+			if (sParams.BodyColorL != null)
+			weight += sParams.BodyColorL.Value.weight * Math.Abs(sParams.BodyColorL.Value.target - colors.BodyColor.L);
+			if (sParams.DecorationColorH != null)
+				weight += sParams.DecorationColorH.Value.weight * Math.Abs(sParams.DecorationColorH.Value.target - colors.DecorationColor.H);
+			if (sParams.DecorationColorS != null)
+					weight += sParams.DecorationColorS.Value.weight * Math.Abs(sParams.DecorationColorS.Value.target - colors.DecorationColor.S);
+			if (sParams.DecorationColorL != null)
+			weight += sParams.DecorationColorL.Value.weight * Math.Abs(sParams.DecorationColorL.Value.target - colors.DecorationColor.L);
+			if (sParams.EyeColorH != null)
+				weight += sParams.EyeColorH.Value.weight * Math.Abs(sParams.EyeColorH.Value.target - colors.EyeColor.H);
+			if (sParams.EyeColorL != null)
+					weight += sParams.EyeColorL.Value.weight * Math.Abs(sParams.EyeColorL.Value.target - colors.EyeColor.L);
+			if (sParams.HeadColorH != null)
+			weight += sParams.HeadColorH.Value.weight * Math.Abs(sParams.HeadColorH.Value.target - colors.HeadColor.H);
+			if (sParams.HeadColorS != null)
+				weight += sParams.HeadColorS.Value.weight * Math.Abs(sParams.HeadColorS.Value.target - colors.HeadColor.S);
+			if (sParams.HeadColorL != null)
+					weight += sParams.HeadColorL.Value.weight * Math.Abs(sParams.HeadColorL.Value.target - colors.HeadColor.L);
+			if (sParams.BellyColorBlack != null)
+			weight += sParams.BellyColorBlack.Value.weight * Math.Abs(sParams.BellyColorBlack.Value.target - colors.BellyColorBlack);
+			if (sParams.BodyColorBlack != null)
+				weight += sParams.BodyColorBlack.Value.weight * Math.Abs(sParams.BodyColorBlack.Value.target - colors.BodyColorBlack);
+			if (sParams.HeadColorBlack != null)
+					weight += sParams.HeadColorBlack.Value.weight * Math.Abs(sParams.HeadColorBlack.Value.target - colors.HeadColorBlack);
+			return weight;
+		}
+		internal static float ScavSkillsWeight(ScavSkills skills, IScavSkillsParams sParams)
+		{
+			float weight = 0f;
+			if (sParams.BlockingSkill != null)
+				weight += sParams.BlockingSkill.Value.weight * Math.Abs(sParams.BlockingSkill.Value.target - skills.BlockingSkill);
+			if (sParams.DodgeSkill != null)
+				weight += sParams.DodgeSkill.Value.weight * Math.Abs(sParams.DodgeSkill.Value.target - skills.DodgeSkill);
+			if (sParams.MeleeSkill != null)
+				weight += sParams.MeleeSkill.Value.weight * Math.Abs(sParams.MeleeSkill.Value.target - skills.MeleeSkill);
+			if (sParams.MidRangeSkill != null)
+				weight += sParams.MidRangeSkill.Value.weight * Math.Abs(sParams.MidRangeSkill.Value.target - skills.MidRangeSkill);
+			if (sParams.ReactionSkill != null)
+				weight += sParams.ReactionSkill.Value.weight * Math.Abs(sParams.ReactionSkill.Value.target - skills.ReactionSkill);
+			return weight;
+		}
+		internal static float ScavBackPatternsWeight(BackTuftsAndRidges back, IScavBackPatternsParams sParams)
+		{
+			float weight = 0f;
+			if (sParams.Top != null)
+				weight += sParams.Top.Value.weight * Math.Abs(sParams.Top.Value.target - back.Top);
+			if (sParams.Bottom != null)
+				weight += sParams.Bottom.Value.weight * Math.Abs(sParams.Bottom.Value.target - back.Bottom);
+			if (sParams.Pattern != null)
+				weight += sParams.Pattern.Value.weight * Math.Abs(sParams.Pattern.Value.target - back.Pattern);
+			if (sParams.Type != null)
+				weight += sParams.Type.Value.weight * (sParams.Type.Value.target == back.Type ? 0f : 1f);
+			if (sParams.ColorType != null)
+				weight += sParams.ColorType.Value.weight * Math.Abs(sParams.ColorType.Value.target - back.ColorType);
+			if (sParams.IsColored != null)
+				weight += sParams.IsColored.Value.weight * (sParams.IsColored.Value.target == back.IsColored ? 0f : 1f);
+			if (sParams.ScaleGraf != null)
+				weight += sParams.ScaleGraf.Value.weight * Math.Abs(sParams.ScaleGraf.Value.target - back.ScaleGraf);
+			if (sParams.GeneralSize != null)
+				weight += sParams.GeneralSize.Value.weight * Math.Abs(sParams.GeneralSize.Value.target - back.GeneralSize);
+			if (sParams.Colored != null)
+				weight += sParams.Colored.Value.weight * Math.Abs(sParams.Colored.Value.target - back.Colored);
+			if (sParams.NumberOfSpines != null)
+				weight += sParams.NumberOfSpines.Value.weight * Math.Abs(sParams.NumberOfSpines.Value.target - back.NumberOfSpines);
+			return weight;
+		}
+		public IEnumerable<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents doesn't fit anything other than console.
+		{
+			// Will likely split this out later into unique methods for each creature. It'll avoid some unecessary if statements, and List<Func<int, float>> could be used to iterate through the required ones. This is different to using Func<int, float> for each struct and class, since that runs into problems with repeat constructions with the same ID.
+			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
+			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
+			bool boolSlugcatStats = !((ISlugcatStatsParams)SearchParams).AllNull();
+			bool boolFoodPreferences = !((IFoodPreferencesParams)SearchParams).AllNull();
+			bool boolScavVariations = !((IIndividualVariationsParams)SearchParams).AllNull();
+			bool boolScavColors = !((IScavColorsParams)SearchParams).AllNull();
+			bool boolScavSkills = !((IScavSkillsParams)SearchParams).AllNull();
+			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
+			bool isElite = SearchParams.Elite;
 
-
-			throw new NotImplementedException();
-		}
-		internal static float IndividualVariationsWeight()
-		{
-			throw new NotImplementedException();
-		}
-		internal static float EartlersWeight()
-		{
-			throw new NotImplementedException();
-		}
-		internal static float ScavColorsWeight()
-		{
-			throw new NotImplementedException();
-		}
-		internal static float ScavSkillsWeight()
-		{
-			throw new NotImplementedException();
-		}
-		internal static float ScavBackPatternsWeight()
-		{
-			throw new NotImplementedException();
-		}
-		public static IEnumerable<KeyValuePair<float, int>> NEWSearch(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents is primitive and doesn't fit anything other than console.
-		{
 			SortedList<float, int> vals = [];   // smallest value at index 0
 			float weight;
 			bool saturated = false;
@@ -144,56 +256,67 @@
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
 			int percentTracker = 0;
 
-			bool personality, npcStats, slugcatStats, foodPreferences;
-			personality = !(SearchParams.Sympathy is null && SearchParams.Energy is null && SearchParams.Bravery is null && SearchParams.Nervous is null && SearchParams.Aggression is null && SearchParams.Dominance is null);
-			npcStats = !(SearchParams.Met is null && SearchParams.Bal is null && SearchParams.Size is null && SearchParams.Stealth is null && SearchParams.Dark is null && SearchParams.EyeColor is null && SearchParams.H is null && SearchParams.S is null && SearchParams.L is null && SearchParams.Wideness is null);
-			slugcatStats = !(SearchParams.BodyWeightFac is null && SearchParams.GeneralVisibilityBonus is null && SearchParams.VisualStealthInSneakMode is null && SearchParams.LoudnessFac is null && SearchParams.LungsFac is null && SearchParams.ThrowingSkill is null && SearchParams.PoleClimbSpeedFac is null && SearchParams.CorridorClimbSpeedFac is null && SearchParams.RunSpeedFac is null);
-			foodPreferences = !(SearchParams.DangleFruit is null && SearchParams.WaterNut is null && SearchParams.JellyFish is null && SearchParams.SlimeMold is null && SearchParams.EggBugEgg is null && SearchParams.FireEgg is null && SearchParams.Popcorn is null && SearchParams.GooieDuck is null && SearchParams.LilyPuck is null && SearchParams.GlowWeed is null && SearchParams.DandelionPeach is null && SearchParams.Neuron is null && SearchParams.Centipede is null && SearchParams.SmallCentipede is null && SearchParams.VultureGrub is null && SearchParams.SmallNeedleWorm is null && SearchParams.Hazer is null && SearchParams.NotCounted is null);
+			Personality personality = default;
+			NPCStats npcStats = default;
+			SlugcatStats slugStats = default;
+			FoodPreferences foodPref = default;
+			ScavSkills scavSkills = default;
+			//IndividualVariations scavVariations = default;
+			//ScavColors scavColors = default;
+			//BackDecals scavBack = null!;
 
-			
-			
-			
-			
-			
-			
-			
-			
-			
-
-			Personality p = new(0);
-			NPCStats npc = new(0);
-			SlugcatStats slugStats = new(0);
-			FoodPreferences foodPref = new(0);
-			for (int i = start; i < stop; i++)
+			for (int i = start; i <= stop; i++)
 			{
+				#region scugs
 				if (logPercents && (i - start) % percentInterval == 0)
 				{
 					percentTracker++;
 					Console.WriteLine($"{percentTracker}%");
 				}
 				weight = 0f;
-				//if (personality)
-				//{
-				//	p = new(i);
-				//	weight += PersonalityWeight(p);
-				//}
-				//if (npcStats)
-				//{
-				//	npc = new(i);
-				//	weight += NPCStatsWeight(npc);
-				//}
-				//if (slugcatStats)
-				//{
-				//	if (!npcStats) npc = new(i);
-				//	slugStats = new(i, npc);
-				//	weight += SlugcatStatsWeight(slugStats);
-				//}
-				//if (foodPreferences)
-				//{
-				//	if (!personality) p = new(i);
-				//	foodPref = new(i, p);
-				//	weight += FoodPreferencesWeight(foodPref);
-				//}
+				if (boolPersonality)
+				{
+					personality = new(i);
+					weight += PersonalityWeight(personality, SearchParams);
+				}
+				if (boolNpcStats)
+				{
+					npcStats = new(i);
+					weight += NPCStatsWeight(npcStats, SearchParams);
+				}
+				if (boolSlugcatStats)
+				{
+					if (!boolNpcStats) npcStats = new(i);
+					slugStats = new(i, npcStats);
+					weight += SlugcatStatsWeight(slugStats, SearchParams);
+				}
+				if (boolFoodPreferences)
+				{
+					if (!boolPersonality) personality = new(i);
+					foodPref = new(i, personality);
+					weight += FoodPreferencesWeight(foodPref, SearchParams);
+				}
+				#endregion
+				#region scavs
+				if (boolScavSkills)	// Needs personality
+				{
+					if (!boolPersonality) personality = new(i);
+					scavSkills = new(i, personality, isElite);
+					weight += ScavSkillsWeight(scavSkills, SearchParams);
+				}
+				if (boolScavVariations || boolScavBack || boolScavColors)	// Needs personality
+				{
+					if (!boolPersonality && !boolScavSkills) personality = new(i);
+					(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) graphics = Scavenger.GetGraphics(i, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
+					
+					if (boolScavVariations)
+						weight += IndividualVariationsWeight((IndividualVariations)graphics.variations!, SearchParams);
+					if (boolScavColors)
+						weight += ScavColorsWeight((ScavColors)graphics.color!, SearchParams);
+					if (boolScavBack)
+						weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
+				}
+				#endregion
 
 				if (!saturated && vals.Count < numToStore)
 				{
@@ -208,6 +331,9 @@
 						vals.Add(weight, i);
 					}
 				}
+
+				if (i == int.MaxValue)	// Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
+					break;
 			}
 
 			if (stop == int.MaxValue)   // edge case to prevent overflow and infinite looping when searching up to the largest int32 integer. 
@@ -391,11 +517,10 @@
 			long percentInterval = ((long)stop - (long)start) / 100;	// long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
 			int percentTracker = 0;
 
-			bool personality, npcStats, slugcatStats, foodPreferences;
-			personality = !(SearchParams.Sympathy is null && SearchParams.Energy is null && SearchParams.Bravery is null && SearchParams.Nervous is null && SearchParams.Aggression is null && SearchParams.Dominance is null);
-			npcStats = !(SearchParams.Met is null && SearchParams.Bal is null && SearchParams.Size is null && SearchParams.Stealth is null && SearchParams.Dark is null && SearchParams.EyeColor is null && SearchParams.H is null && SearchParams.S is null && SearchParams.L is null && SearchParams.Wideness is null);
-			slugcatStats = !(SearchParams.BodyWeightFac is null && SearchParams.GeneralVisibilityBonus is null && SearchParams.VisualStealthInSneakMode is null && SearchParams.LoudnessFac is null && SearchParams.LungsFac is null && SearchParams.ThrowingSkill is null && SearchParams.PoleClimbSpeedFac is null && SearchParams.CorridorClimbSpeedFac is null && SearchParams.RunSpeedFac is null);
-			foodPreferences = !(SearchParams.DangleFruit is null && SearchParams.WaterNut is null && SearchParams.JellyFish is null && SearchParams.SlimeMold is null && SearchParams.EggBugEgg is null && SearchParams.FireEgg is null && SearchParams.Popcorn is null && SearchParams.GooieDuck is null && SearchParams.LilyPuck is null && SearchParams.GlowWeed is null && SearchParams.DandelionPeach is null && SearchParams.Neuron is null && SearchParams.Centipede is null && SearchParams.SmallCentipede is null && SearchParams.VultureGrub is null && SearchParams.SmallNeedleWorm is null && SearchParams.Hazer is null && SearchParams.NotCounted is null);
+			bool personality = !((IPersonalityParams)SearchParams).AllNull();
+			bool npcStats = !((INPCStatsParams)SearchParams).AllNull();
+			bool slugcatStats = !((ISlugcatStatsParams)SearchParams).AllNull();
+			bool foodPreferences = !((IFoodPreferencesParams)SearchParams).AllNull();
 
 			Personality p = new(0);
 			NPCStats npc = new(0);
@@ -491,97 +616,6 @@
             }
 			return vals;
 		}
-
-		#region search bools
-		bool personality = false;
-		bool npcStats = false;
-		bool slugcatStats = false;
-		bool foodPreferences = false;
-
-        #endregion
-        public async Task<IEnumerable<KeyValuePair<float, int>>> MULTISearch(int start, int stop, int numToStore, bool logPercents = false, int threads = 6)  // logPercents is primitive and doesn't fit anything other than console. Consider async task implementation and progress tracking that way. Does any responsibility for this fall onto the library or only whatever program utilises it?
-        {
-            SortedList<float, int> vals = [];
-
-			// Do bools here, pass them to SearchIterationsAsync
-			// Maybe they should be fields? Searcher gets instantiated anyway
-
-			
-			
-
-
-			// Address edge case int.MaxValue here
-            return vals;
-        }
-		private void SearchIterations(SortedList<float, int> vals, int start, int stop, int numToStore, bool logPercents = false)	// What was this one for again? Can't remember what I was doing
-		{
-            float weight;
-            bool saturated = false;
-            vals.Capacity = numToStore;
-            long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
-            int percentTracker = 0;
-
-            personality = !(SearchParams.Sympathy is null && SearchParams.Energy is null && SearchParams.Bravery is null && SearchParams.Nervous is null && SearchParams.Aggression is null && SearchParams.Dominance is null);
-            npcStats = !(SearchParams.Met is null && SearchParams.Bal is null && SearchParams.Size is null && SearchParams.Stealth is null && SearchParams.Dark is null && SearchParams.EyeColor is null && SearchParams.H is null && SearchParams.S is null && SearchParams.L is null && SearchParams.Wideness is null);
-            slugcatStats = !(SearchParams.BodyWeightFac is null && SearchParams.GeneralVisibilityBonus is null && SearchParams.VisualStealthInSneakMode is null && SearchParams.LoudnessFac is null && SearchParams.LungsFac is null && SearchParams.ThrowingSkill is null && SearchParams.PoleClimbSpeedFac is null && SearchParams.CorridorClimbSpeedFac is null && SearchParams.RunSpeedFac is null);
-            foodPreferences = !(SearchParams.DangleFruit is null && SearchParams.WaterNut is null && SearchParams.JellyFish is null && SearchParams.SlimeMold is null && SearchParams.EggBugEgg is null && SearchParams.FireEgg is null && SearchParams.Popcorn is null && SearchParams.GooieDuck is null && SearchParams.LilyPuck is null && SearchParams.GlowWeed is null && SearchParams.DandelionPeach is null && SearchParams.Neuron is null && SearchParams.Centipede is null && SearchParams.SmallCentipede is null && SearchParams.VultureGrub is null && SearchParams.SmallNeedleWorm is null && SearchParams.Hazer is null && SearchParams.NotCounted is null);
-
-            Personality p = new(0);
-            NPCStats npc = new(0);
-            SlugcatStats slugStats = new(0);
-            FoodPreferences foodPref = new(0);
-            for (int i = start; i < stop; i++)
-            {
-                if (logPercents && (i - start) % percentInterval == 0)
-                {
-                    percentTracker++;
-                    Console.WriteLine($"{percentTracker}%");
-                }
-                weight = 0f;
-                if (personality)
-                {
-                    p = new(i);
-                    weight += PersonalityWeight(p);
-                }
-                if (npcStats)
-                {
-                    npc = new(i);
-                    weight += NPCStatsWeight(npc);
-                }
-                if (slugcatStats)
-                {
-                    if (!npcStats) npc = new(i);
-                    slugStats = new(i, npc);
-                    weight += SlugcatStatsWeight(slugStats);
-                }
-                if (foodPreferences)
-                {
-                    if (!personality) p = new(i);
-                    foodPref = new(i, p);
-                    weight += FoodPreferencesWeight(foodPref);
-                }
-
-                if (!saturated && vals.Count < numToStore)
-                {
-					lock (vals)
-					{
-						vals.TryAdd(weight, i);
-						if (vals.Count == vals.Capacity) saturated = true;
-					}
-                }
-                else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
-                {
-                    if (!vals.ContainsKey(weight))
-                    {
-						lock (vals)
-						{
-							vals.RemoveAt(vals.Capacity - 1);
-							vals.Add(weight, i);
-						}
-                    }
-                }
-            }
-        }
 		private static int[][] Chunking(int start, int stop, int threads)
         {
             int[][] chunks = new int[threads][];
