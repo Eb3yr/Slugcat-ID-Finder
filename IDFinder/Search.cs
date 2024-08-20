@@ -249,7 +249,7 @@ namespace IDFinder
 			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
 			bool isElite = SearchParams.Elite;
 
-			SortedList<float, int> vals = [];   // smallest value at index 0
+			SortedList<float, int> vals = [];   // smallest value at index 0.
 			float weight;
 			bool saturated = false;
 			vals.Capacity = numToStore;
@@ -298,7 +298,7 @@ namespace IDFinder
 				}
 				#endregion
 				#region scavs
-				// Significant room for improvement when searching for variations, perhaps others as well. Looking at almost +50% time to complete vs ingame mod. This'll be because of all the excess being done in GetGraphics. 
+				// Significant room for improvement when searching for variations, perhaps others as well. Looking at almost +30% time to complete vs ingame mod. This'll be because of all the excess being done in GetGraphics. All others appear to be faster
 
 				if (boolScavSkills)	// Needs personality
 				{
@@ -388,6 +388,20 @@ namespace IDFinder
 				}
 			}
 			return vals;
+		}
+
+		public static int[][] Chunker(int start, int stop, int threads)
+		{
+			int[][] chunks = new int[threads][];
+			int chunkSize = (stop - start) / threads;
+			for (int i = 0; i < threads; i++)
+			{
+				chunks[i] = [start + i * chunkSize + 1, start + (i + 1) * chunkSize];
+			}
+			chunks[0][0] = start;
+			chunks[threads - 1][1] = stop;
+
+			return chunks;
 		}
 	}
 	public class SlugSearcher
