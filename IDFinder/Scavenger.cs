@@ -107,7 +107,7 @@ namespace IDFinder
 			    skills = new(ID, personality, Elite);
 
 			XORShift128.InitSeed(ID);
-			if (genColors)
+			if (genColors || genBack)
                 colors = new(personality, variations, Elite);
 
             if (genBack)
