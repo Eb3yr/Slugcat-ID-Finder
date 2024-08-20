@@ -448,6 +448,29 @@ namespace IDFinder
 		public (float target, float weight)? BellyColorBlack { get; set; }
 		public (float target, float weight)? BodyColorBlack { get; set; }
 		public (float target, float weight)? HeadColorBlack { get; set; }
+		public new bool AllNull()
+		{
+			if (BellyColorH is null &&
+				BellyColorS is null &&
+				BellyColorL is null &&
+				BodyColorH is null &&
+				BodyColorS is null &&
+				BodyColorL is null &&
+				DecorationColorH is null &&
+				DecorationColorS is null &&
+				DecorationColorL is null &&
+				EyeColorH is null &&
+				EyeColorL is null &&
+				HeadColorH is null &&
+				HeadColorS is null &&
+				HeadColorL is null &&
+				BellyColorBlack is null &&
+				BodyColorBlack is null &&
+				HeadColorBlack is null)
+				return true;
+
+			return false;
+		}
 	}
     public interface IScavSkillsParams : ISearchParams
     {
@@ -456,19 +479,46 @@ namespace IDFinder
 		public (float target, float weight)? MeleeSkill { get; set; }
 		public (float target, float weight)? MidRangeSkill { get; set; }
 		public (float target, float weight)? ReactionSkill { get; set; }
+		public new bool AllNull()
+		{
+			if (BlockingSkill is null &&
+				DodgeSkill is null &&
+				MeleeSkill is null &&
+				MidRangeSkill is null &&
+				ReactionSkill is null)
+				return true;
+
+			return false;
+		}
 	}
     public interface IScavBackPatternsParams : ISearchParams
     {
 		public (float target, float weight)? Top { get; set; }
 		public (float target, float weight)? Bottom { get; set; }
 		public (BackPattern target, float weight)? Pattern { get; set; }
-		public (string target, float weight)? Type { get; set; }	// Would be BackDecals not string, but this circumvents calling ToString() constantly to compare it.
+		public (string target, float weight)? Type { get; set; }	// Target would be BackDecals not string, but this circumvents calling ToString() constantly to compare it.
 		public (ColorTypeEnum target, float weight)? ColorType { get; set; }
 		public (bool target, float weight)? IsColored { get; set; }
-		public (int target, float weight)? ScaleGraf { get; set; }
+		public (int target, float weight)? ScaleGraf { get; set; }	// Necessary?
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
+		public new bool AllNull()
+		{
+			if (Top is null &&
+				Bottom is null &&
+				Pattern is null &&
+				Type is null &&
+				ColorType is null &&
+				IsColored is null &&
+				ScaleGraf is null &&
+				GeneralSize is null &&
+				Colored is null &&
+				NumberOfSpines is null)
+				return true;
+
+			return false;
+		}
 	}
     #endregion
 }
