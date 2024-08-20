@@ -104,19 +104,19 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
-		public bool AllNull()
-		{
-			return
-				((IPersonalityParams)this).AllNull() &&
-				((INPCStatsParams)this).AllNull() &&
-				((ISlugcatStatsParams)this).AllNull() &&
-				((IFoodPreferencesParams)this).AllNull() &&
-				((IIndividualVariationsParams)this).AllNull() &&
-				// Eartlers
-				((IScavColorsParams)this).AllNull() &&
-				((IScavSkillsParams)this).AllNull() &&
-				((IScavBackPatternsParams)this).AllNull();
-		}
+		//public bool AllNull()
+		//{
+		//	return
+		//		((IPersonalityParams)this).AllNull() &&
+		//		((INPCStatsParams)this).AllNull() &&
+		//		((ISlugcatStatsParams)this).AllNull() &&
+		//		((IFoodPreferencesParams)this).AllNull() &&
+		//		((IIndividualVariationsParams)this).AllNull() &&
+		//		// Eartlers
+		//		((IScavColorsParams)this).AllNull() &&
+		//		((IScavSkillsParams)this).AllNull() &&
+		//		((IScavBackPatternsParams)this).AllNull();
+		//}
 	}
 	public class SlugParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams
 	{
@@ -163,14 +163,14 @@ namespace IDFinder
 		public (float target, float weight)? SmallNeedleWorm { get; set; }
 		public (float target, float weight)? Hazer { get; set; }
 		public (float target, float weight)? NotCounted { get; set; }
-		public bool AllNull()
-		{
-			return
-				((IPersonalityParams)this).AllNull() &&
-				((INPCStatsParams)this).AllNull() &&
-				((ISlugcatStatsParams)this).AllNull() &&
-				((IFoodPreferencesParams)this).AllNull();
-		}
+		//public bool AllNull()
+		//{
+		//	return
+		//		((IPersonalityParams)this).AllNull() &&
+		//		((INPCStatsParams)this).AllNull() &&
+		//		((ISlugcatStatsParams)this).AllNull() &&
+		//		((IFoodPreferencesParams)this).AllNull();
+		//}
 	}
 	public class ScavParams : ISearchParams, IPersonalityParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams
 	{
@@ -233,22 +233,22 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
-		public bool AllNull()
-		{
-			return
-				((IPersonalityParams)this).AllNull() &&
-				((IIndividualVariationsParams)this).AllNull() &&
-				// Eartlers
-				((IScavColorsParams)this).AllNull() &&
-				((IScavSkillsParams)this).AllNull() &&
-				((IScavBackPatternsParams)this).AllNull();
-		}
+		//public bool AllNull()
+		//{
+		//	return
+		//		((IPersonalityParams)this).AllNull() &&
+		//		((IIndividualVariationsParams)this).AllNull() &&
+		//		// Eartlers
+		//		((IScavColorsParams)this).AllNull() &&
+		//		((IScavSkillsParams)this).AllNull() &&
+		//		((IScavBackPatternsParams)this).AllNull();
+		//}
 	}
 	#endregion
 	#region interfaces
 	public interface ISearchParams
 	{
-		public abstract bool AllNull();
+		//public abstract bool AllNull();
 	}
     public interface IPersonalityParams : ISearchParams
     {
@@ -258,7 +258,7 @@ namespace IDFinder
         public (float target, float weight)? Nervous { get; set; }
         public (float target, float weight)? Aggression { get; set; }
         public (float target, float weight)? Dominance { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (Sympathy is null &&
 				Energy is null &&
@@ -283,7 +283,7 @@ namespace IDFinder
         public (float target, float weight)? S { get; set; }
         public (float target, float weight)? L { get; set; }
         public (float target, float weight)? Wideness { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (Met is null &&
 				Bal is null &&
@@ -311,7 +311,7 @@ namespace IDFinder
         public (float target, float weight)? PoleClimbSpeedFac { get; set; }
         public (float target, float weight)? CorridorClimbSpeedFac { get; set; }
         public (float target, float weight)? RunSpeedFac { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (BodyWeightFac is null &&
 				GeneralVisibilityBonus is null &&
@@ -347,7 +347,7 @@ namespace IDFinder
         public (float target, float weight)? SmallNeedleWorm { get; set; }
         public (float target, float weight)? Hazer { get; set; }
         public (float target, float weight)? NotCounted { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (DangleFruit is null &&
 				WaterNut is null &&
@@ -397,7 +397,7 @@ namespace IDFinder
 		public (int target, float weight)? ColoredPupils { get; set; }
 		public (int target, float weight)? TailSegs { get; set; }
 		public (float target, float weight)? GeneralMelanin { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (WaistWidth is null &&
 				HeadSize is null &&
@@ -448,7 +448,7 @@ namespace IDFinder
 		public (float target, float weight)? BellyColorBlack { get; set; }
 		public (float target, float weight)? BodyColorBlack { get; set; }
 		public (float target, float weight)? HeadColorBlack { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (BellyColorH is null &&
 				BellyColorS is null &&
@@ -479,7 +479,7 @@ namespace IDFinder
 		public (float target, float weight)? MeleeSkill { get; set; }
 		public (float target, float weight)? MidRangeSkill { get; set; }
 		public (float target, float weight)? ReactionSkill { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (BlockingSkill is null &&
 				DodgeSkill is null &&
@@ -503,7 +503,7 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
-		public new bool AllNull()
+		public bool AllNull()
 		{
 			if (Top is null &&
 				Bottom is null &&
