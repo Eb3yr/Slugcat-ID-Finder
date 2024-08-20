@@ -298,6 +298,8 @@ namespace IDFinder
 				}
 				#endregion
 				#region scavs
+				// Significant room for improvement when searching for variations, perhaps others as well. Looking at almost +50% time to complete vs ingame mod. This'll be because of all the excess being done in GetGraphics. 
+
 				if (boolScavSkills)	// Needs personality
 				{
 					if (!boolPersonality) personality = new(i);
@@ -317,18 +319,25 @@ namespace IDFinder
 						weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
 				}
 				#endregion
-
 				if (!saturated && vals.Count < numToStore)
 				{
-					vals.TryAdd(weight, i);
+					while (!vals.TryAdd(weight, i))
+					{
+						weight += 0.000001f;
+					}
 					if (vals.Count == vals.Capacity) saturated = true;
 				}
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
 				{
-					if (!vals.ContainsKey(weight))
+					vals.RemoveAt(vals.Capacity - 1);
+					//if (!vals.ContainsKey(weight))
+					//{
+					//	
+					//	vals.Add(weight, i);
+					//}
+					while (!vals.TryAdd(weight, i))
 					{
-						vals.RemoveAt(vals.Capacity - 1);
-						vals.Add(weight, i);
+						weight += 0.000001f;	// This is the smallest increment that isn't giving me problems. Hack to add two IDs with the same weight to the SortedList, as SortedLists do not allow duplicate keys (weight as key, as it sorts on the key). 
 					}
 				}
 
