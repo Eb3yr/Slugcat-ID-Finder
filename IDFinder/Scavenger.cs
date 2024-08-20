@@ -84,7 +84,7 @@ namespace IDFinder
             //}
             #endregion
         }
-        public static (ScavColors? color, ScavSkills? skills, BackDecals? back) GetGraphics(int ID, bool Elite = false, bool genColors = false, bool genSkills = false, bool genBack = false, Personality? inPersonality = null, IndividualVariations? inIVars = null)
+        public static (ScavColors? color, BackTuftsAndRidges? back) GetGraphics(int ID, bool Elite = false, bool genColors = false, bool genBack = false, Personality? inPersonality = null, IndividualVariations? inIVars = null)
         {
             // Only graphics
             // Excludes eartlers as I don't (yet?) have any way to get meaningful information out of them. Maybe in the future.
@@ -101,10 +101,7 @@ namespace IDFinder
                 variations = (IndividualVariations)inIVars;
 
 			ScavColors? colors = null;
-			ScavSkills? skills = null;
-			BackDecals backPatterns = null!;
-            if (genSkills)
-			    skills = new(ID, personality, Elite);
+			BackTuftsAndRidges backPatterns = null!;
 
 			XORShift128.InitSeed(ID);
 			if (genColors || genBack)
@@ -121,7 +118,7 @@ namespace IDFinder
                     backPatterns = new WobblyBackTufts(variations, personality);
             }
 
-            return (colors, skills, backPatterns);
+            return (colors, backPatterns);
         }
     }
     public struct Eartlers
