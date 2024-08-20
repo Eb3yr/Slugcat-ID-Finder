@@ -84,41 +84,39 @@ namespace IDFinder
             //}
             #endregion
         }
-        public static (ScavColors? color, BackTuftsAndRidges? back) GetGraphics(int ID, bool Elite = false, bool genColors = false, bool genBack = false, Personality? inPersonality = null, IndividualVariations? inIVars = null)
+        public static (IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) GetGraphics(int ID, bool Elite = false, bool genVariations = false, bool genColors = false, bool genBack = false, Personality? inPersonality = null)
         {
             // Only graphics
             // Excludes eartlers as I don't (yet?) have any way to get meaningful information out of them. Maybe in the future.
             Personality personality;
-            IndividualVariations variations;
-
             if (inPersonality == null)
                 personality = new(ID);
             else
                 personality = (Personality)inPersonality;
-            if (inIVars == null)
-                variations = new(personality, Elite);
-            else
-                variations = (IndividualVariations)inIVars;
 
+            IndividualVariations? variations = null;
 			ScavColors? colors = null;
 			BackTuftsAndRidges backPatterns = null!;
 
 			XORShift128.InitSeed(ID);
+            if (genVariations || genColors || genBack)
+                variations = new(personality);
+
 			if (genColors || genBack)
-                colors = new(personality, variations, Elite);
+                colors = new(personality, (IndividualVariations)variations!, Elite);
 
             if (genBack)
             {
-                for (int i = 0; i < variations.TailSegs; i++)
+                for (int i = 0; i < ((IndividualVariations)variations!).TailSegs; i++)
                     XORShift128.NextFloat();    // TailSegment constructor calls BodyChunks.Reset(), which has a single UnityEngine.Random.value call. 
 
                 if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-                    backPatterns = new HardBackSpikes(variations, personality);
+                    backPatterns = new HardBackSpikes((IndividualVariations)variations, personality);
                 else
-                    backPatterns = new WobblyBackTufts(variations, personality);
+                    backPatterns = new WobblyBackTufts((IndividualVariations)variations, personality);
             }
 
-            return (colors, backPatterns);
+            return (variations, colors, backPatterns);
         }
     }
     public struct Eartlers
