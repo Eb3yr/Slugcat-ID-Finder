@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Dynamic;
+using System.ComponentModel;
 
 namespace IDFinder
 {
@@ -19,10 +20,6 @@ namespace IDFinder
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
         public BackDecals BackPatterns { get; private set; }    // Cannot be a struct due to inheritance
-
-        // Make sure the RNG is initialised correctly. I may need to go back to Personality's implementation and add back that return to the initial RNG state once the properties are all generated for example. 
-        // There is a problem here. IndividualVariations doesn't initialise RNG in itself. The RNG is initialised in the Scavenger constructor just prior to its call, then followed up by this.GenerateColors(); and so on. The RNG state is very important so I can't simply instantiate, say, ScavColors without accounting for the effects of Variations' instantiation on RNG
-        // I could call the RNG functions in order with like parameters and maybe improve performance by not executing functions like float.Pow, float.Lerp etc. I need to benchmark how expensive they are vs just generating the RNG, and if it's worth it implement logic to do the latter.
         public string AsJson()
         {
 			JsonSerializerOptions opt = new()
@@ -34,8 +31,6 @@ namespace IDFinder
 				},
 				IncludeFields = true
 			};
-            //object[] arr = [ID, Elite, Personality, Variations, Colors, Skills, BackPatterns];
-            //return JsonSerializer.Serialize(arr, opt);
             dynamic scav = new ExpandoObject();
             scav.ID = ID;
             scav.Elite = Elite;
@@ -52,7 +47,6 @@ namespace IDFinder
             Elite = isElite;
             Personality = new(ID);
             Skills = new(ID, Personality, Elite);
-            //BackPatterns = new();
 
             #region ScavengerGraphics
             XORShift128.InitSeed(ID);
@@ -68,68 +62,6 @@ namespace IDFinder
                 BackPatterns = new WobblyBackTufts(Variations, Personality);
 
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
-            float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];  // As a quirk of the JSON serializer, this cannot be serialized. While it has a visual impact on the scavengers, it unfortunately cannot be included as a property or field of this class unless a different serializer is used.
-            float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
-            num2 = float.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
-            float num3 = float.Lerp(num2 + 0.2f, float.Lerp(0.7f, 1.2f, XORShift128.NextFloat()), XORShift128.NextFloat());
-            num3 = float.Lerp(num3, Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1.5f, 0.2f), 0.4f);
-            float a = 0.3f + 0.7f * XORShift128.NextFloat();
-            for (int l = 0; l < teeth.GetLength(0); l++)
-            {
-                float num4 = (float)l / (teeth.GetLength(0) - 1);
-                teeth[1, 0] = float.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
-                if (XORShift128.NextFloat() < Variations.Scruffy && XORShift128.NextFloat() < 0.2f)
-                {
-                    teeth[l, 0] = 0f;
-                }
-                teeth[l, 1] = float.Lerp(0.5f, 1f, float.Sin(num4 * 3.1415927f)) * num3;
-            }
-            // if Scav King
-            // Scav king VultureMaskGraphics.GenerateColor() here. There is some use of UnityEngine.Random in GenerateColor, HOWEVER UnityEngine.Random.state is returned to what it was prior to the function call. Thank fuck.
-            if (Elite)  // Else if to prev comment
-            {
-                int num8 = XORShift128.NextIntRange(0, 4);  // Used to determine which kind of mask the elite scavenger wears. Unused here as mask graphics are not being instantiated.
-                // Likewise a call to VultureMaskGraphics.GenerateColor() here, but since the RNG state prior to the function call is preserved, it does not need to be ran. 
-            }
-            // CentipedeShellCosmetic[] shells is instantiated next. The class's constructor uses UnityEngine.Random.value, however unless the scavenger is a king, shells.Length = 0 so no objects are instantiated and the constructor is never called. 
-            #endregion
-        }
-        
-        // Liberal use of gotos to try and minimise how much expensive code needs to be ran
-        public static (Personality? personality, IndividualVariations? variations, Eartlers? eartlers, ScavColors? color, ScavSkills? skills, BackDecals? back) Get(int ID, bool Elite = false, bool personality = false, bool variations = false, bool eartlers = false, bool colors = false, bool skills = false, bool back = false)
-        {
-            throw new NotImplementedException("Currently faulty, has not been updated with the changes that make the regular Scavenger constructor function correctly.");
-            // Nastiness allows skipping unecessary generations to accelerate searching. This appears to work, but testing has not been thorough.
-
-            Personality Personality = default;
-            ScavSkills Skills = default;
-            BackDecals BackPatterns = default!;
-            IndividualVariations Variations = default;
-            ScavColors Colors = default;
-            Eartlers Eartlers = default;
-            
-            Personality = new(ID);
-            if (!(skills || variations || colors || eartlers || Elite)) goto End;
-            Skills = new(ID, Personality, Elite);
-            if (!(back || variations || colors || eartlers || Elite)) goto End;
-            //BackPatterns = new();
-
-            #region ScavengerGraphics
-            XORShift128.InitSeed(ID);
-            if (!(variations || colors || back || eartlers || Elite)) goto End;
-            Variations = new(Personality);
-            if (!(colors || back || eartlers || Elite)) goto End;
-            Colors = new(Personality, Variations, Elite); // game code shows call to this.GenerateColors(); so implement that logic in the colors constructor. GenerateColors() does not initialise RNG itself, be careful.
-            if (!(back || eartlers || Elite)) goto End;
-			if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-				BackPatterns = new HardBackSpikes(Variations, Personality);
-			else
-				BackPatterns = new WobblyBackTufts(Variations, Personality);
-
-
-			if (!(eartlers || Elite)) goto End;
-            Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
-            if (!Elite) goto End;
             float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];
             float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
             num2 = float.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
@@ -146,55 +78,50 @@ namespace IDFinder
                 }
                 teeth[l, 1] = float.Lerp(0.5f, 1f, float.Sin(num4 * 3.1415927f)) * num3;
             }
-            
-            if (Elite)
-            {
-                int num8 = XORShift128.NextIntRange(0, 4);
-            }
+            //if (Elite)
+            //{
+            //    int num8 = XORShift128.NextIntRange(0, 4);  // Used to determine which kind of mask the elite scavenger wears. Unused here as mask graphics are not being instantiated.
+            //}
             #endregion
+        }
+        public static (ScavColors? color, ScavSkills? skills, BackDecals? back) GetGraphics(int ID, bool Elite = false, bool genColors = false, bool genSkills = false, bool genBack = false, Personality? inPersonality = null, IndividualVariations? inIVars = null)
+        {
+            // Only graphics
+            // Excludes eartlers as I don't (yet?) have any way to get meaningful information out of them. Maybe in the future.
+            Personality personality;
+            IndividualVariations variations;
 
-            End:
-            return (
-                personality ? Personality : null,
-                variations ? Variations : null,
-                eartlers ? Eartlers : null,
-                colors ? Colors : null,
-                skills ? Skills : null,
-                back ? BackPatterns : null
-            );
-        }
-    }
-    public class ScavBackPatterns   // Not a struct to avoid issues assigning to properties
-    {
-        public enum ScavBackType
-        {
-            HardBackSpikes,
-            WobblyBackTufts
-        }
-        public enum ColorTypes
-        {
-            None,
-            Decoration,
-            Head
-        }
-        // These properties aren't necessarily the info I want to store, rather they're the searching info. I'm not sure where I should draw the line. Perhaps getting a creature's info should match the searching stuff? IDK
-        // setters are public to circumvent inaccessibility when setting the values of properties in Scavenger constructor.
-        // Not private set to act upon in the Scavenger constructor
-        public ScavBackType BackType { get; private set; }  // There are two separate classes in the game's code for this. 
-        public ColorTypes ColorType { get; set; }
-        public float ColorStrength { get; set; }    // 0f to 1f. Not sure what of, yet.
-        public BackDecals.BackPattern Pattern { get; set; }   
-        public float RangeTop { get; set; }    // 0.02 to 0.30. Not sure what of, yet
-        public float RangeBottom { get; set; }     // 0.40 to 1f. Not sure what of, yet
-        public int NumSpines { get; set; }   // Spineridge:  [2, 37], doublespineridge: [2, 40], randombackblotch: [4, 40] ranges
-        public float GeneralSpineSize { get; set; }    // 0f to 1f. Mean of all the spine lengths? 
-        public ScavBackPatterns(BackDecals decals)
-        {
-            // Calculate these params using the BackPatterns property in the Scavenger class. 
-            if (decals is HardBackSpikes)
-                BackType = ScavBackType.HardBackSpikes;
+            if (inPersonality == null)
+                personality = new(ID);
             else
-                BackType = ScavBackType.WobblyBackTufts;
+                personality = (Personality)inPersonality;
+            if (inIVars == null)
+                variations = new(personality, Elite);
+            else
+                variations = (IndividualVariations)inIVars;
+
+			ScavColors? colors = null;
+			ScavSkills? skills = null;
+			BackDecals backPatterns = null!;
+            if (genSkills)
+			    skills = new(ID, personality, Elite);
+
+			XORShift128.InitSeed(ID);
+			if (genColors)
+                colors = new(personality, variations, Elite);
+
+            if (genBack)
+            {
+                for (int i = 0; i < variations.TailSegs; i++)
+                    XORShift128.NextFloat();    // TailSegment constructor calls BodyChunks.Reset(), which has a single UnityEngine.Random.value call. 
+
+                if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
+                    backPatterns = new HardBackSpikes(variations, personality);
+                else
+                    backPatterns = new WobblyBackTufts(variations, personality);
+            }
+
+            return (colors, skills, backPatterns);
         }
     }
     public struct Eartlers
@@ -398,7 +325,6 @@ namespace IDFinder
     public struct ScavColors
     {
         public HSLColor BellyColor { get; private set; }
-        //public Color BlackColor { get; private set; }   // This is dependent on the room pallete, not the scavenger, and is used for the blended color properties in ScavengerGraphics. 
         public HSLColor BodyColor { get; private set; }
         public HSLColor DecorationColor { get; private set; }
         public HSLColor EyeColor { get; private set; }
@@ -538,7 +464,7 @@ namespace IDFinder
         public float MeleeSkill { get; private set; }
         public float MidRangeSkill { get; private set; }
         public float ReactionSkill { get; private set; }
-        public ScavSkills(int seed, Personality personality, bool elite) { SetUpCombatSkills(seed, personality, elite); }
+        public ScavSkills(int seed, Personality personality, bool elite = false) { SetUpCombatSkills(seed, personality, elite); }
         private void SetUpCombatSkills(int seed, Personality personality, bool elite)
         {
             uint x = XORShift128.x, y = XORShift128.y, z = XORShift128.z, w = XORShift128.w;    // preserving state.
