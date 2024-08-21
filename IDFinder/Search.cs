@@ -353,8 +353,10 @@ namespace IDFinder
 			return vals;
 		}
 
+		
 		public static IEnumerable<KeyValuePair<float, int>> SearchThreaded(int start, int stop, int numToStore, int threads, SearchParams SearchParams, bool trimToNumToStore = false, bool logPercents = false)
 		{
+			throw new NotImplementedException("Erroneous behaviour has not been fixed.");
 			if (threads < 1)
 				throw new ArgumentException("Cannot use less than one thread!");
 			if (threads == 1)
