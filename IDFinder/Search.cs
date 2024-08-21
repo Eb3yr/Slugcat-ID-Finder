@@ -5,7 +5,7 @@ namespace IDFinder
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
 	public static class Searcher
 	{
-		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((a, b) => a.Key == b.Key ? 0 : a.Key > b.Key ? 1 : -1);
+		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key <= y.Key ? -1 : 1);
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -251,7 +251,8 @@ namespace IDFinder
 			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
 			bool isElite = SearchParams.Elite;
 
-			List<KeyValuePair<float, int>> vals = [];   // uses comparison property of Searcher class to ensure smallest weights at index 0.
+			List<KeyValuePair<float, int>> vals = new(numToStore + 1);   // uses comparison property of Searcher class to ensure smallest weights at index 0. Unfortunately this handles large numbers of elements far worse than SortedList, so it's recommended to use SearchMulti with an increased number of threads and trimNumToStore disabled rather than a numToStore in the tens of thousands.
+
 			float weight;
 			bool saturated = false;
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
@@ -266,6 +267,8 @@ namespace IDFinder
 			//ScavColors scavColors = default;
 			//BackDecals scavBack = null!;
 
+			int largerThanIndex;
+			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
 				#region scugs
@@ -330,13 +333,22 @@ namespace IDFinder
 				if (!saturated && vals.Count < numToStore)
 				{
 					vals.Add(new(weight, i));
-					vals.Sort(comparer);
-					if (vals.Count == numToStore) saturated = true;
+					if (vals.Count == numToStore)
+					{
+						vals.Sort(comparer);
+						saturated = true;
+					}
 				}
 				else if (vals.Last().Key > weight)
 				{
-					vals[numToStore - 1] = new(weight, i);
-					vals.Sort(comparer);
+					// vals is certainly ordered at this point, as vals is sorted when vals.Count == numToStore. Therefore I can do a binary search ( log(n) ) to find the index of the next largest or equal weight, insert there ( O(n) where n is list.count - index ), and remove the final element ( O(1) ). Much faster than appending a value and sorting the whole list each time and significantly decreases search time with large numToStore.
+					kvp = new(weight, i);
+					largerThanIndex = vals.BinarySearch(kvp, comparer);
+					if (largerThanIndex < 0)
+						largerThanIndex = ~largerThanIndex; // bitwise complement of a BinarySearch that does not find the value returns the index of the next largest value in the list.
+
+					vals.Insert(largerThanIndex, kvp);
+					vals.RemoveAt(numToStore);
 				}
 
 				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
@@ -391,10 +403,9 @@ namespace IDFinder
 			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
 			bool isElite = SearchParams.Elite;
 
-			List<KeyValuePair<float, int>> vals = [];
+			List<KeyValuePair<float, int>> vals = new(numToStore + 1);
 			float weight;
 			bool saturated = false;
-			vals.Capacity = numToStore;
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
 			int percentTracker = 0;
 
@@ -407,6 +418,8 @@ namespace IDFinder
 			//ScavColors scavColors = default;
 			//BackDecals scavBack = null!;
 
+			int largerThanIndex;
+			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
 				#region scugs
@@ -470,13 +483,22 @@ namespace IDFinder
 				if (!saturated && vals.Count < numToStore)
 				{
 					vals.Add(new(weight, i));
-					vals.Sort(comparer);
-					if (vals.Count == numToStore) saturated = true;
+					if (vals.Count == numToStore)
+					{
+						vals.Sort(comparer);
+						saturated = true;
+					}
 				}
 				else if (vals.Last().Key > weight)
 				{
-					vals[numToStore - 1] = new(weight, i);
-					vals.Sort(comparer);
+					// vals is certainly ordered at this point, as vals is sorted when vals.Count == numToStore. Therefore I can do a binary search ( log(n) ) to find the index of the next largest or equal weight, insert there ( O(n) where n is list.count - index ), and remove the final element ( O(1) ). Much faster than appending a value and sorting the whole list each time and significantly decreases search time with large numToStore.
+					kvp = new(weight, i);
+					largerThanIndex = vals.BinarySearch(kvp, comparer);
+					if (largerThanIndex < 0)
+						largerThanIndex = ~largerThanIndex;	// bitwise complement of a BinarySearch that does not find the value returns the index of the next largest value in the list.
+
+					vals.Insert(largerThanIndex, kvp);
+					vals.RemoveAt(numToStore);
 				}
 
 				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
