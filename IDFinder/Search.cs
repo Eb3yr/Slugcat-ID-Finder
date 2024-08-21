@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Collections.Concurrent;
+using System.Drawing;
 
 namespace IDFinder
 {
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
-	public class Searcher
+	public static class Searcher
 	{
 		internal static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
@@ -236,8 +237,10 @@ namespace IDFinder
 				weight += sParams.NumberOfSpines.Value.weight * Math.Abs(sParams.NumberOfSpines.Value.target - back.NumberOfSpines);
 			return weight;
 		}
-		public IEnumerable<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents doesn't fit anything other than console.
+		public static IEnumerable<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents doesn't fit anything other than console.
 		{
+			// Must remember to update XORShiftSearch when updating this method. Not merged into one as different object constructors are used for each struct/class being searched.
+
 			// Will likely split this out later into unique methods for each creature. It'll avoid some unecessary if statements, and List<Func<int, float>> could be used to iterate through the required ones. This is different to using Func<int, float> for each struct and class, since that runs into problems with repeat constructions with the same ID.
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
@@ -287,7 +290,7 @@ namespace IDFinder
 				if (boolSlugcatStats)
 				{
 					if (!boolNpcStats) npcStats = new(i);
-					slugStats = new(i, npcStats);
+					slugStats = new(npcStats);
 					weight += SlugcatStatsWeight(slugStats, SearchParams);
 				}
 				if (boolFoodPreferences)
@@ -298,25 +301,32 @@ namespace IDFinder
 				}
 				#endregion
 				#region scavs
-				// Significant room for improvement when searching for variations, perhaps others as well. Looking at almost +30% time to complete vs ingame mod. This'll be because of all the excess being done in GetGraphics. All others appear to be faster
-
 				if (boolScavSkills)	// Needs personality
 				{
 					if (!boolPersonality) personality = new(i);
 					scavSkills = new(i, personality, isElite);
 					weight += ScavSkillsWeight(scavSkills, SearchParams);
 				}
-				if (boolScavVariations || boolScavBack || boolScavColors)	// Needs personality
+				if (boolScavVariations || boolScavBack || boolScavColors)   // Needs personality
 				{
 					if (!boolPersonality && !boolScavSkills) personality = new(i);
-					(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) graphics = Scavenger.GetGraphics(i, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
-					
-					if (boolScavVariations)
-						weight += IndividualVariationsWeight((IndividualVariations)graphics.variations!, SearchParams);
-					if (boolScavColors)
-						weight += ScavColorsWeight((ScavColors)graphics.color!, SearchParams);
-					if (boolScavBack)
-						weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
+
+					if (!(boolScavBack || boolScavColors))   // Avoid having to call GetGraphics if only variations are needed
+					{
+						XORShift128.InitSeed(i);
+						weight += IndividualVariationsWeight(new IndividualVariations(personality, isElite), SearchParams);
+					}
+					else
+					{
+						(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) graphics = Scavenger.GetGraphics(i, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
+
+						if (boolScavVariations)
+							weight += IndividualVariationsWeight((IndividualVariations)graphics.variations!, SearchParams);
+						if (boolScavColors)
+							weight += ScavColorsWeight((ScavColors)graphics.color!, SearchParams);
+						if (boolScavBack)
+							weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
+					}
 				}
 				#endregion
 				if (!saturated && vals.Count < numToStore)
@@ -330,11 +340,6 @@ namespace IDFinder
 				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
 				{
 					vals.RemoveAt(vals.Capacity - 1);
-					//if (!vals.ContainsKey(weight))
-					//{
-					//	
-					//	vals.Add(weight, i);
-					//}
 					while (!vals.TryAdd(weight, i))
 					{
 						weight += 0.000001f;	// This is the smallest increment that isn't giving me problems. Hack to add two IDs with the same weight to the SortedList, as SortedLists do not allow duplicate keys (weight as key, as it sorts on the key). 
@@ -348,7 +353,150 @@ namespace IDFinder
 			return vals;
 		}
 
-		public static int[][] Chunker(int start, int stop, int threads)
+		public static IEnumerable<KeyValuePair<float, int>> SearchThreaded(int start, int stop, int numToStore, int threads, SearchParams SearchParams, bool trimToNumToStore = false, bool logPercents = false)
+		{
+			if (threads < 1)
+				throw new ArgumentException("Cannot use less than one thread!");
+			if (threads == 1)
+				return Search(start, stop, numToStore, SearchParams, logPercents);
+
+			
+			int[][] chunks = Chunker(start, stop, threads);
+			ConcurrentBag<IEnumerable<KeyValuePair<float, int>>> resultCollection = [];
+
+			// Shallow copying SearchParams in the expectation that a bottleneck could arise when multiple threads access the same instance
+			Parallel.ForEach(chunks,
+				new ParallelOptions() { MaxDegreeOfParallelism = threads },
+				chunk =>
+				{
+					var res = XORShiftSearch(chunk[0], chunk[1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), logPercents);
+					resultCollection.Add(res);
+				}
+			);
+
+			IEnumerable<KeyValuePair<float, int>> resultsSorted = [];
+			foreach (var result in resultCollection)
+				resultsSorted = resultsSorted.Concat(result);
+
+			resultsSorted = resultsSorted.OrderBy(o => o.Key);
+
+			if (trimToNumToStore)
+				return resultsSorted.ToList().GetRange(0, numToStore);
+
+			return resultsSorted;
+		}
+		private static IEnumerable<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, bool logPercents = false)
+		{
+			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
+			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
+			bool boolSlugcatStats = !((ISlugcatStatsParams)SearchParams).AllNull();
+			bool boolFoodPreferences = !((IFoodPreferencesParams)SearchParams).AllNull();
+			bool boolScavVariations = !((IIndividualVariationsParams)SearchParams).AllNull();
+			bool boolScavColors = !((IScavColorsParams)SearchParams).AllNull();
+			bool boolScavSkills = !((IScavSkillsParams)SearchParams).AllNull();
+			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
+			bool isElite = SearchParams.Elite;
+
+			SortedList<float, int> vals = [];   // smallest value at index 0.
+			float weight;
+			bool saturated = false;
+			vals.Capacity = numToStore;
+			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
+			int percentTracker = 0;
+
+			Personality personality = default;
+			NPCStats npcStats = default;
+			SlugcatStats slugStats = default;
+			FoodPreferences foodPref = default;
+			ScavSkills scavSkills = default;
+			//IndividualVariations scavVariations = default;
+			//ScavColors scavColors = default;
+			//BackDecals scavBack = null!;
+
+			for (int i = start; i <= stop; i++)
+			{
+				#region scugs
+				if (logPercents && (i - start) % percentInterval == 0)
+				{
+					percentTracker++;
+					Console.WriteLine($"{percentTracker}%");
+				}
+				weight = 0f;
+				if (boolPersonality)
+				{
+					personality = new(i, XORShift128);
+					weight += PersonalityWeight(personality, SearchParams);
+				}
+				if (boolNpcStats)
+				{
+					npcStats = new(i, XORShift128);
+					weight += NPCStatsWeight(npcStats, SearchParams);
+				}
+				if (boolSlugcatStats)
+				{
+					if (!boolNpcStats) npcStats = new(i, XORShift128);
+					slugStats = new(npcStats);	// SlugcatStats makes no use of rng in its constructor
+					weight += SlugcatStatsWeight(slugStats, SearchParams);
+				}
+				if (boolFoodPreferences)
+				{
+					if (!boolPersonality) personality = new(i, XORShift128);
+					foodPref = new(i, personality, XORShift128);
+					weight += FoodPreferencesWeight(foodPref, SearchParams);
+				}
+				#endregion
+				#region scavs
+				if (boolScavSkills) 
+				{
+					if (!boolPersonality) personality = new(i, XORShift128);
+					scavSkills = new(i, personality, XORShift128, isElite);
+					weight += ScavSkillsWeight(scavSkills, SearchParams);
+				}
+				if (boolScavVariations || boolScavBack || boolScavColors)
+				{
+					if (!boolPersonality && !boolScavSkills) personality = new(i, XORShift128);
+
+					if (!(boolScavBack || boolScavColors))
+					{
+						weight += IndividualVariationsWeight(new IndividualVariations(personality, XORShift128, isElite), SearchParams);
+					}
+					else
+					{
+						(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) graphics = Scavenger.GetGraphicsRNGParam(i, XORShift128, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
+
+						if (boolScavVariations)
+							weight += IndividualVariationsWeight((IndividualVariations)graphics.variations!, SearchParams);
+						if (boolScavColors)
+							weight += ScavColorsWeight((ScavColors)graphics.color!, SearchParams);
+						if (boolScavBack)
+							weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
+					}
+				}
+				#endregion
+				if (!saturated && vals.Count < numToStore)
+				{
+					while (!vals.TryAdd(weight, i))
+					{
+						weight += 0.000001f;
+					}
+					if (vals.Count == vals.Capacity) saturated = true;
+				}
+				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+				{
+					vals.RemoveAt(vals.Capacity - 1);
+					while (!vals.TryAdd(weight, i))
+					{
+						weight += 0.000001f;
+					}
+				}
+
+				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
+					break;
+			}
+
+			return vals;
+		}
+		internal static int[][] Chunker(int start, int stop, int threads)
 		{
 			int[][] chunks = new int[threads][];
 			int chunkSize = (stop - start) / threads;
@@ -528,7 +676,7 @@ namespace IDFinder
 				if (slugcatStats) 
 				{
 					if (!npcStats) npc = new(i);
-					slugStats = new(i, npc);
+					slugStats = new(npc);
 					weight += SlugcatStatsWeight(slugStats);
 				}
 				if (foodPreferences)
@@ -571,7 +719,7 @@ namespace IDFinder
                 if (slugcatStats)
                 {
                     if (!npcStats) npc = new(i);
-                    slugStats = new(i, npc);
+                    slugStats = new(npc);
                     weight += SlugcatStatsWeight(slugStats);
                 }
                 if (foodPreferences)
