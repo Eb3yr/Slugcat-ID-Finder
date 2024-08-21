@@ -20,7 +20,7 @@ namespace IDFinder
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
         public BackDecals BackPatterns { get; private set; }    // Cannot be a struct due to inheritance
-        [Obsolete("Incompatible with Native AOT compilation in its current form. Either do this externally or re-write using a non-reflection based JSON serializer")]
+        //[Obsolete("Incompatible with Native AOT compilation in its current form. Either do this externally or re-write using a non-reflection based JSON serializer")]    // Not using Native AOT at the moment, not a problem.
         public string AsJson()
         {
 			JsonSerializerOptions opt = new()
