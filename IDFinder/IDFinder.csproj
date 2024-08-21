@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PublishAot>True</PublishAot>
+    <PublishAot>False</PublishAot>
     <PublishTrimmed>True</PublishTrimmed>
   </PropertyGroup>
 
@@ -17,9 +17,10 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
 
+  <!--
   <PropertyGroup>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
-
+  -->
 
 </Project>
