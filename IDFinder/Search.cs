@@ -1,12 +1,12 @@
 ﻿using System.Collections.Concurrent;
-using System.Drawing;
 
 namespace IDFinder
 {
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
 	public static class Searcher
 	{
-		internal static float PersonalityWeight(Personality p, IPersonalityParams sParams)
+		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((a, b) => a.Key == b.Key ? 0 : a.Key > b.Key ? 1 : -1);
+		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.Sympathy != null)
@@ -23,7 +23,7 @@ namespace IDFinder
 				weight += sParams.Dominance.Value.weight * Math.Abs(p.Dominance - sParams.Dominance.Value.target);
 			return weight;
 		}
-		internal static float NPCStatsWeight(NPCStats npc, INPCStatsParams sParams)
+		private static float NPCStatsWeight(NPCStats npc, INPCStatsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.Met != null)
@@ -48,7 +48,7 @@ namespace IDFinder
 				weight += sParams.Wideness.Value.weight * Math.Abs(npc.Wideness - sParams.Wideness.Value.target);
 			return weight;
 		}
-		internal static float SlugcatStatsWeight(SlugcatStats slug, ISlugcatStatsParams sParams)
+		private static float SlugcatStatsWeight(SlugcatStats slug, ISlugcatStatsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.BodyWeightFac != null)
@@ -71,7 +71,7 @@ namespace IDFinder
 				weight += sParams.RunSpeedFac.Value.weight * Math.Abs(slug.runSpeedFac - sParams.RunSpeedFac.Value.target);
 			return weight;
 		}
-		internal static float FoodPreferencesWeight(FoodPreferences foodPref, IFoodPreferencesParams sParams)
+		private static float FoodPreferencesWeight(FoodPreferences foodPref, IFoodPreferencesParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.DangleFruit != null)
@@ -112,7 +112,7 @@ namespace IDFinder
 				weight += sParams.NotCounted.Value.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.Value.target);
 			return weight;
 		}
-		internal static float IndividualVariationsWeight(IndividualVariations iVars, IIndividualVariationsParams sParams)
+		private static float IndividualVariationsWeight(IndividualVariations iVars, IIndividualVariationsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.WaistWidth != null)
@@ -157,8 +157,8 @@ namespace IDFinder
 				weight += sParams.GeneralMelanin.Value.weight * Math.Abs(sParams.GeneralMelanin.Value.target - iVars.GeneralMelanin);
 			return weight;
 		}
-		internal static float EartlersWeight() => throw new NotImplementedException();
-		internal static float ScavColorsWeight(ScavColors colors, IScavColorsParams sParams)
+		private static float EartlersWeight() => throw new NotImplementedException();
+		private static float ScavColorsWeight(ScavColors colors, IScavColorsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.BellyColorH != null)
@@ -197,7 +197,7 @@ namespace IDFinder
 					weight += sParams.HeadColorBlack.Value.weight * Math.Abs(sParams.HeadColorBlack.Value.target - colors.HeadColorBlack);
 			return weight;
 		}
-		internal static float ScavSkillsWeight(ScavSkills skills, IScavSkillsParams sParams)
+		private static float ScavSkillsWeight(ScavSkills skills, IScavSkillsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.BlockingSkill != null)
@@ -212,7 +212,7 @@ namespace IDFinder
 				weight += sParams.ReactionSkill.Value.weight * Math.Abs(sParams.ReactionSkill.Value.target - skills.ReactionSkill);
 			return weight;
 		}
-		internal static float ScavBackPatternsWeight(BackTuftsAndRidges back, IScavBackPatternsParams sParams)
+		private static float ScavBackPatternsWeight(BackTuftsAndRidges back, IScavBackPatternsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.Top != null)
@@ -241,7 +241,6 @@ namespace IDFinder
 		{
 			// Must remember to update XORShiftSearch when updating this method. Not merged into one as different object constructors are used for each struct/class being searched.
 
-			// Will likely split this out later into unique methods for each creature. It'll avoid some unecessary if statements, and List<Func<int, float>> could be used to iterate through the required ones. This is different to using Func<int, float> for each struct and class, since that runs into problems with repeat constructions with the same ID.
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
 			bool boolSlugcatStats = !((ISlugcatStatsParams)SearchParams).AllNull();
@@ -252,10 +251,9 @@ namespace IDFinder
 			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
 			bool isElite = SearchParams.Elite;
 
-			SortedList<float, int> vals = [];   // smallest value at index 0.
+			List<KeyValuePair<float, int>> vals = [];   // uses comparison property of Searcher class to ensure smallest weights at index 0.
 			float weight;
 			bool saturated = false;
-			vals.Capacity = numToStore;
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
 			int percentTracker = 0;
 
@@ -301,7 +299,7 @@ namespace IDFinder
 				}
 				#endregion
 				#region scavs
-				if (boolScavSkills)	// Needs personality
+				if (boolScavSkills) // Needs personality
 				{
 					if (!boolPersonality) personality = new(i);
 					scavSkills = new(i, personality, isElite);
@@ -331,29 +329,24 @@ namespace IDFinder
 				#endregion
 				if (!saturated && vals.Count < numToStore)
 				{
-					while (!vals.TryAdd(weight, i))
-					{
-						weight += 0.000001f;
-					}
-					if (vals.Count == vals.Capacity) saturated = true;
+					vals.Add(new(weight, i));
+					vals.Sort(comparer);
+					if (vals.Count == numToStore) saturated = true;
 				}
-				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+				else if (vals.Last().Key > weight)
 				{
-					vals.RemoveAt(vals.Capacity - 1);
-					while (!vals.TryAdd(weight, i))
-					{
-						weight += 0.000001f;	// This is the smallest increment that isn't giving me problems. Hack to add two IDs with the same weight to the SortedList, as SortedLists do not allow duplicate keys (weight as key, as it sorts on the key). 
-					}
+					vals[numToStore - 1] = new(weight, i);
+					vals.Sort(comparer);
 				}
 
-				if (i == int.MaxValue)	// Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
+				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
 					break;
 			}
 
 			return vals;
 		}
 
-		
+
 		public static IEnumerable<KeyValuePair<float, int>> SearchThreaded(int start, int stop, int numToStore, int threads, SearchParams SearchParams, bool trimToNumToStore = false, bool logPercents = false)
 		{
 			if (threads < 1)
@@ -398,7 +391,7 @@ namespace IDFinder
 			bool boolScavBack = !((IScavBackPatternsParams)SearchParams).AllNull();
 			bool isElite = SearchParams.Elite;
 
-			SortedList<float, int> vals = [];   // smallest value at index 0.
+			List<KeyValuePair<float, int>> vals = [];
 			float weight;
 			bool saturated = false;
 			vals.Capacity = numToStore;
@@ -476,19 +469,14 @@ namespace IDFinder
 				#endregion
 				if (!saturated && vals.Count < numToStore)
 				{
-					while (!vals.TryAdd(weight, i))
-					{
-						weight += 0.000001f;
-					}
-					if (vals.Count == vals.Capacity) saturated = true;
+					vals.Add(new(weight, i));
+					vals.Sort(comparer);
+					if (vals.Count == numToStore) saturated = true;
 				}
-				else if (vals.GetKeyAtIndex(vals.Capacity - 1) > weight)
+				else if (vals.Last().Key > weight)
 				{
-					vals.RemoveAt(vals.Capacity - 1);
-					while (!vals.TryAdd(weight, i))
-					{
-						weight += 0.000001f;
-					}
+					vals[numToStore - 1] = new(weight, i);
+					vals.Sort(comparer);
 				}
 
 				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
