@@ -13,7 +13,7 @@
 			this.ID = ID;
 			Personality = new(ID);
 			NPCStats = new(ID);
-			SlugcatStats = new(ID, NPCStats);
+			SlugcatStats = new(NPCStats);
 			FoodPreferences = new(ID, Personality);
 		}
 	}
