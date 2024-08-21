@@ -36,11 +36,19 @@ namespace IDFinder
         {
             return float.Clamp(baseValue + Custom.RandomDeviation(k) * maxDeviation, 0f, 1f);
         }
-        private static float RandomDeviation(float k)
+		internal static float ClampedRandomVariationRNGParam(float baseValue, float maxDeviation, float k, InstanceXORShift128 XORShift128)
+		{
+			return float.Clamp(baseValue + Custom.RandomDeviationRNGParam(k, XORShift128) * maxDeviation, 0f, 1f);
+		}
+		private static float RandomDeviation(float k)
         {
             return Custom.SCurve(XORShift128.NextFloat() * 0.5f, k) * 2f * ((XORShift128.NextFloat() < 0.5f) ? 1f : -1f);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static float RandomDeviationRNGParam(float k, InstanceXORShift128 XORShift128)
+		{
+			return Custom.SCurve(XORShift128.NextFloat() * 0.5f, k) * 2f * ((XORShift128.NextFloat() < 0.5f) ? 1f : -1f);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SCurve(float x, float k)
         {
             x = x * 2f - 1f;
@@ -125,6 +133,11 @@ namespace IDFinder
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 RNV()
+		{
+			return Custom.DegToVec(XORShift128.NextFloat() * 360f);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static Vector2 RNVRNGParam(InstanceXORShift128 XORShift128)
 		{
 			return Custom.DegToVec(XORShift128.NextFloat() * 360f);
 		}

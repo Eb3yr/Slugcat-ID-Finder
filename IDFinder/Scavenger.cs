@@ -125,7 +125,7 @@ namespace IDFinder
 			// Excludes eartlers as I don't (yet?) have any way to get meaningful information out of them. Maybe in the future.
 			Personality personality;
 			if (inPersonality == null)
-				personality = new(ID);
+				personality = new(ID, XORShift128);
 			else
 				personality = (Personality)inPersonality;
 
@@ -135,10 +135,10 @@ namespace IDFinder
 
 			XORShift128.InitSeed(ID);
 			if (genVariations || genColors || genBack)
-				variations = new(personality);
+				variations = new(personality, XORShift128);
 
 			if (genColors || genBack)
-				colors = new(personality, (IndividualVariations)variations!, Elite);
+				colors = new(personality, (IndividualVariations)variations!, Elite, XORShift128);
 
 			if (genBack)
 			{
@@ -146,9 +146,9 @@ namespace IDFinder
 					XORShift128.NextFloat();    // TailSegment constructor calls BodyChunks.Reset(), which has a single UnityEngine.Random.value call. 
 
 				if (XORShift128.NextFloat() < 0.1f || Elite)  // this way round is deliberate. The first condition is always checked, else the RNG state would be wrong for all subsequent uses.
-					backPatterns = new HardBackSpikes((IndividualVariations)variations, personality);
+					backPatterns = new HardBackSpikes((IndividualVariations)variations, personality, XORShift128);
 				else
-					backPatterns = new WobblyBackTufts((IndividualVariations)variations, personality);
+					backPatterns = new WobblyBackTufts((IndividualVariations)variations, personality, XORShift128);
 			}
 
 			return (variations, colors, backPatterns);
@@ -431,7 +431,7 @@ namespace IDFinder
 		internal IndividualVariations(Personality personality, InstanceXORShift128 XORShift128, bool isElite = false)
 		{
 			GeneralMelanin = Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-			HeadSize = Custom.ClampedRandomVariation(0.5f, 0.5f, 0.1f);
+			HeadSize = Custom.ClampedRandomVariationRNGParam(0.5f, 0.5f, 0.1f, XORShift128);
 			EartlerWidth = XORShift128.NextFloat();
 			EyeSize = float.Pow(float.Max(0f, float.Lerp(XORShift128.NextFloat(), float.Pow(HeadSize, 0.5f), XORShift128.NextFloat() * 0.4f)), float.Lerp(0.95f, 0.55f, personality.Sympathy));
 			NarrowEyes = ((XORShift128.NextFloat() < float.Lerp(0.3f, 0.7f, personality.Sympathy)) ? 0f : float.Pow(XORShift128.NextFloat(), float.Lerp(0.5f, 1.5f, personality.Sympathy)));
