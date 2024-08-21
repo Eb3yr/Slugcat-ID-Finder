@@ -6,9 +6,10 @@ namespace IDFinder
 {
 	#region classes
 	// Add implicit casts to SearchParams from SlugParams and ScavParams. That way the latter can be passed as a parameter without breaking anything in Search.cs
-	public class SearchParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams	 // H, S, L should be more clear that it's slugcat npcstats. Likewise for some others. So long as everything has unique names no bugs should arise, but I wouldn't recommend directly assigning properties in this class, rather use SlugParams, ScavParams etc once I implement operators. 
+	public class SearchParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams     // H, S, L should be more clear that it's slugcat npcstats. Likewise for some others. So long as everything has unique names no bugs should arise, but I wouldn't recommend directly assigning properties in this class, rather use SlugParams, ScavParams.
+																																																												 // Need to add addition operator.
 	{
-		public SearchParams Clone() => (SearchParams)this.MemberwiseClone();
+		#region Properties
 		public (float target, float weight)? Sympathy { get; set; }
 		public (float target, float weight)? Energy { get; set; }
 		public (float target, float weight)? Bravery { get; set; }
@@ -105,6 +106,113 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
+		#endregion
+		public SearchParams Clone() => (SearchParams)this.MemberwiseClone();
+		public static SearchParams operator +(SearchParams left, SearchParams right)
+		{
+			var res = left.Clone();
+			if (right.Sympathy != null) res.Sympathy = right.Sympathy;
+			if (right.Energy != null) res.Energy = right.Energy;
+			if (right.Bravery != null) res.Bravery = right.Bravery;
+			if (right.Nervous != null) res.Nervous = right.Nervous;
+			if (right.Aggression != null) res.Aggression = right.Aggression;
+			if (right.Dominance != null) res.Dominance = right.Dominance;
+			if (right.Met != null) res.Met = right.Met;
+			if (right.Bal != null) res.Bal = right.Bal;
+			if (right.Size != null) res.Size = right.Size;
+			if (right.Stealth != null) res.Stealth = right.Stealth;
+			if (right.Dark != null) res.Dark = right.Dark;
+			if (right.EyeColor != null) res.EyeColor = right.EyeColor;
+			if (right.H != null) res.H = right.H;
+			if (right.S != null) res.S = right.S;
+			if (right.L != null) res.L = right.L;
+			if (right.Wideness != null) res.Wideness = right.Wideness;
+			if (right.BodyWeightFac != null) res.BodyWeightFac = right.BodyWeightFac;
+			if (right.GeneralVisibilityBonus != null) res.GeneralVisibilityBonus = right.GeneralVisibilityBonus;
+			if (right.VisualStealthInSneakMode != null) res.VisualStealthInSneakMode = right.VisualStealthInSneakMode;
+			if (right.LoudnessFac != null) res.LoudnessFac = right.LoudnessFac;
+			if (right.LungsFac != null) res.LungsFac = right.LungsFac;
+			if (right.ThrowingSkill != null) res.ThrowingSkill = right.ThrowingSkill;
+			if (right.PoleClimbSpeedFac != null) res.PoleClimbSpeedFac = right.PoleClimbSpeedFac;
+			if (right.CorridorClimbSpeedFac != null) res.CorridorClimbSpeedFac = right.CorridorClimbSpeedFac;
+			if (right.RunSpeedFac != null) res.RunSpeedFac = right.RunSpeedFac;
+			if (right.DangleFruit != null) res.DangleFruit = right.DangleFruit;
+			if (right.WaterNut != null) res.WaterNut = right.WaterNut;
+			if (right.JellyFish != null) res.JellyFish = right.JellyFish;
+			if (right.SlimeMold != null) res.SlimeMold = right.SlimeMold;
+			if (right.EggBugEgg != null) res.EggBugEgg = right.EggBugEgg;
+			if (right.FireEgg != null) res.FireEgg = right.FireEgg;
+			if (right.Popcorn != null) res.Popcorn = right.Popcorn;
+			if (right.GooieDuck != null) res.GooieDuck = right.GooieDuck;
+			if (right.LilyPuck != null) res.LilyPuck = right.LilyPuck;
+			if (right.GlowWeed != null) res.GlowWeed = right.GlowWeed;
+			if (right.DandelionPeach != null) res.DandelionPeach = right.DandelionPeach;
+			if (right.Neuron != null) res.Neuron = right.Neuron;
+			if (right.Centipede != null) res.Centipede = right.Centipede;
+			if (right.SmallCentipede != null) res.SmallCentipede = right.SmallCentipede;
+			if (right.VultureGrub != null) res.VultureGrub = right.VultureGrub;
+			if (right.SmallNeedleWorm != null) res.SmallNeedleWorm = right.SmallNeedleWorm;
+			if (right.Hazer != null) res.Hazer = right.Hazer;
+			if (right.NotCounted != null) res.NotCounted = right.NotCounted;
+
+			if (right.Elite != false) res.Elite = right.Elite;
+
+			if (right.WaistWidth != null) res.WaistWidth = right.WaistWidth;
+			if (right.HeadSize != null) res.HeadSize = right.HeadSize;
+			if (right.EartlerWidth != null) res.EartlerWidth = right.EartlerWidth;
+			if (right.NeckThickness != null) res.NeckThickness = right.NeckThickness;
+			if (right.HandsHeadColor != null) res.HandsHeadColor = right.HandsHeadColor;
+			if (right.EyeSize != null) res.EyeSize = right.EyeSize;
+			if (right.NarrowEyes != null) res.NarrowEyes = right.NarrowEyes;
+			if (right.EyesAngle != null) res.EyesAngle = right.EyesAngle;
+			if (right.Fatness != null) res.Fatness = right.Fatness;
+			if (right.NarrowWaist != null) res.NarrowWaist = right.NarrowWaist;
+			if (right.LegsSize != null) res.LegsSize = right.LegsSize;
+			if (right.ArmThickness != null) res.ArmThickness = right.ArmThickness;
+			if (right.WideTeeth != null) res.WideTeeth = right.WideTeeth;
+			if (right.PupilSize != null) res.PupilSize = right.PupilSize;
+			if (right.Scruffy != null) res.Scruffy = right.Scruffy;
+			if (right.ColoredEartlerTips != null) res.ColoredEartlerTips = right.ColoredEartlerTips;
+			if (right.DeepPupils != null) res.DeepPupils = right.DeepPupils;
+			if (right.ColoredPupils != null) res.ColoredPupils = right.ColoredPupils;
+			if (right.TailSegs != null) res.TailSegs = right.TailSegs;
+			if (right.GeneralMelanin != null) res.GeneralMelanin = right.GeneralMelanin;
+			if (right.BellyColorH != null) res.BellyColorH = right.BellyColorH;
+			if (right.BellyColorS != null) res.BellyColorS = right.BellyColorS;
+			if (right.BellyColorL != null) res.BellyColorL = right.BellyColorL;
+			if (right.BodyColorH != null) res.BodyColorH = right.BodyColorH;
+			if (right.BodyColorS != null) res.BodyColorS = right.BodyColorS;
+			if (right.BodyColorL != null) res.BodyColorL = right.BodyColorL;
+			if (right.DecorationColorH != null) res.DecorationColorH = right.DecorationColorH;
+			if (right.DecorationColorS != null) res.DecorationColorS = right.DecorationColorS;
+			if (right.DecorationColorL != null) res.DecorationColorL = right.DecorationColorL;
+			if (right.EyeColorH != null) res.EyeColorH = right.EyeColorH;
+			if (right.EyeColorL != null) res.EyeColorL = right.EyeColorL;
+			if (right.HeadColorH != null) res.HeadColorH = right.HeadColorH;
+			if (right.HeadColorS != null) res.HeadColorS = right.HeadColorS;
+			if (right.HeadColorL != null) res.HeadColorL = right.HeadColorL;
+			if (right.BellyColorBlack != null) res.BellyColorBlack = right.BellyColorBlack;
+			if (right.BodyColorBlack != null) res.BodyColorBlack = right.BodyColorBlack;
+			if (right.HeadColorBlack != null) res.HeadColorBlack = right.HeadColorBlack;
+			if (right.BlockingSkill != null) res.BlockingSkill = right.BlockingSkill;
+			if (right.DodgeSkill != null) res.DodgeSkill = right.DodgeSkill;
+			if (right.MeleeSkill != null) res.MeleeSkill = right.MeleeSkill;
+			if (right.MidRangeSkill != null) res.MidRangeSkill = right.MidRangeSkill;
+			if (right.ReactionSkill != null) res.ReactionSkill = right.ReactionSkill;
+			if (right.Top != null) res.Top = right.Top;
+			if (right.Bottom != null) res.Bottom = right.Bottom;
+			if (right.Pattern != null) res.Pattern = right.Pattern;
+			if (right.Type != null) res.Type = right.Type;
+			if (right.ColorType != null) res.ColorType = right.ColorType;
+			if (right.IsColored != null) res.IsColored = right.IsColored;
+			if (right.ScaleGraf != null) res.ScaleGraf = right.ScaleGraf;
+			if (right.GeneralSize != null) res.GeneralSize = right.GeneralSize;
+			if (right.Colored != null) res.Colored = right.Colored;
+			if (right.NumberOfSpines != null) res.NumberOfSpines = right.NumberOfSpines;
+
+			return res;
+		}
+
 	}
 	public class SlugParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams
 	{
