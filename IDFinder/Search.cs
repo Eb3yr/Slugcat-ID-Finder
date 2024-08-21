@@ -5,7 +5,7 @@ namespace IDFinder
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
 	public static class Searcher
 	{
-		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key <= y.Key ? -1 : 1);
+		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key < y.Key ? -1 : x.Key == y.Key ? -1 : 1);
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -263,9 +263,6 @@ namespace IDFinder
 			SlugcatStats slugStats = default;
 			FoodPreferences foodPref = default;
 			ScavSkills scavSkills = default;
-			//IndividualVariations scavVariations = default;
-			//ScavColors scavColors = default;
-			//BackDecals scavBack = null!;
 
 			int largerThanIndex;
 			KeyValuePair<float, int> kvp;
@@ -359,8 +356,9 @@ namespace IDFinder
 		}
 
 
-		public static IEnumerable<KeyValuePair<float, int>> SearchThreaded(int start, int stop, int numToStore, int threads, SearchParams SearchParams, bool trimToNumToStore = false, bool logPercents = false)
+		public static IEnumerable<KeyValuePair<float, int>> SearchThreaded(int start, int stop, int numToStore, int threads, SearchParams SearchParams, bool trimToNumToStore = true, bool logPercents = false)
 		{
+			var comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key <= y.Key ? -1 : 1);
 			if (threads < 1)
 				throw new ArgumentException("Cannot use less than one thread!");
 			if (threads == 1)
@@ -379,7 +377,6 @@ namespace IDFinder
 					resultCollection.Add(res);
 				}
 			);
-
 			IEnumerable<KeyValuePair<float, int>> resultsSorted = [];
 			foreach (var result in resultCollection)
 				resultsSorted = resultsSorted.Concat(result);
@@ -414,10 +411,7 @@ namespace IDFinder
 			SlugcatStats slugStats = default;
 			FoodPreferences foodPref = default;
 			ScavSkills scavSkills = default;
-			//IndividualVariations scavVariations = default;
-			//ScavColors scavColors = default;
-			//BackDecals scavBack = null!;
-
+			
 			int largerThanIndex;
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
@@ -495,7 +489,7 @@ namespace IDFinder
 					kvp = new(weight, i);
 					largerThanIndex = vals.BinarySearch(kvp, comparer);
 					if (largerThanIndex < 0)
-						largerThanIndex = ~largerThanIndex;	// bitwise complement of a BinarySearch that does not find the value returns the index of the next largest value in the list.
+						largerThanIndex = ~largerThanIndex; // bitwise complement of a BinarySearch that does not find the value returns the index of the next largest value in the list.
 
 					vals.Insert(largerThanIndex, kvp);
 					vals.RemoveAt(numToStore);
