@@ -105,19 +105,6 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
-		//public bool AllNull()
-		//{
-		//	return
-		//		((IPersonalityParams)this).AllNull() &&
-		//		((INPCStatsParams)this).AllNull() &&
-		//		((ISlugcatStatsParams)this).AllNull() &&
-		//		((IFoodPreferencesParams)this).AllNull() &&
-		//		((IIndividualVariationsParams)this).AllNull() &&
-		//		// Eartlers
-		//		((IScavColorsParams)this).AllNull() &&
-		//		((IScavSkillsParams)this).AllNull() &&
-		//		((IScavBackPatternsParams)this).AllNull();
-		//}
 	}
 	public class SlugParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams
 	{
@@ -164,14 +151,55 @@ namespace IDFinder
 		public (float target, float weight)? SmallNeedleWorm { get; set; }
 		public (float target, float weight)? Hazer { get; set; }
 		public (float target, float weight)? NotCounted { get; set; }
-		//public bool AllNull()
-		//{
-		//	return
-		//		((IPersonalityParams)this).AllNull() &&
-		//		((INPCStatsParams)this).AllNull() &&
-		//		((ISlugcatStatsParams)this).AllNull() &&
-		//		((IFoodPreferencesParams)this).AllNull();
-		//}
+		public static implicit operator SearchParams(SlugParams slug)
+		{
+			return new()
+			{
+				Sympathy = slug.Sympathy,
+				Energy = slug.Energy,
+				Bravery = slug.Bravery,
+				Nervous = slug.Nervous,
+				Aggression = slug.Aggression,
+				Dominance = slug.Dominance,
+				Met = slug.Met,
+				Bal = slug.Bal,
+				Size = slug.Size,
+				Stealth = slug.Stealth,
+				Dark = slug.Dark,
+				EyeColor = slug.EyeColor,
+				H = slug.H,
+				S = slug.S,
+				L = slug.L,
+				Wideness = slug.Wideness,
+				BodyWeightFac = slug.BodyWeightFac,
+				GeneralVisibilityBonus = slug.GeneralVisibilityBonus,
+				VisualStealthInSneakMode = slug.VisualStealthInSneakMode,
+				LoudnessFac = slug.LoudnessFac,
+				LungsFac = slug.LungsFac,
+				ThrowingSkill = slug.ThrowingSkill,
+				PoleClimbSpeedFac = slug.PoleClimbSpeedFac,
+				CorridorClimbSpeedFac = slug.CorridorClimbSpeedFac,
+				RunSpeedFac = slug.RunSpeedFac,
+				DangleFruit = slug.DangleFruit,
+				WaterNut = slug.WaterNut,
+				JellyFish = slug.JellyFish,
+				SlimeMold = slug.SlimeMold,
+				EggBugEgg = slug.EggBugEgg,
+				FireEgg = slug.FireEgg,
+				Popcorn = slug.Popcorn,
+				GooieDuck = slug.GooieDuck,
+				LilyPuck = slug.LilyPuck,
+				GlowWeed = slug.GlowWeed,
+				DandelionPeach = slug.DandelionPeach,
+				Neuron = slug.Neuron,
+				Centipede = slug.Centipede,
+				SmallCentipede = slug.SmallCentipede,
+				VultureGrub = slug.VultureGrub,
+				SmallNeedleWorm = slug.SmallNeedleWorm,
+				Hazer = slug.Hazer,
+				NotCounted = slug.NotCounted
+			};
+		}
 	}
 	public class ScavParams : ISearchParams, IPersonalityParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams
 	{
@@ -234,23 +262,75 @@ namespace IDFinder
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
-		//public bool AllNull()
-		//{
-		//	return
-		//		((IPersonalityParams)this).AllNull() &&
-		//		((IIndividualVariationsParams)this).AllNull() &&
-		//		// Eartlers
-		//		((IScavColorsParams)this).AllNull() &&
-		//		((IScavSkillsParams)this).AllNull() &&
-		//		((IScavBackPatternsParams)this).AllNull();
-		//}
+		public static implicit operator SearchParams(ScavParams scav)
+		{
+			return new()
+			{
+				Sympathy = scav.Sympathy,
+				Energy = scav.Energy,
+				Bravery = scav.Bravery,
+				Nervous = scav.Nervous,
+				Aggression = scav.Aggression,
+				Dominance = scav.Dominance,
+				Elite = scav.Elite,
+				WaistWidth = scav.WaistWidth,
+				HeadSize = scav.HeadSize,
+				EartlerWidth = scav.EartlerWidth,
+				NeckThickness = scav.NeckThickness,
+				HandsHeadColor = scav.HandsHeadColor,
+				EyeSize = scav.EyeSize,
+				NarrowEyes = scav.NarrowEyes,
+				EyesAngle = scav.EyesAngle,
+				Fatness = scav.Fatness,
+				NarrowWaist = scav.NarrowWaist,
+				LegsSize = scav.LegsSize,
+				ArmThickness = scav.ArmThickness,
+				WideTeeth = scav.WideTeeth,
+				PupilSize = scav.PupilSize,
+				Scruffy = scav.Scruffy,
+				ColoredEartlerTips = scav.ColoredEartlerTips,
+				DeepPupils = scav.DeepPupils,
+				ColoredPupils = scav.ColoredPupils,
+				TailSegs = scav.TailSegs,
+				GeneralMelanin = scav.GeneralMelanin,
+				BellyColorH = scav.BellyColorH,
+				BellyColorS = scav.BellyColorS,
+				BellyColorL = scav.BellyColorL,
+				BodyColorH = scav.BodyColorH,
+				BodyColorS = scav.BodyColorS,
+				BodyColorL = scav.BodyColorL,
+				DecorationColorH = scav.DecorationColorH,
+				DecorationColorS = scav.DecorationColorS,
+				DecorationColorL = scav.DecorationColorL,
+				EyeColorH = scav.EyeColorH,
+				EyeColorL = scav.EyeColorL,
+				HeadColorH = scav.HeadColorH,
+				HeadColorS = scav.HeadColorS,
+				HeadColorL = scav.HeadColorL,
+				BellyColorBlack = scav.BellyColorBlack,
+				BodyColorBlack = scav.BodyColorBlack,
+				HeadColorBlack = scav.HeadColorBlack,
+				BlockingSkill = scav.BlockingSkill,
+				DodgeSkill = scav.DodgeSkill,
+				MeleeSkill = scav.MeleeSkill,
+				MidRangeSkill = scav.MidRangeSkill,
+				ReactionSkill = scav.ReactionSkill,
+				Top = scav.Top,
+				Bottom = scav.Bottom,
+				Pattern = scav.Pattern,
+				Type = scav.Type,
+				ColorType = scav.ColorType,
+				IsColored = scav.IsColored,
+				ScaleGraf = scav.ScaleGraf,
+				GeneralSize = scav.GeneralSize,
+				Colored = scav.Colored,
+				NumberOfSpines = scav.NumberOfSpines
+			};
+		}
 	}
 	#endregion
 	#region interfaces
-	public interface ISearchParams
-	{
-		//public abstract bool AllNull();
-	}
+	public interface ISearchParams { }
     public interface IPersonalityParams : ISearchParams
     {
         public (float target, float weight)? Sympathy { get; set; }
