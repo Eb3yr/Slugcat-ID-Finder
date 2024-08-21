@@ -2,15 +2,18 @@
 
 namespace IDFinder
 {
+	// Used for writing to csv in SlugManager using reflection. Not a huge fan.
 	public static class ColumnNames
 	{
+		//public string this[];
+		public static readonly FieldInfo[] fields = typeof(ColumnNames).GetFields();
 		public const string ID = "ID";
-		public const string Sympathy = "sym";
-		public const string Energy = "nrg";
-		public const string Bravery = "brv";
-		public const string Nervous = "nrv";
-		public const string Aggression = "agg";
-		public const string Dominance = "dom";
+		public const string Sympathy = "Sympathy";
+		public const string Energy = "Energy";
+		public const string Bravery = "Bravery";
+		public const string Nervous = "Nervous";
+		public const string Aggression = "Aggression";
+		public const string Dominance = "Dominance";
 
 		public const string Met = "Met";
 		public const string Bal = "Bal";
@@ -18,16 +21,16 @@ namespace IDFinder
 		public const string Stealth = "Stealth";
 		public const string Dark = "Dark?";
 		public const string EyeColor = "Eye";
-		public const string H = "H";
-		public const string S = "S";
-		public const string L = "L";
+		public const string H = "Hue";
+		public const string S = "Saturation";
+		public const string L = "Lightness";
 		public const string Wideness = "Wide";
 
-		public const string bodyWeightFac = "Weight";
+		public const string bodyWeightFac = "WeightFac";
 		public const string generalVisibilityBonus = "StandStealth";
 		public const string visualStealthInSneakMode = "CrouchStealth";
 		public const string loudnessFac = "Loudness";
-		public const string lungsFac = "Lungs";
+		public const string lungsFac = "LungsFac";
 		public const string throwingSkill = "ThrowSkill";
 		public const string poleClimbSpeedFac = "PoleClimb";
 		public const string corridorClimbSpeedFac = "CorridorClimb";

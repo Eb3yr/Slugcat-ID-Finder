@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
-using System.IO;
-using System.ComponentModel;
-using Unity_XORShift;
+using System.Text.Json.Serialization;
+
 namespace IDFinder
 {
 	internal class Program
@@ -9,28 +8,26 @@ namespace IDFinder
 		
 		static void Main(string[] args)
 		{
-            Searcher search = new(new Searcher.SearchParams()
-            {
-                Aggression = (0f, 1f),
-                Bravery = (0f, 1f),
-                Dominance = (0f, 1f),
-                Nervous = (0f, 1f),
-                Energy = (0f, 1f),
-                Sympathy = (0f, 1f)
-            });
+            
+            PersonalityParams pp = new();
+            ((ISearchParams)pp).AllNull();
 
-            DateTime dt;
-            dt = DateTime.Now;
-            Dictionary<float, Slugcat> result = new(search.Search(0, 100000000, 1200, true));
-            TimeSpan completion = DateTime.Now.Subtract(dt);
-            Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
-            foreach (KeyValuePair<float, Slugcat> kvp in result)
-            {
-                Console.WriteLine($"ID: {kvp.Value.ID}, weight: {kvp.Key}");
-            }
-            Console.WriteLine("Completion time: " + completion.TotalMilliseconds.ToString());
-            SlugManager sm = new(result.Values);
-            sm.WriteToCSV("outSearched.csv");
+			Scavenger scav = new(0);
+
+			JsonSerializerOptions opt = new()
+			{
+				WriteIndented = true,
+				Converters =
+				{
+					new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+				},
+				IncludeFields = true
+			};
+			string json = JsonSerializer.Serialize(scav, opt);
+			json += "\n\nBack Patterns:\n";
+			json += $"type: {scav.BackPatterns.GetType()}\n";
+			json += JsonSerializer.Serialize(scav.BackPatterns as object, opt);
+			File.WriteAllText("scav.json", json);
 
             Console.WriteLine("Done");
             Console.ReadLine();
