@@ -515,6 +515,7 @@ namespace IDFinder
 			return chunks;
 		}
 	}
+	[Obsolete("Use Searcher instead")]
 	public class SlugSearcher
 	{
 		public SlugParams SearchParams { get; protected set; }
