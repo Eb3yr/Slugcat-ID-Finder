@@ -332,7 +332,6 @@ namespace IDFinder
 					vals.Add(new(weight, i));
 					if (vals.Count == numToStore)
 					{
-						//vals.Sort(comparer);
 						vals = vals.OrderBy(kvp => kvp.Key).ToList();
 						saturated = true;
 					}
@@ -386,7 +385,7 @@ namespace IDFinder
 			resultsSorted = resultsSorted.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value);
 
 			if (trimToNumToStore)
-				return resultsSorted.ToList().GetRange(0, numToStore);
+				return resultsSorted.Take(numToStore);
 
 			return resultsSorted;
 		}
@@ -418,7 +417,7 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				if (logPercents && (i - start) % percentInterval == 0)
+				if (logPercents && ( i == int.MaxValue || (i - start) % percentInterval == 0))	// MaxValue stopgap to avoid divide by zero exception that crashed after 2 hours min to maxvalue.
 				{
 					percentTracker++;
 					Console.WriteLine($"{percentTracker}%");
@@ -507,10 +506,10 @@ namespace IDFinder
 		internal static int[][] Chunker(int start, int stop, int threads)
 		{
 			int[][] chunks = new int[threads][];
-			int chunkSize = (stop - start) / threads;
+			long chunkSize = ((long)stop - start) / threads;
 			for (int i = 0; i < threads; i++)
 			{
-				chunks[i] = [start + i * chunkSize + 1, start + (i + 1) * chunkSize];
+				chunks[i] = [start + i * (int)chunkSize + 1, start + (i + 1) * (int)chunkSize];
 			}
 			chunks[0][0] = start;
 			chunks[threads - 1][1] = stop;
@@ -754,18 +753,5 @@ namespace IDFinder
             }
 			return vals;
 		}
-		private static int[][] Chunking(int start, int stop, int threads)
-        {
-            int[][] chunks = new int[threads][];
-            int chunkSize = (stop - start) / threads;
-            for (int i = 0; i < threads; i++)
-            {
-                chunks[i] = [start + i * chunkSize + 1, start + (i + 1) * chunkSize];
-            }
-            chunks[0][0] = start;
-            chunks[threads - 1][1] = stop;
-
-            return chunks;
-        }
 	}
 }
