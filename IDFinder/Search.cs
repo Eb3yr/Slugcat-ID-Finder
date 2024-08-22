@@ -35,7 +35,7 @@ namespace IDFinder
 			if (sParams.Stealth != null)
 				weight += sParams.Stealth.Value.weight * Math.Abs(npc.Stealth - sParams.Stealth.Value.target);
 			if (sParams.Dark != null)
-				weight += sParams.Dark.Value.weight * (npc.Dark == sParams.Dark.Value.target ? 1 : 0);
+				weight += sParams.Dark.Value.weight * (npc.Dark == sParams.Dark.Value.target ? 0 : 1);
 			if (sParams.EyeColor != null)
 				weight += sParams.EyeColor.Value.weight * Math.Abs(npc.EyeColor - sParams.EyeColor.Value.target);
 			if (sParams.H != null)
