@@ -5,7 +5,7 @@ namespace IDFinder
 	// Have an ISearcher interface, each creature has its own class that implements it. This'll avoid having a disgusting number of parameters, and SearchParams can be a nested class
 	public static class Searcher
 	{
-		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key < y.Key ? -1 : x.Key == y.Key ? -1 : 1);
+		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -332,7 +332,8 @@ namespace IDFinder
 					vals.Add(new(weight, i));
 					if (vals.Count == numToStore)
 					{
-						vals.Sort(comparer);
+						//vals.Sort(comparer);
+						vals = vals.OrderBy(kvp => kvp.Key).ToList();
 						saturated = true;
 					}
 				}
@@ -352,6 +353,7 @@ namespace IDFinder
 					break;
 			}
 
+			vals = vals.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value).ToList();	// When weights are equal, ordered by ID in ascending order.
 			return vals;
 		}
 
@@ -381,7 +383,7 @@ namespace IDFinder
 			foreach (var result in resultCollection)
 				resultsSorted = resultsSorted.Concat(result);
 
-			resultsSorted = resultsSorted.OrderBy(o => o.Key);
+			resultsSorted = resultsSorted.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value);
 
 			if (trimToNumToStore)
 				return resultsSorted.ToList().GetRange(0, numToStore);
@@ -479,7 +481,8 @@ namespace IDFinder
 					vals.Add(new(weight, i));
 					if (vals.Count == numToStore)
 					{
-						vals.Sort(comparer);
+						//vals.Sort(comparer);
+						vals = vals.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value).ToList();
 						saturated = true;
 					}
 				}
