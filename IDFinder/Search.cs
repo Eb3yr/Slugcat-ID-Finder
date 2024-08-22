@@ -256,7 +256,7 @@ namespace IDFinder
 			float weight;
 			bool saturated = false;
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
-			int percentTracker = 0;
+			int percentTracker = -1;
 
 			Personality personality = default;
 			NPCStats npcStats = default;
@@ -268,12 +268,12 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				#region scugs
 				if (logPercents && (i - start) % percentInterval == 0)
 				{
 					percentTracker++;
 					Console.WriteLine($"{percentTracker}%");
 				}
+				#region scugs
 				weight = 0f;
 				if (boolPersonality)
 				{
@@ -406,7 +406,7 @@ namespace IDFinder
 			float weight;
 			bool saturated = false;
 			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
-			int percentTracker = 0;
+			int percentTracker = -1;
 
 			Personality personality = default;
 			NPCStats npcStats = default;
@@ -418,12 +418,12 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				#region scugs
 				if (logPercents && (i - start) % percentInterval == 0)
 				{
 					percentTracker++;
 					Console.WriteLine($"{percentTracker}%");
 				}
+				#region scugs
 				weight = 0f;
 				if (boolPersonality)
 				{
