@@ -108,7 +108,7 @@
             return (min - max) * ((float)(XORShift() << 9) / 0xFFFFFFFF) + max;
         }
     }
-	internal class InstanceXORShift128  // For when I implement multithreading, to prevent the static XORShift128 from becoming a bottleneck. 
+	internal class InstanceXORShift128  // While the ThreadStatic attribute could be used in XORShift128, this approach is ~10% faster. 
 	{
 		public uint x = 0, y = 0, z = 0, w = 0;
 		const uint MT19937 = 1812433253;
