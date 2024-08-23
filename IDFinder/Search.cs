@@ -6,6 +6,9 @@ namespace IDFinder
 	public static class Searcher
 	{
 		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
+		#if ABORTABLE
+		public static bool AbortSearch { get; set; } = false;	// Preprocessor directive using ABORTABLE defined in IDFinder.csproj. With multiple threads this can have a noticeable performance impact, so while it's included in the code it'll be opt-in for anyone building this project.
+		#endif
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -268,6 +271,11 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
+				#if ABORTABLE
+				if (AbortSearch)
+					return vals;
+				#endif
+
 				if (logPercents && (i - start) % percentInterval == 0)
 				{
 					percentTracker++;
@@ -417,7 +425,12 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				if (logPercents && ( i == int.MaxValue || (i - start) % percentInterval == 0))	// MaxValue stopgap to avoid divide by zero exception that crashed after 2 hours min to maxvalue.
+				#if ABORTABLE
+                if (AbortSearch)
+                    return vals;
+				#endif
+
+                if (logPercents && ( i == int.MaxValue || (i - start) % percentInterval == 0))	// MaxValue stopgap to avoid divide by zero exception that crashed after 2 hours min to maxvalue.
 				{
 					percentTracker++;
 					Console.WriteLine($"{percentTracker}%");

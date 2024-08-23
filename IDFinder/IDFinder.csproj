@@ -12,16 +12,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>True</Optimize>
     <IsAotCompatible>False</IsAotCompatible>
+    <DefineConstants>$(DefineConstants);ABORTABLE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
     <IsAotCompatible>False</IsAotCompatible>
+    <DefineConstants>$(DefineConstants);ABORTABLE</DefineConstants>
   </PropertyGroup>
 
-  <!--
-  <PropertyGroup>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  -->
 </Project>
