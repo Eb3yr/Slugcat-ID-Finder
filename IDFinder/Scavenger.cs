@@ -156,15 +156,15 @@ namespace IDFinder
 	}
     public struct Eartlers
     {
-        public List<Vertex[]> points { get; private set; }
+        public List<Vertex[]> Points { get; private set; }
         public Eartlers(bool elite)
         {
-            points = [];
+            Points = [];
             GenerateSegments(elite);
         }
 		internal Eartlers(bool elite, InstanceXORShift128 XORShift128)
 		{
-			points = [];
+			Points = [];
 			GenerateSegmentsRNGParam(elite, XORShift128);
 		}
 		private void GenerateSegments(bool elite)
@@ -188,18 +188,18 @@ namespace IDFinder
             list.Add(new(float2, 2f * num4));
             DefineBranch(list);
             list.Clear();
-            list.Add(new(points[0][1].pos, 1f));
-            int num7 = (Vector2.Distance(points[0][1].pos, points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
-            Vector2 float4 = Vector2.Lerp(points[0][1].pos, points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
+            list.Add(new(Points[0][1].pos, 1f));
+            int num7 = (Vector2.Distance(Points[0][1].pos, Points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
+            Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
             list.Add(new(float4, 1.2f));
-            list.Add(new(float4 + points[0][3].pos - points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
+            list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
             DefineBranch(list);
             if (num7 == 2)
             {
                 list.Clear();
-                float4 = Vector2.Lerp(points[0][1].pos, points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
+                float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
                 list.Add(new(float4, 1.2f));
-                list.Add(new(float4 + points[0][3].pos - points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
+                list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
                 DefineBranch(list);
             }
             bool flag = XORShift128.NextFloat() < 0.5f && !elite;
@@ -207,7 +207,7 @@ namespace IDFinder
             {
                 list.Clear();
                 Vector2 float5 = Custom.DegToFloat2(90f + float.Lerp(-20f, 20f, XORShift128.NextFloat())) * float.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
-                if (float5.Y > this.points[0][1].pos.Y - 0.1f)
+                if (float5.Y > this.Points[0][1].pos.Y - 0.1f)
                 {
                     float5 = new Vector2(float5.X, float5.Y - 0.2f);
                 }
@@ -261,18 +261,18 @@ namespace IDFinder
 			list.Add(new(float2, 2f * num4));
 			DefineBranch(list);
 			list.Clear();
-			list.Add(new(points[0][1].pos, 1f));
-			int num7 = (Vector2.Distance(points[0][1].pos, points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
-			Vector2 float4 = Vector2.Lerp(points[0][1].pos, points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
+			list.Add(new(Points[0][1].pos, 1f));
+			int num7 = (Vector2.Distance(Points[0][1].pos, Points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
+			Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
 			list.Add(new(float4, 1.2f));
-			list.Add(new(float4 + points[0][3].pos - points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
+			list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
 			DefineBranch(list);
 			if (num7 == 2)
 			{
 				list.Clear();
-				float4 = Vector2.Lerp(points[0][1].pos, points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
+				float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
 				list.Add(new(float4, 1.2f));
-				list.Add(new(float4 + points[0][3].pos - points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
+				list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
 				DefineBranch(list);
 			}
 			bool flag = XORShift128.NextFloat() < 0.5f && !elite;
@@ -280,7 +280,7 @@ namespace IDFinder
 			{
 				list.Clear();
 				Vector2 float5 = Custom.DegToFloat2(90f + float.Lerp(-20f, 20f, XORShift128.NextFloat())) * float.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
-				if (float5.Y > this.points[0][1].pos.Y - 0.1f)
+				if (float5.Y > this.Points[0][1].pos.Y - 0.1f)
 				{
 					float5 = new Vector2(float5.X, float5.Y - 0.2f);
 				}
@@ -315,12 +315,12 @@ namespace IDFinder
 		}
 		private void DefineBranch(List<Vertex> vList)
         {
-            points.Add(vList.ToArray());
+            Points.Add(vList.ToArray());
             for (int i = 0; i < vList.Count; i++)
             {
                 vList[i] = new(new(-vList[i].pos.X, vList[i].pos.Y), vList[i].rad);
             }
-            points.Add(vList.ToArray());
+            Points.Add(vList.ToArray());
         }
         public struct Vertex
         {
