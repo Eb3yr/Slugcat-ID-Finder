@@ -24,41 +24,14 @@ namespace IDFinder
 			};
 			var dt = DateTime.Now;
 			IEnumerable<KeyValuePair<float, int>> result;// = Searcher.SearchThreaded(0, 2871250, 300, 12, sParams, true, false);
-
-            Task<IEnumerable<KeyValuePair<float, int>>> task = new(() => Searcher.SearchThreaded(0, int.MaxValue / 32, 48, 12, sParams, true, false));
-			DateTime timer = DateTime.Now;
-			task.Start();
-			Searcher.AbortSearch = true;
-			result = task.Result;
-			//result = Searcher.SearchThreaded(/*int.MinValue*/0, int.MaxValue / 32, 48, 12, sParams, true, false);
-			Console.WriteLine("Time: " + DateTime.Now.Subtract(dt).TotalSeconds + "s");
-			//foreach (var kvp in result)
-			//	Console.WriteLine(kvp.Value + ": " + kvp.Key);
+			var ts = TimeSpan.Zero;
 			
-			//File.WriteAllLines("eepy.txt", result.Select(kvp => kvp.Value + ": " + kvp.Key));
+			dt = DateTime.Now;
+			Searcher.SearchThreaded(0, int.MaxValue / 32, 4, 4, sParams, false, true);
+			//Searcher.Search(0, 1000000, 4, sParams, true);
+			ts += DateTime.Now.Subtract(dt);
 			
-			//Console.WriteLine("\n\n\n\n");
-			//Scavenger scav;
-			//List<int> final = [];
-			//foreach (var kvp in result)
-			//{
-			//	scav = new(kvp.Value);
-			//	if (scav.Colors.BodyColor.H > 0.21f || scav.Colors.BodyColor.H < 0.135f)
-			//		continue;
-			//	if (scav.Colors.BodyColor.S < 0.7f)
-			//		continue;
-			//	if (Math.Abs(scav.Colors.BodyColor.L - 0.5f) > 0.35f)
-			//		continue;
-			//	if (!(scav.Colors.DecorationColor.H < 0.9f && scav.Colors.DecorationColor.H > 0.1f))
-			//		continue;
-			//	if (scav.BackPatterns.UseDetailColor == false)
-			//		continue;
-			//	final.Add(kvp.Value);
-			//}
-			
-			foreach (var i in result)
-				Console.WriteLine(i.Value + ": " + i.Key);
-
+			Console.WriteLine("Time: " + ts.TotalSeconds + "s");
 
 			Console.WriteLine("Done");
 			Console.ReadLine();
@@ -67,5 +40,5 @@ namespace IDFinder
 }
 
 // TODO: Add UseDetailColor to IScavBackPatternsParams
-// TODO: Go through search methods and clean up unecessary conversions to lists with LINQ alternatives. ToList on large lists will be expensive and want to avoid it where possible.
-// TODO: wh is the VS debugger only using 15% or so CPU when running 12 threads? Investigate.
+// TODO: Rework & logging to use floats rather than ints, and update the float periodically in the if( (i & 127) == 0) statements. Maybe bump them up to 255 or even 511. Under the heaviest loads these should be updating multiple times a second - ideally 10x or more. 
+// TODO: !! Verify Abort's duration is long enough that everything terminates. Not just for my processor, but also for slow ones.

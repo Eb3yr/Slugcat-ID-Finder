@@ -6,7 +6,7 @@ namespace IDFinder
 	public static class Searcher
 	{
 		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
-		public static bool AbortSearch { get; set; } = false;   // I'd rather this be a private field and have an Abort() method invoked that sets it to true, awaits a Task.Delay, and sets it back to false afterwards. I feel there's too much risk to forget to reset it, or for race condition shenanigans. 
+		private static bool abortSearch = false;   // I'd rather this be a private field and have an Abort() method invoked that sets it to true, awaits a Task.Delay, and sets it back to false afterwards. I feel there's too much risk to forget to reset it, or for race condition shenanigans. 
 		private static float[] _completions = [];
 		public static float CompletionPercent
 		{
@@ -14,8 +14,15 @@ namespace IDFinder
 		}
 		private static void Init(int threads)
 		{
-			AbortSearch = false;
+			abortSearch = false;
 			_completions = new float[threads];
+		}
+		public async static void Abort()
+		{
+			abortSearch = true;
+			await Task.Delay(200); 
+			// Should be long enough to ensure that all searches terminate by the time this method returns
+			// All searches call Init so no need to set abortSearch to false. 
 		}
 		#region Weights
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
@@ -284,7 +291,7 @@ namespace IDFinder
 			{
 				if ((i & 127) == 0)	// I wonder how performant this is compared to the previous console logging? Test with the older master branch.
 				{
-					if (AbortSearch)
+					if (abortSearch)
 						return vals;
 
 					if (logPercents)
@@ -394,15 +401,6 @@ namespace IDFinder
 			ConcurrentBag<IEnumerable<KeyValuePair<float, int>>> resultCollection = [];
 
 			// Shallow copying SearchParams in the expectation that a bottleneck could arise when multiple threads access the same instance
-			
-			//Parallel.ForEach(chunks,
-			//	new ParallelOptions() { MaxDegreeOfParallelism = threads },
-			//	chunk =>
-			//	{
-			//		var res = XORShiftSearch(chunk[0], chunk[1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), threads, logPercents);
-			//		resultCollection.Add(res);
-			//	}
-			//);
 
 			Parallel.For(0, threads, i =>
 			{
@@ -452,7 +450,7 @@ namespace IDFinder
 			{
                 if ((i & 127) == 0)
                 {
-                    if (AbortSearch)
+                    if (abortSearch)
                         return vals;
 
                     if (logPercents)
