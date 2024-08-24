@@ -6,9 +6,18 @@ namespace IDFinder
 	public static class Searcher
 	{
 		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
-		#if ABORTABLE
-		public static bool AbortSearch { get; set; } = false;	// Preprocessor directive using ABORTABLE defined in IDFinder.csproj. With multiple threads this can have a noticeable performance impact, so while it's included in the code it'll be opt-in for anyone building this project.
-		#endif
+		public static bool AbortSearch { get; set; } = false;   // I'd rather this be a private field and have an Abort() method invoked that sets it to true, awaits a Task.Delay, and sets it back to false afterwards. I feel there's too much risk to forget to reset it, or for race condition shenanigans. 
+		private static float[] _completions = [];
+		public static float CompletionPercent
+		{
+			get => (float)Math.Round(_completions.Average(), 2, MidpointRounding.AwayFromZero);
+		}
+		private static void Init(int threads)
+		{
+			AbortSearch = false;
+			_completions = new float[threads];
+		}
+		#region Weights
 		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
@@ -240,10 +249,11 @@ namespace IDFinder
 				weight += sParams.NumberOfSpines.Value.weight * Math.Abs(sParams.NumberOfSpines.Value.target - back.NumberOfSpines);
 			return weight;
 		}
+		#endregion
 		public static IEnumerable<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, SearchParams SearchParams, bool logPercents = false)  // logPercents doesn't fit anything other than console.
 		{
 			// Must remember to update XORShiftSearch when updating this method. Not merged into one as different object constructors are used for each struct/class being searched.
-
+			Init(1);
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
 			bool boolSlugcatStats = !((ISlugcatStatsParams)SearchParams).AllNull();
@@ -258,8 +268,8 @@ namespace IDFinder
 
 			float weight;
 			bool saturated = false;
-			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
-			int percentTracker = -1;
+			float percentRange = 1f + ((long)stop - (long)start);	// +1f makes it inclusive of stop. long casts avoid overflow errors.
+			long startLong = start;	// Avoid having to cast repeatedly, makes the expression i - startLong into a long rather than an int that'd overflow. 
 
 			Personality personality = default;
 			NPCStats npcStats = default;
@@ -268,18 +278,24 @@ namespace IDFinder
 			ScavSkills scavSkills = default;
 
 			int largerThanIndex;
+			float lastPercent = 0f;	// For pasting to console only. 
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				#if ABORTABLE
-				if (AbortSearch)
-					return vals;
-				#endif
-
-				if (logPercents && (i - start) % percentInterval == 0)
+				if ((i & 127) == 0)	// I wonder how performant this is compared to the previous console logging? Test with the older master branch.
 				{
-					percentTracker++;
-					Console.WriteLine($"{percentTracker}%");
+					if (AbortSearch)
+						return vals;
+
+					if (logPercents)
+					{
+						_completions[0] = 100f * (i - startLong) / percentRange;
+						if (CompletionPercent - lastPercent > 0.99f)
+						{
+							Console.WriteLine(CompletionPercent + "%");
+							lastPercent = CompletionPercent;
+						}
+					}
 				}
 				#region scugs
 				weight = 0f;
@@ -373,19 +389,27 @@ namespace IDFinder
 			if (threads == 1)
 				return Search(start, stop, numToStore, SearchParams, logPercents);
 
-			
-			int[][] chunks = Chunker(start, stop, threads);
+            Init(threads);
+            int[][] chunks = Chunker(start, stop, threads);
 			ConcurrentBag<IEnumerable<KeyValuePair<float, int>>> resultCollection = [];
 
 			// Shallow copying SearchParams in the expectation that a bottleneck could arise when multiple threads access the same instance
-			Parallel.ForEach(chunks,
-				new ParallelOptions() { MaxDegreeOfParallelism = threads },
-				chunk =>
-				{
-					var res = XORShiftSearch(chunk[0], chunk[1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), logPercents);
-					resultCollection.Add(res);
-				}
-			);
+			
+			//Parallel.ForEach(chunks,
+			//	new ParallelOptions() { MaxDegreeOfParallelism = threads },
+			//	chunk =>
+			//	{
+			//		var res = XORShiftSearch(chunk[0], chunk[1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), threads, logPercents);
+			//		resultCollection.Add(res);
+			//	}
+			//);
+
+			Parallel.For(0, threads, i =>
+			{
+				var res = XORShiftSearch(chunks[i][0], chunks[i][1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), threads, i, logPercents);
+				resultCollection.Add(res);
+			});
+
 			IEnumerable<KeyValuePair<float, int>> resultsSorted = [];
 			foreach (var result in resultCollection)
 				resultsSorted = resultsSorted.Concat(result);
@@ -397,7 +421,7 @@ namespace IDFinder
 
 			return resultsSorted;
 		}
-		private static IEnumerable<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, bool logPercents = false)
+		private static IEnumerable<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, int threads, int whichThreadAmI, bool logPercents = false)
 		{
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllNull();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllNull();
@@ -412,31 +436,46 @@ namespace IDFinder
 			List<KeyValuePair<float, int>> vals = new(numToStore + 1);
 			float weight;
 			bool saturated = false;
-			long percentInterval = ((long)stop - (long)start) / 100;    // long cast avoids int32 overflow edge cases that cause a DivideByZero exception.
-			int percentTracker = -1;
+            float percentRange = 1f + ((long)stop - (long)start);   // +1f makes it inclusive of stop. long casts avoid overflow errors.
+            long startLong = start; // Avoid having to cast repeatedly
 
-			Personality personality = default;
+            Personality personality = default;
 			NPCStats npcStats = default;
 			SlugcatStats slugStats = default;
 			FoodPreferences foodPref = default;
 			ScavSkills scavSkills = default;
 			
 			int largerThanIndex;
-			KeyValuePair<float, int> kvp;
+            float lastPercent = 0f; // For pasting to console only. 
+            KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				#if ABORTABLE
-                if (AbortSearch)
-                    return vals;
-				#endif
+                if ((i & 127) == 0)
+                {
+                    if (AbortSearch)
+                        return vals;
 
-                if (logPercents && ( i == int.MaxValue || (i - start) % percentInterval == 0))	// MaxValue stopgap to avoid divide by zero exception that crashed after 2 hours min to maxvalue.
-				{
-					percentTracker++;
-					Console.WriteLine($"{percentTracker}%");
-				}
-				#region scugs
-				weight = 0f;
+                    if (logPercents)
+                    {
+						_completions[whichThreadAmI] = 100f * (i - startLong) / percentRange;	
+                        if (_completions[whichThreadAmI] - lastPercent > 0.99f)
+                        {
+                            Console.WriteLine(_completions[whichThreadAmI] + "%");
+                            lastPercent = _completions[whichThreadAmI];
+                        }
+                    }
+                }
+
+                //if ((i & 127) == 0 && AbortSearch)	// i & (2^n - 1) == 0 is true once every 2^n increments of i. Minimising how often AbortSearch needs to be accessed, which improves /performance/ by a few % in multithreaded workloads. Can also merge percent logging into here later and 
+                //    return vals;
+                //
+                //if (logPercents && ( i == int.MaxValue || (i - start) % percentInterval == 0))	// MaxValue stopgap to avoid divide by zero exception that crashed after 2 hours min to maxvalue.
+                //{
+                //	percentTracker++;
+                //	Console.WriteLine($"{percentTracker}%");
+                //}
+                #region scugs
+                weight = 0f;
 				if (boolPersonality)
 				{
 					personality = new(i, XORShift128);
