@@ -20,7 +20,6 @@ namespace IDFinder
         public ScavColors Colors { get; private set; }
         public ScavSkills Skills { get; private set; }
         public BackTuftsAndRidges BackPatterns { get; private set; }    // Cannot be a struct due to inheritance
-        //[Obsolete("Incompatible with Native AOT compilation in its current form. Either do this externally or re-write using a non-reflection based JSON serializer")]    // Not using Native AOT at the moment, not a problem.
         public string AsJson()
         {
 			JsonSerializerOptions opt = new()
@@ -72,7 +71,7 @@ namespace IDFinder
             for (int l = 0; l < teeth.GetLength(0); l++)
             {
                 float num4 = (float)l / (teeth.GetLength(0) - 1);
-                teeth[1, 0] = float.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
+                teeth[l, 0] = float.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
                 if (XORShift128.NextFloat() < Variations.Scruffy && XORShift128.NextFloat() < 0.2f)
                 {
                     teeth[l, 0] = 0f;
