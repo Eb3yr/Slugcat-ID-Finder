@@ -458,7 +458,7 @@ namespace IDFinder
 						_completions[whichThreadAmI] = 100f * (i - startLong) / percentRange;	
                         if (_completions[whichThreadAmI] - lastPercent > 0.99f)
                         {
-                            Console.WriteLine(_completions[whichThreadAmI] + "%");
+                            Console.WriteLine(Math.Round(_completions[whichThreadAmI], 1, MidpointRounding.AwayFromZero) + "%");
                             lastPercent = _completions[whichThreadAmI];
                         }
                     }

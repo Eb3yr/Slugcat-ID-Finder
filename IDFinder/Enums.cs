@@ -21,7 +21,7 @@
 		Hazer,
 		NotCounted
 	}
-	public enum SearchParamsEnum
+	public enum SearchCatEnum
 	{
 		Personality,
 		NPCStats,
@@ -33,54 +33,8 @@
 		ScavSkills,
 		ScavBackPatterns
 	}
-	public enum Columns
+	public enum SearchParamsEnum
 	{
-		ID,
-		Sympathy,
-		Energy,
-		Bravery,
-		Nervous,
-		Aggression,
-		Dominance,
-		
-		Met,
-		Bal,
-		Size,
-		Stealth,
-		Dark,
-		EyeColor,
-		H,
-		S,
-		L,
-		Wideness,
-		
-		bodyWeightFac,
-		generalVisibilityBonus,
-		visualStealthInSneakMode,
-		loudnessFac,
-		lungsFac,
-		throwingSkill,
-		poleClimbSpeedFac,
-		corridorClimbSpeedFac,
-		runSpeedFac,
-		
-		DangleFruit,
-		WaterNut,
-		JellyFish,
-		SlimeMold,
-		EggBugEgg,
-		FireEgg,
-		Popcorn,
-		GooieDuck,
-		LilyPuck,
-		GlowWeed,
-		DandelionPeach,
-		Neuron,
-		Centipede,
-		SmallCentipede,
-		VultureGrub,
-		SmallNeedleWorm,
-		Hazer,
-		NotCounted
+
 	}
 }

@@ -22,15 +22,27 @@ namespace IDFinder
 				MidRangeSkill = (1f, 1f),
 				ReactionSkill = (1f, 1f),
 			};
+			sParams = new()
+			{
+				H = (0.5208333f, 1f),
+				S = (0.05882353f, 1f),
+				L = (0.73333335f, 1f)
+			};
+			sParams = new()
+			{
+				L = (0.5f, 1f)
+			};
 			var dt = DateTime.Now;
 			IEnumerable<KeyValuePair<float, int>> result;// = Searcher.SearchThreaded(0, 2871250, 300, 12, sParams, true, false);
 			var ts = TimeSpan.Zero;
 			
 			dt = DateTime.Now;
-			Searcher.SearchThreaded(0, int.MaxValue / 32, 4, 4, sParams, false, true);
+			result = Searcher.SearchThreaded(0, int.MaxValue / 4, 32, 12, sParams, true, true);
 			//Searcher.Search(0, 1000000, 4, sParams, true);
 			ts += DateTime.Now.Subtract(dt);
-			
+
+			File.WriteAllLines("results.txt", result.Select(res => $"{res.Value}: {res.Key}"));
+
 			Console.WriteLine("Time: " + ts.TotalSeconds + "s");
 
 			Console.WriteLine("Done");
