@@ -1,4 +1,6 @@
-﻿namespace IDFinder
+﻿using System.Runtime.CompilerServices;
+
+namespace IDFinder
 {
     internal static class XORShift128 // From https://gist.github.com/macklinb/a00be6b616cbf20fa95e4227575fe50b
 	{
@@ -25,14 +27,15 @@
             XORShift128.w = w;
         }
 
-        // XORShift, returns an unsigned 32-bit integer
-        public static uint XORShift()
+		// XORShift, returns an unsigned 32-bit integer
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static uint _XORShift()
         {
             uint t = x ^ (x << 11);
             x = y; y = z; z = w;
             return w = w ^ (w >> 19) ^ t ^ (t >> 8);
         }
-
+        public static uint XORShift() => _XORShift();
         // UInt32 / uint
 
         // UnityEngine.Random doesn't have any uint functions so these functions behave exactly like int Random.Range
@@ -40,14 +43,14 @@
         // Alias of base Next/XORShift
         public static uint NextUInt()
         {
-            return XORShift();
+            return _XORShift();
         }
 
         // Generate a random unsigned 32-bit integer value in the range 0 (inclusive) to max (exclusive)
         public static uint NextUIntMax(uint max)
         {
             if (max == 0) return 0;
-            return XORShift() % max;
+            return _XORShift() % max;
         }
 
         // Generate random unsigned 32-bit integer value in the range min (inclusive) to max (exclusive)
@@ -56,9 +59,9 @@
             if (max - min == 0) return min;
 
             if (max < min)
-                return min - XORShift() % (max + min);
+                return min - _XORShift() % (max + min);
             else
-                return min + XORShift() % (max - min);
+                return min + _XORShift() % (max - min);
         }
 
         // Int32 / int
@@ -66,7 +69,7 @@
         // Generate a random signed 32-bit integer value in the range -2,147,483,648 (inclusive) to 2,147,483,647 (inclusive)
         public static int NextInt()
         {
-            return (int)(XORShift() % int.MaxValue);
+            return (int)(_XORShift() % int.MaxValue);
         }
 
         public static int NextIntMax(int max)
@@ -85,7 +88,7 @@
             // I'm sure there's a faster/better way to do this and avoid casting, but we prefer equivalence to Unity over performance
             long minLong = (long)min;
             long maxLong = (long)max;
-            long r = XORShift();
+            long r = _XORShift();
 
             // Flip the first operator if the max is lower than the min,
             if (max < min)
@@ -105,7 +108,7 @@
         // Generate a random floating point between min (inclusive) and max (exclusive) 
         public static float NextFloatRange(float min, float max)
         {
-            return (min - max) * ((float)(XORShift() << 9) / 0xFFFFFFFF) + max;
+            return (min - max) * ((float)(_XORShift() << 9) / 0xFFFFFFFF) + max;
         }
     }
 	internal class InstanceXORShift128  // While the ThreadStatic attribute could be used in XORShift128, this approach is ~10% faster. 
@@ -126,33 +129,35 @@
 			this.z = z;
 			this.w = w;
 		}
-		public uint XORShift()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private uint _XORShift()
 		{
 			uint t = x ^ (x << 11);
 			x = y; y = z; z = w;
 			return w = w ^ (w >> 19) ^ t ^ (t >> 8);
 		}
+        public uint XORShift() => _XORShift();
 		public uint NextUInt()
 		{
-			return XORShift();
+			return _XORShift();
 		}
 		public uint NextUIntMax(uint max)
 		{
 			if (max == 0) return 0;
-			return XORShift() % max;
+			return _XORShift() % max;
 		}
 		public uint NextUIntRange(uint min, uint max)
 		{
 			if (max - min == 0) return min;
 
 			if (max < min)
-				return min - XORShift() % (max + min);
+				return min - _XORShift() % (max + min);
 			else
-				return min + XORShift() % (max - min);
+				return min + _XORShift() % (max - min);
 		}
 		public int NextInt()
 		{
-			return (int)(XORShift() % int.MaxValue);
+			return (int)(_XORShift() % int.MaxValue);
 		}
 		public int NextIntMax(int max)
 		{
@@ -164,7 +169,7 @@
 
 			long minLong = (long)min;
 			long maxLong = (long)max;
-			long r = XORShift();
+			long r = _XORShift();
 
 			if (max < min)
 				return (int)(minLong - r % (maxLong - minLong));
@@ -177,7 +182,7 @@
 		}
 		public float NextFloatRange(float min, float max)
 		{
-			return (min - max) * ((float)(XORShift() << 9) / 0xFFFFFFFF) + max;
+			return (min - max) * ((float)(_XORShift() << 9) / 0xFFFFFFFF) + max;
 		}
 	}
 }
