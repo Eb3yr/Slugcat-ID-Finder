@@ -289,7 +289,7 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				if ((i & 127) == 0)	// I wonder how performant this is compared to the previous console logging? Test with the older master branch.
+				if ((i & 127) == 0)	// More performant than i % 128
 				{
 					if (abortSearch)
 						return vals;
