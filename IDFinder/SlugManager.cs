@@ -136,7 +136,7 @@ namespace IDFinder
 		}
 		public static string GetJsonMany(IEnumerable<int> IDs)
 		{
-			List<Slugcat> scugs = [];
+			List<Slugcat> scugs = new();
 			foreach (int ID in IDs)
 			{
 				scugs.Add(new(ID));

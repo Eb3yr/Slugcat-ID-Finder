@@ -8,6 +8,7 @@ namespace IDFinder
 {
 	public static class Custom
 	{
+		public static float Lerp(float value1, float value2, float amount) => (value1 * (1.0f - amount)) + (value2 * amount);
 		// All methods but InverseLerp are both functions found in the Rain World codebase, in the Custom class within the RWCustom namespace. InverseLerp is a recreation of the equivalent function in the Mathf Unity namespace based on Unity's documentation.
 		public static float PushFromHalf(float val, float pushExponent)
 		{
@@ -25,11 +26,11 @@ namespace IDFinder
 		{
 			if (exponent != null)
 			{
-				return float.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), (float)exponent));
+				return Custom.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), (float)exponent));
 			}
 			else
 			{
-				return float.Lerp(fromB, toB, InverseLerp(fromA, toA, val));
+				return Custom.Lerp(fromB, toB, InverseLerp(fromA, toA, val));
 			}
 		}
         public static float ClampedRandomVariation(float baseValue, float maxDeviation, float k)
@@ -63,8 +64,8 @@ namespace IDFinder
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 DegToFloat2(float ang)
         {
-            float x = float.DegreesToRadians(ang);
-            return new Vector2(float.Sin(x), float.Cos(x));
+            float x = ang * 57.29577951f;  // Degrees to radians = multiply by 180 / pi = 57.29577951f
+			return new Vector2(float.Sin(x), float.Cos(x));
         }
         public static Color HSL2RGB(float h, float sl, float l)
         {

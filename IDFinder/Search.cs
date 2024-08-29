@@ -7,7 +7,7 @@ namespace IDFinder
 	{
 		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
 		private static bool abortSearch = false;   // I'd rather this be a private field and have an Abort() method invoked that sets it to true, awaits a Task.Delay, and sets it back to false afterwards. I feel there's too much risk to forget to reset it, or for race condition shenanigans. 
-		private static float[] _completions = [];
+		private static float[] _completions = new float[0];
 		public static float CompletionPercent
 		{
 			get => (float)Math.Round(_completions.Average(), 2, MidpointRounding.AwayFromZero);
@@ -398,7 +398,7 @@ namespace IDFinder
 
             Init(threads);
             int[][] chunks = Chunker(start, stop, threads);
-			ConcurrentBag<IEnumerable<KeyValuePair<float, int>>> resultCollection = [];
+			ConcurrentBag<IEnumerable<KeyValuePair<float, int>>> resultCollection = new();
 
 			// Shallow copying SearchParams in the expectation that a bottleneck could arise when multiple threads access the same instance
 
@@ -408,7 +408,7 @@ namespace IDFinder
 				resultCollection.Add(res);
 			});
 
-			IEnumerable<KeyValuePair<float, int>> resultsSorted = [];
+			IEnumerable<KeyValuePair<float, int>> resultsSorted = new List<KeyValuePair<float, int>>();
 			foreach (var result in resultCollection)
 				resultsSorted = resultsSorted.Concat(result);
 
@@ -559,7 +559,9 @@ namespace IDFinder
 			long chunkSize = ((long)stop - start) / threads;
 			for (int i = 0; i < threads; i++)
 			{
-				chunks[i] = [start + i * (int)chunkSize + 1, start + (i + 1) * (int)chunkSize];
+				chunks[i] = new int[2];
+				chunks[i][0] = start + i * (int)chunkSize + 1;
+				chunks[i][1] = start + (i + 1) * (int)chunkSize;
 			}
 			chunks[0][0] = start;
 			chunks[threads - 1][1] = stop;
@@ -697,7 +699,7 @@ namespace IDFinder
 			// Why am I storing an object? Store the ID. All the structs in slugcat need to be instantiated otherwise. ID is also more expandable for other creatures. 
 			// I could use stackalloc spans of float key, int ID value, and use another variable to keep track of the position of the largest float instead of searching each time, which would be expensive with high numToStore.
 			// --> I could use a queue! Item gets added to the collection to return, the element its added at is added to the queue. This means that when I add the smallest float's position, everything before it has to be dequeued first before it's on the chopping block. This would be perfect. Just need to know if it's efficient. 
-			SortedList<float, Slugcat> vals = [];   // smallest value at index 0
+			SortedList<float, Slugcat> vals = new();   // smallest value at index 0
 			float weight;
 			bool saturated = false;
 			vals.Capacity = numToStore;

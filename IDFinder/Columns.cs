@@ -5,7 +5,7 @@ namespace IDFinder
 	// Used for writing to csv in SlugManager using reflection. Not a huge fan.
 	public static class ColumnNames
 	{
-		//public string this[];
+		//public string thisnew();
 		public static readonly FieldInfo[] fields = typeof(ColumnNames).GetFields();
 		public const string ID = "ID";
 		public const string Sympathy = "Sympathy";

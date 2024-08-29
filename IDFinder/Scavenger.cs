@@ -63,20 +63,20 @@ namespace IDFinder
 
             Eartlers = new(Elite);    // Eartlers constructor does call UnityEngine.Random so must be generated
             float[,] teeth = new float[XORShift128.NextIntRange(2, 5) * 2, 2];
-            float num2 = float.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
-            num2 = float.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
-            float num3 = float.Lerp(num2 + 0.2f, float.Lerp(0.7f, 1.2f, XORShift128.NextFloat()), XORShift128.NextFloat());
-            num3 = float.Lerp(num3, Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1.5f, 0.2f), 0.4f);
+            float num2 = Custom.Lerp(0.5f, 1.5f, float.Pow(XORShift128.NextFloat(), 1.5f - Personality.Aggression));
+            num2 = Custom.Lerp(num2, num2 * Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1f, 0.5f), 0.3f);
+            float num3 = Custom.Lerp(num2 + 0.2f, Custom.Lerp(0.7f, 1.2f, XORShift128.NextFloat()), XORShift128.NextFloat());
+            num3 = Custom.Lerp(num3, Custom.LerpMap(teeth.GetLength(0), 4f, 8f, 1.5f, 0.2f), 0.4f);
             float a = 0.3f + 0.7f * XORShift128.NextFloat();
             for (int l = 0; l < teeth.GetLength(0); l++)
             {
                 float num4 = (float)l / (teeth.GetLength(0) - 1);
-                teeth[l, 0] = float.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
+                teeth[l, 0] = Custom.Lerp(a, 1f, float.Sin(num4 * 3.1415927f)) * num2;
                 if (XORShift128.NextFloat() < Variations.Scruffy && XORShift128.NextFloat() < 0.2f)
                 {
                     teeth[l, 0] = 0f;
                 }
-                teeth[l, 1] = float.Lerp(0.5f, 1f, float.Sin(num4 * 3.1415927f)) * num3;
+                teeth[l, 1] = Custom.Lerp(0.5f, 1f, float.Sin(num4 * 3.1415927f)) * num3;
             }
             //if (Elite)
             //{
@@ -158,12 +158,12 @@ namespace IDFinder
         public List<Vertex[]> Points { get; private set; }
         public Eartlers(bool elite)
         {
-            Points = [];
+            Points = new();
             GenerateSegments(elite);
         }
 		internal Eartlers(bool elite, InstanceXORShift128 XORShift128)
 		{
-			Points = [];
+			Points = new();
 			GenerateSegmentsRNGParam(elite, XORShift128);
 		}
 		private void GenerateSegments(bool elite)
@@ -176,27 +176,27 @@ namespace IDFinder
             float num4 = elite ? 0f : 1f;
             float num5 = elite ? 2f : 1f;
             float num6 = elite ? 0f : 1f;
-            List<Vertex> list = [];
+            List<Vertex> list = new();
             list.Add(new(new(0f, 0f), 1f));
-            list.Add(new(Custom.DegToFloat2(float.Lerp(40f, 90f, XORShift128.NextFloat())) * 0.4f * rhs, 1f * num2));
-            Vector2 float2 = Custom.DegToFloat2(float.Lerp(@float.X, @float.Y, XORShift128.NextFloat()) * num);
-            Vector2 float3 = float2 - Custom.DegToFloat2(float.Lerp(40f, 90f, XORShift128.NextFloat()) * 0.4f * rhs);
+            list.Add(new(Custom.DegToFloat2(Custom.Lerp(40f, 90f, XORShift128.NextFloat())) * 0.4f * rhs, 1f * num2));
+            Vector2 float2 = Custom.DegToFloat2(Custom.Lerp(@float.X, @float.Y, XORShift128.NextFloat()) * num);
+            Vector2 float3 = float2 - Custom.DegToFloat2(Custom.Lerp(40f, 90f, XORShift128.NextFloat()) * 0.4f * rhs);
             if (float3.X < 0.2f)
-                float3 = new(float.Lerp(float3.X, float2.X, 0.4f), float3.Y);
+                float3 = new(Custom.Lerp(float3.X, float2.X, 0.4f), float3.Y);
             list.Add(new(float3, 1.5f * num3));
             list.Add(new(float2, 2f * num4));
             DefineBranch(list);
             list.Clear();
             list.Add(new(Points[0][1].pos, 1f));
             int num7 = (Vector2.Distance(Points[0][1].pos, Points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
-            Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
+            Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, Custom.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
             list.Add(new(float4, 1.2f));
             list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
             DefineBranch(list);
             if (num7 == 2)
             {
                 list.Clear();
-                float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
+                float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, Custom.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
                 list.Add(new(float4, 1.2f));
                 list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
                 DefineBranch(list);
@@ -205,15 +205,15 @@ namespace IDFinder
             if (flag)
             {
                 list.Clear();
-                Vector2 float5 = Custom.DegToFloat2(90f + float.Lerp(-20f, 20f, XORShift128.NextFloat())) * float.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
+                Vector2 float5 = Custom.DegToFloat2(90f + Custom.Lerp(-20f, 20f, XORShift128.NextFloat())) * Custom.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
                 if (float5.Y > this.Points[0][1].pos.Y - 0.1f)
                 {
                     float5 = new Vector2(float5.X, float5.Y - 0.2f);
                 }
-                float num8 = float.Lerp(0.8f, 2f, XORShift128.NextFloat());
+                float num8 = Custom.Lerp(0.8f, 2f, XORShift128.NextFloat());
                 if (XORShift128.NextFloat() < 0.5f)
                 {
-                    float5 += Custom.DegToFloat2(float.Lerp(120f, 170f, XORShift128.NextFloat())) * float.Lerp(0.1f, 0.3f, XORShift128.NextFloat());
+                    float5 += Custom.DegToFloat2(Custom.Lerp(120f, 170f, XORShift128.NextFloat())) * Custom.Lerp(0.1f, 0.3f, XORShift128.NextFloat());
                     list.Add(new(new Vector2(0f, 0f), num8));
                     list.Add(new(float5, num8));
                 }
@@ -221,7 +221,7 @@ namespace IDFinder
                 {
                     list.Add(new(new Vector2(0f, 0f), 1f));
                     list.Add(new(float5, (1f + num8) / 2f));
-                    list.Add(new(float5 + Custom.DegToFloat2(float.Lerp(95f, 170f, XORShift128.NextFloat())) * float.Lerp(0.1f, 0.2f, XORShift128.NextFloat()), num8));
+                    list.Add(new(float5 + Custom.DegToFloat2(Custom.Lerp(95f, 170f, XORShift128.NextFloat())) * Custom.Lerp(0.1f, 0.2f, XORShift128.NextFloat()), num8));
                 }
                 DefineBranch(list);
             }
@@ -231,11 +231,11 @@ namespace IDFinder
                 float num9 = 1f + XORShift128.NextFloat() * 1.5f;
                 bool flag2 = XORShift128.NextFloat() < 0.5f;
                 list.Add(new(new Vector2(0f, 0f), 1f));
-                float num10 = float.Lerp(95f, 135f, XORShift128.NextFloat());
-                float num11 = float.Lerp(0.25f, 0.4f, XORShift128.NextFloat()) * num5;
-                list.Add(new(Custom.DegToFloat2(num10) * num11, (flag2 ? 0.8f : float.Lerp(1f, num9, 0.3f)) * num5));
-                list.Add(new(Custom.DegToFloat2(num10 + float.Lerp(5f, 35f, XORShift128.NextFloat())) * float.Max(num11 + 0.1f, float.Lerp(0.3f, 0.6f, XORShift128.NextFloat())), flag2 ? 0.8f : float.Lerp(1f, num9, 0.6f)));
-                list.Add(new(Vector2.Normalize(list[list.Count - 1].pos) * (list[list.Count - 1].pos.Length() + float.Lerp(0.15f, 0.25f, XORShift128.NextFloat()) * num5), num9 * num6));
+                float num10 = Custom.Lerp(95f, 135f, XORShift128.NextFloat());
+                float num11 = Custom.Lerp(0.25f, 0.4f, XORShift128.NextFloat()) * num5;
+                list.Add(new(Custom.DegToFloat2(num10) * num11, (flag2 ? 0.8f : Custom.Lerp(1f, num9, 0.3f)) * num5));
+                list.Add(new(Custom.DegToFloat2(num10 + Custom.Lerp(5f, 35f, XORShift128.NextFloat())) * float.Max(num11 + 0.1f, Custom.Lerp(0.3f, 0.6f, XORShift128.NextFloat())), flag2 ? 0.8f : Custom.Lerp(1f, num9, 0.6f)));
+                list.Add(new(Vector2.Normalize(list[list.Count - 1].pos) * (list[list.Count - 1].pos.Length() + Custom.Lerp(0.15f, 0.25f, XORShift128.NextFloat()) * num5), num9 * num6));
                 DefineBranch(list);
             }
         }
@@ -249,27 +249,27 @@ namespace IDFinder
 			float num4 = elite ? 0f : 1f;
 			float num5 = elite ? 2f : 1f;
 			float num6 = elite ? 0f : 1f;
-			List<Vertex> list = [];
+			List<Vertex> list = new();
 			list.Add(new(new(0f, 0f), 1f));
-			list.Add(new(Custom.DegToFloat2(float.Lerp(40f, 90f, XORShift128.NextFloat())) * 0.4f * rhs, 1f * num2));
-			Vector2 float2 = Custom.DegToFloat2(float.Lerp(@float.X, @float.Y, XORShift128.NextFloat()) * num);
-			Vector2 float3 = float2 - Custom.DegToFloat2(float.Lerp(40f, 90f, XORShift128.NextFloat()) * 0.4f * rhs);
+			list.Add(new(Custom.DegToFloat2(Custom.Lerp(40f, 90f, XORShift128.NextFloat())) * 0.4f * rhs, 1f * num2));
+			Vector2 float2 = Custom.DegToFloat2(Custom.Lerp(@float.X, @float.Y, XORShift128.NextFloat()) * num);
+			Vector2 float3 = float2 - Custom.DegToFloat2(Custom.Lerp(40f, 90f, XORShift128.NextFloat()) * 0.4f * rhs);
 			if (float3.X < 0.2f)
-				float3 = new(float.Lerp(float3.X, float2.X, 0.4f), float3.Y);
+				float3 = new(Custom.Lerp(float3.X, float2.X, 0.4f), float3.Y);
 			list.Add(new(float3, 1.5f * num3));
 			list.Add(new(float2, 2f * num4));
 			DefineBranch(list);
 			list.Clear();
 			list.Add(new(Points[0][1].pos, 1f));
 			int num7 = (Vector2.Distance(Points[0][1].pos, Points[0][2].pos) > 0.6 && XORShift128.NextFloat() < 0.5f) ? 2 : 1;
-			Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
+			Vector2 float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, Custom.Lerp(0f, num7 == 1 ? 0.7f : 0.25f, XORShift128.NextFloat()));
 			list.Add(new(float4, 1.2f));
 			list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
 			DefineBranch(list);
 			if (num7 == 2)
 			{
 				list.Clear();
-				float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, float.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
+				float4 = Vector2.Lerp(Points[0][1].pos, Points[0][2].pos, Custom.Lerp(0.45f, 0.7f, XORShift128.NextFloat()));
 				list.Add(new(float4, 1.2f));
 				list.Add(new(float4 + Points[0][3].pos - Points[0][2].pos + Custom.DegToFloat2(XORShift128.NextFloat() * 360f) * 0.1f, 1.75f));
 				DefineBranch(list);
@@ -278,15 +278,15 @@ namespace IDFinder
 			if (flag)
 			{
 				list.Clear();
-				Vector2 float5 = Custom.DegToFloat2(90f + float.Lerp(-20f, 20f, XORShift128.NextFloat())) * float.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
+				Vector2 float5 = Custom.DegToFloat2(90f + Custom.Lerp(-20f, 20f, XORShift128.NextFloat())) * Custom.Lerp(0.2f, 0.5f, XORShift128.NextFloat());
 				if (float5.Y > this.Points[0][1].pos.Y - 0.1f)
 				{
 					float5 = new Vector2(float5.X, float5.Y - 0.2f);
 				}
-				float num8 = float.Lerp(0.8f, 2f, XORShift128.NextFloat());
+				float num8 = Custom.Lerp(0.8f, 2f, XORShift128.NextFloat());
 				if (XORShift128.NextFloat() < 0.5f)
 				{
-					float5 += Custom.DegToFloat2(float.Lerp(120f, 170f, XORShift128.NextFloat())) * float.Lerp(0.1f, 0.3f, XORShift128.NextFloat());
+					float5 += Custom.DegToFloat2(Custom.Lerp(120f, 170f, XORShift128.NextFloat())) * Custom.Lerp(0.1f, 0.3f, XORShift128.NextFloat());
 					list.Add(new(new Vector2(0f, 0f), num8));
 					list.Add(new(float5, num8));
 				}
@@ -294,7 +294,7 @@ namespace IDFinder
 				{
 					list.Add(new(new Vector2(0f, 0f), 1f));
 					list.Add(new(float5, (1f + num8) / 2f));
-					list.Add(new(float5 + Custom.DegToFloat2(float.Lerp(95f, 170f, XORShift128.NextFloat())) * float.Lerp(0.1f, 0.2f, XORShift128.NextFloat()), num8));
+					list.Add(new(float5 + Custom.DegToFloat2(Custom.Lerp(95f, 170f, XORShift128.NextFloat())) * Custom.Lerp(0.1f, 0.2f, XORShift128.NextFloat()), num8));
 				}
 				DefineBranch(list);
 			}
@@ -304,11 +304,11 @@ namespace IDFinder
 				float num9 = 1f + XORShift128.NextFloat() * 1.5f;
 				bool flag2 = XORShift128.NextFloat() < 0.5f;
 				list.Add(new(new Vector2(0f, 0f), 1f));
-				float num10 = float.Lerp(95f, 135f, XORShift128.NextFloat());
-				float num11 = float.Lerp(0.25f, 0.4f, XORShift128.NextFloat()) * num5;
-				list.Add(new(Custom.DegToFloat2(num10) * num11, (flag2 ? 0.8f : float.Lerp(1f, num9, 0.3f)) * num5));
-				list.Add(new(Custom.DegToFloat2(num10 + float.Lerp(5f, 35f, XORShift128.NextFloat())) * float.Max(num11 + 0.1f, float.Lerp(0.3f, 0.6f, XORShift128.NextFloat())), flag2 ? 0.8f : float.Lerp(1f, num9, 0.6f)));
-				list.Add(new(Vector2.Normalize(list[list.Count - 1].pos) * (list[list.Count - 1].pos.Length() + float.Lerp(0.15f, 0.25f, XORShift128.NextFloat()) * num5), num9 * num6));
+				float num10 = Custom.Lerp(95f, 135f, XORShift128.NextFloat());
+				float num11 = Custom.Lerp(0.25f, 0.4f, XORShift128.NextFloat()) * num5;
+				list.Add(new(Custom.DegToFloat2(num10) * num11, (flag2 ? 0.8f : Custom.Lerp(1f, num9, 0.3f)) * num5));
+				list.Add(new(Custom.DegToFloat2(num10 + Custom.Lerp(5f, 35f, XORShift128.NextFloat())) * float.Max(num11 + 0.1f, Custom.Lerp(0.3f, 0.6f, XORShift128.NextFloat())), flag2 ? 0.8f : Custom.Lerp(1f, num9, 0.6f)));
+				list.Add(new(Vector2.Normalize(list[list.Count - 1].pos) * (list[list.Count - 1].pos.Length() + Custom.Lerp(0.15f, 0.25f, XORShift128.NextFloat()) * num5), num9 * num6));
 				DefineBranch(list);
 			}
 		}
@@ -365,24 +365,24 @@ namespace IDFinder
             GeneralMelanin = Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
             HeadSize = Custom.ClampedRandomVariation(0.5f, 0.5f, 0.1f);
             EartlerWidth = XORShift128.NextFloat();
-            EyeSize = float.Pow(float.Max(0f, float.Lerp(XORShift128.NextFloat(), float.Pow(HeadSize, 0.5f), XORShift128.NextFloat() * 0.4f)), float.Lerp(0.95f, 0.55f, personality.Sympathy));
-            NarrowEyes = ((XORShift128.NextFloat() < float.Lerp(0.3f, 0.7f, personality.Sympathy)) ? 0f : float.Pow(XORShift128.NextFloat(), float.Lerp(0.5f, 1.5f, personality.Sympathy)));
+            EyeSize = float.Pow(float.Max(0f, Custom.Lerp(XORShift128.NextFloat(), float.Pow(HeadSize, 0.5f), XORShift128.NextFloat() * 0.4f)), Custom.Lerp(0.95f, 0.55f, personality.Sympathy));
+            NarrowEyes = ((XORShift128.NextFloat() < Custom.Lerp(0.3f, 0.7f, personality.Sympathy)) ? 0f : float.Pow(XORShift128.NextFloat(), Custom.Lerp(0.5f, 1.5f, personality.Sympathy)));
             if (isElite)
             {
                 NarrowEyes = 1f;
             }
-            EyesAngle = float.Pow(XORShift128.NextFloat(), float.Lerp(2.5f, 0.5f, float.Pow(personality.Energy, 0.03f)));
-            Fatness = float.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat() * 0.2f);
+            EyesAngle = float.Pow(XORShift128.NextFloat(), Custom.Lerp(2.5f, 0.5f, float.Pow(personality.Energy, 0.03f)));
+            Fatness = Custom.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat() * 0.2f);
             if (personality.Energy < 0.5f)
             {
-                Fatness = float.Lerp(Fatness, 1f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 0f, personality.Energy));
+                Fatness = Custom.Lerp(Fatness, 1f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 0f, personality.Energy));
             }
             else
             {
-                Fatness = float.Lerp(Fatness, 0f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 1f, personality.Energy));
+                Fatness = Custom.Lerp(Fatness, 0f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 1f, personality.Energy));
             }
-            NarrowWaist = float.Lerp(float.Lerp(XORShift128.NextFloat(), 1f - Fatness, XORShift128.NextFloat()), 1f - personality.Energy, XORShift128.NextFloat());
-            NeckThickness = float.Lerp(float.Pow(XORShift128.NextFloat(), 1.5f - personality.Aggression), 1f - Fatness, XORShift128.NextFloat() * 0.5f);
+            NarrowWaist = Custom.Lerp(Custom.Lerp(XORShift128.NextFloat(), 1f - Fatness, XORShift128.NextFloat()), 1f - personality.Energy, XORShift128.NextFloat());
+            NeckThickness = Custom.Lerp(float.Pow(XORShift128.NextFloat(), 1.5f - personality.Aggression), 1f - Fatness, XORShift128.NextFloat() * 0.5f);
             PupilSize = 0f;
             DeepPupils = false;
             ColoredPupils = 0;
@@ -390,7 +390,7 @@ namespace IDFinder
             {
                 if (XORShift128.NextFloat() < float.Pow(personality.Sympathy, 1.5f) * 0.8f)
                 {
-                    PupilSize = float.Lerp(0.4f, 0.8f, float.Pow(XORShift128.NextFloat(), 0.5f));
+                    PupilSize = Custom.Lerp(0.4f, 0.8f, float.Pow(XORShift128.NextFloat(), 0.5f));
                     if (XORShift128.NextFloat() < 0.6666667f)
                     {
                         ColoredPupils = XORShift128.NextIntRange(1, 4);
@@ -416,8 +416,8 @@ namespace IDFinder
                 HandsHeadColor = ((XORShift128.NextFloat() < 0.2f) ? XORShift128.NextFloat() : ((XORShift128.NextFloat() < 0.8f) ? 1f : 0f));
             }
             LegsSize = XORShift128.NextFloat();
-            ArmThickness = float.Lerp(XORShift128.NextFloat(), float.Lerp(personality.Dominance, Fatness, 0.5f), XORShift128.NextFloat());
-            ColoredEartlerTips = (isElite || XORShift128.NextFloat() < 1f / float.Lerp(1.2f, 10f, GeneralMelanin));
+            ArmThickness = Custom.Lerp(XORShift128.NextFloat(), Custom.Lerp(personality.Dominance, Fatness, 0.5f), XORShift128.NextFloat());
+            ColoredEartlerTips = (isElite || XORShift128.NextFloat() < 1f / Custom.Lerp(1.2f, 10f, GeneralMelanin));
             WideTeeth = XORShift128.NextFloat();
             TailSegs = (XORShift128.NextFloat() < 0.5f) ? 0 : XORShift128.NextIntRange(1, 5);
             Scruffy = 0f;
@@ -432,24 +432,24 @@ namespace IDFinder
 			GeneralMelanin = Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
 			HeadSize = Custom.ClampedRandomVariationRNGParam(0.5f, 0.5f, 0.1f, XORShift128);
 			EartlerWidth = XORShift128.NextFloat();
-			EyeSize = float.Pow(float.Max(0f, float.Lerp(XORShift128.NextFloat(), float.Pow(HeadSize, 0.5f), XORShift128.NextFloat() * 0.4f)), float.Lerp(0.95f, 0.55f, personality.Sympathy));
-			NarrowEyes = ((XORShift128.NextFloat() < float.Lerp(0.3f, 0.7f, personality.Sympathy)) ? 0f : float.Pow(XORShift128.NextFloat(), float.Lerp(0.5f, 1.5f, personality.Sympathy)));
+			EyeSize = float.Pow(float.Max(0f, Custom.Lerp(XORShift128.NextFloat(), float.Pow(HeadSize, 0.5f), XORShift128.NextFloat() * 0.4f)), Custom.Lerp(0.95f, 0.55f, personality.Sympathy));
+			NarrowEyes = ((XORShift128.NextFloat() < Custom.Lerp(0.3f, 0.7f, personality.Sympathy)) ? 0f : float.Pow(XORShift128.NextFloat(), Custom.Lerp(0.5f, 1.5f, personality.Sympathy)));
 			if (isElite)
 			{
 				NarrowEyes = 1f;
 			}
-			EyesAngle = float.Pow(XORShift128.NextFloat(), float.Lerp(2.5f, 0.5f, float.Pow(personality.Energy, 0.03f)));
-			Fatness = float.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat() * 0.2f);
+			EyesAngle = float.Pow(XORShift128.NextFloat(), Custom.Lerp(2.5f, 0.5f, float.Pow(personality.Energy, 0.03f)));
+			Fatness = Custom.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat() * 0.2f);
 			if (personality.Energy < 0.5f)
 			{
-				Fatness = float.Lerp(Fatness, 1f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 0f, personality.Energy));
+				Fatness = Custom.Lerp(Fatness, 1f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 0f, personality.Energy));
 			}
 			else
 			{
-				Fatness = float.Lerp(Fatness, 0f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 1f, personality.Energy));
+				Fatness = Custom.Lerp(Fatness, 0f, XORShift128.NextFloat() * Custom.InverseLerp(0.5f, 1f, personality.Energy));
 			}
-			NarrowWaist = float.Lerp(float.Lerp(XORShift128.NextFloat(), 1f - Fatness, XORShift128.NextFloat()), 1f - personality.Energy, XORShift128.NextFloat());
-			NeckThickness = float.Lerp(float.Pow(XORShift128.NextFloat(), 1.5f - personality.Aggression), 1f - Fatness, XORShift128.NextFloat() * 0.5f);
+			NarrowWaist = Custom.Lerp(Custom.Lerp(XORShift128.NextFloat(), 1f - Fatness, XORShift128.NextFloat()), 1f - personality.Energy, XORShift128.NextFloat());
+			NeckThickness = Custom.Lerp(float.Pow(XORShift128.NextFloat(), 1.5f - personality.Aggression), 1f - Fatness, XORShift128.NextFloat() * 0.5f);
 			PupilSize = 0f;
 			DeepPupils = false;
 			ColoredPupils = 0;
@@ -457,7 +457,7 @@ namespace IDFinder
 			{
 				if (XORShift128.NextFloat() < float.Pow(personality.Sympathy, 1.5f) * 0.8f)
 				{
-					PupilSize = float.Lerp(0.4f, 0.8f, float.Pow(XORShift128.NextFloat(), 0.5f));
+					PupilSize = Custom.Lerp(0.4f, 0.8f, float.Pow(XORShift128.NextFloat(), 0.5f));
 					if (XORShift128.NextFloat() < 0.6666667f)
 					{
 						ColoredPupils = XORShift128.NextIntRange(1, 4);
@@ -483,8 +483,8 @@ namespace IDFinder
 				HandsHeadColor = ((XORShift128.NextFloat() < 0.2f) ? XORShift128.NextFloat() : ((XORShift128.NextFloat() < 0.8f) ? 1f : 0f));
 			}
 			LegsSize = XORShift128.NextFloat();
-			ArmThickness = float.Lerp(XORShift128.NextFloat(), float.Lerp(personality.Dominance, Fatness, 0.5f), XORShift128.NextFloat());
-			ColoredEartlerTips = (isElite || XORShift128.NextFloat() < 1f / float.Lerp(1.2f, 10f, GeneralMelanin));
+			ArmThickness = Custom.Lerp(XORShift128.NextFloat(), Custom.Lerp(personality.Dominance, Fatness, 0.5f), XORShift128.NextFloat());
+			ColoredEartlerTips = (isElite || XORShift128.NextFloat() < 1f / Custom.Lerp(1.2f, 10f, GeneralMelanin));
 			WideTeeth = XORShift128.NextFloat();
 			TailSegs = (XORShift128.NextFloat() < 0.5f) ? 0 : XORShift128.NextIntRange(1, 5);
 			Scruffy = 0f;
@@ -517,7 +517,7 @@ namespace IDFinder
             {
                 num = float.Pow(XORShift128.NextFloat(), 5f);
             }
-            float num2 = num + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.3f * float.Pow(XORShift128.NextFloat(), 2f);
+            float num2 = num + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.3f * float.Pow(XORShift128.NextFloat(), 2f);
             if (num2 > 1f)
             {
                 num2 -= 1f;
@@ -526,26 +526,26 @@ namespace IDFinder
             {
                 num2 += 1f;
             }
-            BodyColor = new HSLColor(num, float.Lerp(0.05f, 1f, float.Pow(XORShift128.NextFloat(), 0.85f)), float.Lerp(0.05f, 0.8f, XORShift128.NextFloat()));
+            BodyColor = new HSLColor(num, Custom.Lerp(0.05f, 1f, float.Pow(XORShift128.NextFloat(), 0.85f)), Custom.Lerp(0.05f, 0.8f, XORShift128.NextFloat()));
             BodyColor.S = BodyColor.S * (1f - Variations.GeneralMelanin);
-            BodyColor.L = float.Lerp(BodyColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
+            BodyColor.L = Custom.Lerp(BodyColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
             BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
-            BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+            BodyColorBlack = Custom.Lerp(BodyColorBlack, Custom.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
             BodyColorBlack *= Variations.GeneralMelanin;
-            Vector2 @float = new Vector2(BodyColor.S, float.Lerp(-1f, 1f, BodyColor.L * (1f - BodyColorBlack)));
+            Vector2 @float = new Vector2(BodyColor.S, Custom.Lerp(-1f, 1f, BodyColor.L * (1f - BodyColorBlack)));
             if (@float.Length() < 0.5f)
             {
                 @float = Vector2.Lerp(@float, Vector2.Normalize(@float), Custom.InverseLerp(0.5f, 0.3f, @float.Length()));
                 BodyColor = new HSLColor(BodyColor.H, Custom.InverseLerp(-1f, 1f, @float.X), Custom.InverseLerp(-1f, 1f, @float.Y));
                 BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
-                BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+                BodyColorBlack = Custom.Lerp(BodyColorBlack, Custom.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
                 BodyColorBlack *= Variations.GeneralMelanin;
             }
             float num3;
             if (XORShift128.NextFloat() < Custom.LerpMap(BodyColorBlack, 0.5f, 0.8f, 0.9f, 0.3f))
             {
-                num3 = num2 + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.1f * float.Pow(XORShift128.NextFloat(), 1.5f);
-                num3 = float.Lerp(num3, 0.15f, XORShift128.NextFloat());
+                num3 = num2 + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.1f * float.Pow(XORShift128.NextFloat(), 1.5f);
+                num3 = Custom.Lerp(num3, 0.15f, XORShift128.NextFloat());
                 if (num3 > 1f)
                 {
                     num3 -= 1f;
@@ -557,10 +557,10 @@ namespace IDFinder
             }
             else
             {
-                num3 = ((XORShift128.NextFloat() < 0.5f) ? Custom.Decimal(num + 0.5f) : Custom.Decimal(num2 + 0.5f)) + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.25f * float.Pow(XORShift128.NextFloat(), 2f);
-                if (XORShift128.NextFloat() < float.Lerp(0.8f, 0.2f, Personality.Energy))
+                num3 = ((XORShift128.NextFloat() < 0.5f) ? Custom.Decimal(num + 0.5f) : Custom.Decimal(num2 + 0.5f)) + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.25f * float.Pow(XORShift128.NextFloat(), 2f);
+                if (XORShift128.NextFloat() < Custom.Lerp(0.8f, 0.2f, Personality.Energy))
                 {
-                    num3 = float.Lerp(num3, 0.15f, XORShift128.NextFloat());
+                    num3 = Custom.Lerp(num3, 0.15f, XORShift128.NextFloat());
                 }
                 if (num3 > 1f)
                 {
@@ -573,14 +573,14 @@ namespace IDFinder
             }
             HeadColor = new HSLColor((XORShift128.NextFloat() < 0.75f) ? num2 : num3, 1f, 0.05f + 0.15f * XORShift128.NextFloat());
             HeadColor.S = HeadColor.S * float.Pow(1f - Variations.GeneralMelanin, 2f);
-            HeadColor.L = float.Lerp(HeadColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
+            HeadColor.L = Custom.Lerp(HeadColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
             HeadColor.S = HeadColor.S * (0.1f + 0.9f * Custom.InverseLerp(0.1f, 0f, Custom.DistanceBetweenZeroToOneFloats(BodyColor.H, HeadColor.H) * Custom.LerpMap(float.Abs(0.5f - HeadColor.L), 0f, 0.5f, 1f, 0.3f)));
             if (HeadColor.L < 0.5f)
             {
                 HeadColor.L = HeadColor.L * (0.5f + 0.5f * Custom.InverseLerp(0.2f, 0.05f, Custom.DistanceBetweenZeroToOneFloats(BodyColor.H, HeadColor.H)));
             }
             HeadColorBlack = Custom.LerpMap((HeadColor.RGB().R + HeadColor.RGB().G + HeadColor.RGB().B) / 3f, 0.035f, 0.26f, 0.7f, 0.95f, 0.25f);
-            HeadColorBlack = float.Lerp(HeadColorBlack, float.Lerp(0.8f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+            HeadColorBlack = Custom.Lerp(HeadColorBlack, Custom.Lerp(0.8f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
             HeadColorBlack *= 0.2f + 0.7f * Variations.GeneralMelanin;
             HeadColorBlack = float.Max(HeadColorBlack, BodyColorBlack);
             HeadColor.S = Custom.LerpMap(HeadColor.L * (1f - HeadColorBlack), 0f, 0.15f, 1f, HeadColor.S);
@@ -601,11 +601,11 @@ namespace IDFinder
                 HeadColor.S = BodyColor.S * 0.75f;
             }
             DecorationColor = new HSLColor((XORShift128.NextFloat() < 0.65f) ? num : ((XORShift128.NextFloat() < 0.5f) ? num2 : num3), XORShift128.NextFloat(), 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.5f));
-            DecorationColor.L = DecorationColor.L * float.Lerp(Variations.GeneralMelanin, XORShift128.NextFloat(), 0.5f);
+            DecorationColor.L = DecorationColor.L * Custom.Lerp(Variations.GeneralMelanin, XORShift128.NextFloat(), 0.5f);
             EyeColor = new HSLColor(Elite ? 0f : num3, 1f, (XORShift128.NextFloat() < 0.2f) ? (0.5f + XORShift128.NextFloat() * 0.5f) : 0.5f);
             if (Variations.ColoredPupils > 0)
             {
-                EyeColor.L = float.Lerp(EyeColor.L, 1f, 0.3f);
+                EyeColor.L = Custom.Lerp(EyeColor.L, 1f, 0.3f);
             }
             if (HeadColor.L * (1f - HeadColorBlack) > EyeColor.L / 2f && (Variations.PupilSize == 0f || Variations.DeepPupils))
             {
@@ -613,13 +613,13 @@ namespace IDFinder
             }
             float value = XORShift128.NextFloat();
             float value2 = XORShift128.NextFloat();
-            BellyColor = new HSLColor(float.Lerp(BodyColor.H, DecorationColor.H, value * 0.7f), BodyColor.S * float.Lerp(1f, 0.5f, value), BodyColor.L + 0.05f + 0.3f * value2);
-            BellyColorBlack = float.Lerp(BodyColorBlack, 1f, 0.3f * float.Pow(value2, 1.4f));
+            BellyColor = new HSLColor(Custom.Lerp(BodyColor.H, DecorationColor.H, value * 0.7f), BodyColor.S * Custom.Lerp(1f, 0.5f, value), BodyColor.L + 0.05f + 0.3f * value2);
+            BellyColorBlack = Custom.Lerp(BodyColorBlack, 1f, 0.3f * float.Pow(value2, 1.4f));
             if (XORShift128.NextFloat() < 0.033333335f)
             {
-                HeadColor.L = float.Lerp(0.2f, 0.35f, XORShift128.NextFloat());
-                HeadColorBlack *= float.Lerp(1f, 0.8f, XORShift128.NextFloat());
-                BellyColor.H = float.Lerp(BellyColor.H, HeadColor.H, float.Pow(XORShift128.NextFloat(), 0.5f));
+                HeadColor.L = Custom.Lerp(0.2f, 0.35f, XORShift128.NextFloat());
+                HeadColorBlack *= Custom.Lerp(1f, 0.8f, XORShift128.NextFloat());
+                BellyColor.H = Custom.Lerp(BellyColor.H, HeadColor.H, float.Pow(XORShift128.NextFloat(), 0.5f));
             }
 
             // Only struct fields can have their fields written to. Struct properties cannot. As this implementation of ScavColors (which is not a class in Rain World's source) uses properties, these assignments are required.
@@ -641,7 +641,7 @@ namespace IDFinder
 			{
 				num = float.Pow(XORShift128.NextFloat(), 5f);
 			}
-			float num2 = num + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.3f * float.Pow(XORShift128.NextFloat(), 2f);
+			float num2 = num + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.3f * float.Pow(XORShift128.NextFloat(), 2f);
 			if (num2 > 1f)
 			{
 				num2 -= 1f;
@@ -650,26 +650,26 @@ namespace IDFinder
 			{
 				num2 += 1f;
 			}
-			BodyColor = new HSLColor(num, float.Lerp(0.05f, 1f, float.Pow(XORShift128.NextFloat(), 0.85f)), float.Lerp(0.05f, 0.8f, XORShift128.NextFloat()));
+			BodyColor = new HSLColor(num, Custom.Lerp(0.05f, 1f, float.Pow(XORShift128.NextFloat(), 0.85f)), Custom.Lerp(0.05f, 0.8f, XORShift128.NextFloat()));
 			BodyColor.S = BodyColor.S * (1f - Variations.GeneralMelanin);
-			BodyColor.L = float.Lerp(BodyColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
+			BodyColor.L = Custom.Lerp(BodyColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
 			BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
-			BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+			BodyColorBlack = Custom.Lerp(BodyColorBlack, Custom.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
 			BodyColorBlack *= Variations.GeneralMelanin;
-			Vector2 @float = new Vector2(BodyColor.S, float.Lerp(-1f, 1f, BodyColor.L * (1f - BodyColorBlack)));
+			Vector2 @float = new Vector2(BodyColor.S, Custom.Lerp(-1f, 1f, BodyColor.L * (1f - BodyColorBlack)));
 			if (@float.Length() < 0.5f)
 			{
 				@float = Vector2.Lerp(@float, Vector2.Normalize(@float), Custom.InverseLerp(0.5f, 0.3f, @float.Length()));
 				BodyColor = new HSLColor(BodyColor.H, Custom.InverseLerp(-1f, 1f, @float.X), Custom.InverseLerp(-1f, 1f, @float.Y));
 				BodyColorBlack = Custom.LerpMap((BodyColor.RGB().R + BodyColor.RGB().G + BodyColor.RGB().B) / 3f, 0.04f, 0.8f, 0.3f, 0.95f, 0.5f);
-				BodyColorBlack = float.Lerp(BodyColorBlack, float.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+				BodyColorBlack = Custom.Lerp(BodyColorBlack, Custom.Lerp(0.5f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
 				BodyColorBlack *= Variations.GeneralMelanin;
 			}
 			float num3;
 			if (XORShift128.NextFloat() < Custom.LerpMap(BodyColorBlack, 0.5f, 0.8f, 0.9f, 0.3f))
 			{
-				num3 = num2 + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.1f * float.Pow(XORShift128.NextFloat(), 1.5f);
-				num3 = float.Lerp(num3, 0.15f, XORShift128.NextFloat());
+				num3 = num2 + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.1f * float.Pow(XORShift128.NextFloat(), 1.5f);
+				num3 = Custom.Lerp(num3, 0.15f, XORShift128.NextFloat());
 				if (num3 > 1f)
 				{
 					num3 -= 1f;
@@ -681,10 +681,10 @@ namespace IDFinder
 			}
 			else
 			{
-				num3 = ((XORShift128.NextFloat() < 0.5f) ? Custom.Decimal(num + 0.5f) : Custom.Decimal(num2 + 0.5f)) + float.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.25f * float.Pow(XORShift128.NextFloat(), 2f);
-				if (XORShift128.NextFloat() < float.Lerp(0.8f, 0.2f, Personality.Energy))
+				num3 = ((XORShift128.NextFloat() < 0.5f) ? Custom.Decimal(num + 0.5f) : Custom.Decimal(num2 + 0.5f)) + Custom.Lerp(-1f, 1f, XORShift128.NextFloat()) * 0.25f * float.Pow(XORShift128.NextFloat(), 2f);
+				if (XORShift128.NextFloat() < Custom.Lerp(0.8f, 0.2f, Personality.Energy))
 				{
-					num3 = float.Lerp(num3, 0.15f, XORShift128.NextFloat());
+					num3 = Custom.Lerp(num3, 0.15f, XORShift128.NextFloat());
 				}
 				if (num3 > 1f)
 				{
@@ -697,14 +697,14 @@ namespace IDFinder
 			}
 			HeadColor = new HSLColor((XORShift128.NextFloat() < 0.75f) ? num2 : num3, 1f, 0.05f + 0.15f * XORShift128.NextFloat());
 			HeadColor.S = HeadColor.S * float.Pow(1f - Variations.GeneralMelanin, 2f);
-			HeadColor.L = float.Lerp(HeadColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
+			HeadColor.L = Custom.Lerp(HeadColor.L, 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.8f), 1f - Variations.GeneralMelanin);
 			HeadColor.S = HeadColor.S * (0.1f + 0.9f * Custom.InverseLerp(0.1f, 0f, Custom.DistanceBetweenZeroToOneFloats(BodyColor.H, HeadColor.H) * Custom.LerpMap(float.Abs(0.5f - HeadColor.L), 0f, 0.5f, 1f, 0.3f)));
 			if (HeadColor.L < 0.5f)
 			{
 				HeadColor.L = HeadColor.L * (0.5f + 0.5f * Custom.InverseLerp(0.2f, 0.05f, Custom.DistanceBetweenZeroToOneFloats(BodyColor.H, HeadColor.H)));
 			}
 			HeadColorBlack = Custom.LerpMap((HeadColor.RGB().R + HeadColor.RGB().G + HeadColor.RGB().B) / 3f, 0.035f, 0.26f, 0.7f, 0.95f, 0.25f);
-			HeadColorBlack = float.Lerp(HeadColorBlack, float.Lerp(0.8f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
+			HeadColorBlack = Custom.Lerp(HeadColorBlack, Custom.Lerp(0.8f, 1f, XORShift128.NextFloat()), XORShift128.NextFloat() * XORShift128.NextFloat() * XORShift128.NextFloat());
 			HeadColorBlack *= 0.2f + 0.7f * Variations.GeneralMelanin;
 			HeadColorBlack = float.Max(HeadColorBlack, BodyColorBlack);
 			HeadColor.S = Custom.LerpMap(HeadColor.L * (1f - HeadColorBlack), 0f, 0.15f, 1f, HeadColor.S);
@@ -725,11 +725,11 @@ namespace IDFinder
 				HeadColor.S = BodyColor.S * 0.75f;
 			}
 			DecorationColor = new HSLColor((XORShift128.NextFloat() < 0.65f) ? num : ((XORShift128.NextFloat() < 0.5f) ? num2 : num3), XORShift128.NextFloat(), 0.5f + 0.5f * float.Pow(XORShift128.NextFloat(), 0.5f));
-			DecorationColor.L = DecorationColor.L * float.Lerp(Variations.GeneralMelanin, XORShift128.NextFloat(), 0.5f);
+			DecorationColor.L = DecorationColor.L * Custom.Lerp(Variations.GeneralMelanin, XORShift128.NextFloat(), 0.5f);
 			EyeColor = new HSLColor(Elite ? 0f : num3, 1f, (XORShift128.NextFloat() < 0.2f) ? (0.5f + XORShift128.NextFloat() * 0.5f) : 0.5f);
 			if (Variations.ColoredPupils > 0)
 			{
-				EyeColor.L = float.Lerp(EyeColor.L, 1f, 0.3f);
+				EyeColor.L = Custom.Lerp(EyeColor.L, 1f, 0.3f);
 			}
 			if (HeadColor.L * (1f - HeadColorBlack) > EyeColor.L / 2f && (Variations.PupilSize == 0f || Variations.DeepPupils))
 			{
@@ -737,13 +737,13 @@ namespace IDFinder
 			}
 			float value = XORShift128.NextFloat();
 			float value2 = XORShift128.NextFloat();
-			BellyColor = new HSLColor(float.Lerp(BodyColor.H, DecorationColor.H, value * 0.7f), BodyColor.S * float.Lerp(1f, 0.5f, value), BodyColor.L + 0.05f + 0.3f * value2);
-			BellyColorBlack = float.Lerp(BodyColorBlack, 1f, 0.3f * float.Pow(value2, 1.4f));
+			BellyColor = new HSLColor(Custom.Lerp(BodyColor.H, DecorationColor.H, value * 0.7f), BodyColor.S * Custom.Lerp(1f, 0.5f, value), BodyColor.L + 0.05f + 0.3f * value2);
+			BellyColorBlack = Custom.Lerp(BodyColorBlack, 1f, 0.3f * float.Pow(value2, 1.4f));
 			if (XORShift128.NextFloat() < 0.033333335f)
 			{
-				HeadColor.L = float.Lerp(0.2f, 0.35f, XORShift128.NextFloat());
-				HeadColorBlack *= float.Lerp(1f, 0.8f, XORShift128.NextFloat());
-				BellyColor.H = float.Lerp(BellyColor.H, HeadColor.H, float.Pow(XORShift128.NextFloat(), 0.5f));
+				HeadColor.L = Custom.Lerp(0.2f, 0.35f, XORShift128.NextFloat());
+				HeadColorBlack *= Custom.Lerp(1f, 0.8f, XORShift128.NextFloat());
+				BellyColor.H = Custom.Lerp(BellyColor.H, HeadColor.H, float.Pow(XORShift128.NextFloat(), 0.5f));
 			}
 
 			// Only struct fields can have their fields written to. Struct properties cannot. As this implementation of ScavColors (which is not a class in Rain World's source) uses properties, these assignments are required.
@@ -773,28 +773,28 @@ namespace IDFinder
         {
             uint x = XORShift128.x, y = XORShift128.y, z = XORShift128.z, w = XORShift128.w;    // preserving state.
             XORShift128.InitSeed(seed);
-            DodgeSkill = Custom.PushFromHalf(float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Nervous : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
-            MidRangeSkill = Custom.PushFromHalf(float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Energy : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+            DodgeSkill = Custom.PushFromHalf(Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Nervous : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+            MidRangeSkill = Custom.PushFromHalf(Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Energy : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
             MeleeSkill = Custom.PushFromHalf(XORShift128.NextFloat(), 1f + XORShift128.NextFloat());
-            BlockingSkill = Custom.PushFromHalf(Custom.InverseLerp(0.35f, 1f, float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Bravery : personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat())), 1f + XORShift128.NextFloat());
-            ReactionSkill = Custom.PushFromHalf(float.Lerp(personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+            BlockingSkill = Custom.PushFromHalf(Custom.InverseLerp(0.35f, 1f, Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Bravery : personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat())), 1f + XORShift128.NextFloat());
+            ReactionSkill = Custom.PushFromHalf(Custom.Lerp(personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
 
             // In-game implementation only runs this if MSC is enabled. This will have an impact on the skills regardless of whether or not the scav is an elite. Consider adding an additional property for MSC. 
             if (elite)
             {
-                float num = float.Lerp(personality.Dominance, 1f, 0.15f);
-                DodgeSkill = float.Lerp(DodgeSkill, 1f, num * 0.15f); ;
-                MidRangeSkill = float.Lerp(MidRangeSkill, 1f, num * 0.1f);
-                BlockingSkill = float.Lerp(BlockingSkill, 1f, num * 0.1f);
-                ReactionSkill = float.Lerp(ReactionSkill, 1f, num * 0.05f);
+                float num = Custom.Lerp(personality.Dominance, 1f, 0.15f);
+                DodgeSkill = Custom.Lerp(DodgeSkill, 1f, num * 0.15f); ;
+                MidRangeSkill = Custom.Lerp(MidRangeSkill, 1f, num * 0.1f);
+                BlockingSkill = Custom.Lerp(BlockingSkill, 1f, num * 0.1f);
+                ReactionSkill = Custom.Lerp(ReactionSkill, 1f, num * 0.05f);
             }
             else
             {
                 float num2 = 1f - personality.Dominance;
-                DodgeSkill = float.Lerp(DodgeSkill, 0f, num2 * 0.085f);
-                MidRangeSkill = float.Lerp(MidRangeSkill, 0f, num2 * 0.085f);
-                BlockingSkill = float.Lerp(BlockingSkill, 0f, num2 * 0.05f);
-                ReactionSkill = float.Lerp(ReactionSkill, 0f, num2 * 0.15f);
+                DodgeSkill = Custom.Lerp(DodgeSkill, 0f, num2 * 0.085f);
+                MidRangeSkill = Custom.Lerp(MidRangeSkill, 0f, num2 * 0.085f);
+                BlockingSkill = Custom.Lerp(BlockingSkill, 0f, num2 * 0.05f);
+                ReactionSkill = Custom.Lerp(ReactionSkill, 0f, num2 * 0.15f);
             }
             XORShift128.InitState(x, y, z, w);
         }
@@ -802,28 +802,28 @@ namespace IDFinder
 		{
 			uint x = XORShift128.x, y = XORShift128.y, z = XORShift128.z, w = XORShift128.w;    // preserving state.
 			XORShift128.InitSeed(seed);
-			DodgeSkill = Custom.PushFromHalf(float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Nervous : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
-			MidRangeSkill = Custom.PushFromHalf(float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Energy : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+			DodgeSkill = Custom.PushFromHalf(Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Nervous : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+			MidRangeSkill = Custom.PushFromHalf(Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Energy : personality.Aggression, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
 			MeleeSkill = Custom.PushFromHalf(XORShift128.NextFloat(), 1f + XORShift128.NextFloat());
-			BlockingSkill = Custom.PushFromHalf(Custom.InverseLerp(0.35f, 1f, float.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Bravery : personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat())), 1f + XORShift128.NextFloat());
-			ReactionSkill = Custom.PushFromHalf(float.Lerp(personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
+			BlockingSkill = Custom.PushFromHalf(Custom.InverseLerp(0.35f, 1f, Custom.Lerp((XORShift128.NextFloat() < 0.5f) ? personality.Bravery : personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat())), 1f + XORShift128.NextFloat());
+			ReactionSkill = Custom.PushFromHalf(Custom.Lerp(personality.Energy, XORShift128.NextFloat(), XORShift128.NextFloat()), 1f + XORShift128.NextFloat());
 
 			// In-game implementation only runs this if MSC is enabled. This will have an impact on the skills regardless of whether or not the scav is an elite. Consider adding an additional property for MSC. 
 			if (elite)
 			{
-				float num = float.Lerp(personality.Dominance, 1f, 0.15f);
-				DodgeSkill = float.Lerp(DodgeSkill, 1f, num * 0.15f); ;
-				MidRangeSkill = float.Lerp(MidRangeSkill, 1f, num * 0.1f);
-				BlockingSkill = float.Lerp(BlockingSkill, 1f, num * 0.1f);
-				ReactionSkill = float.Lerp(ReactionSkill, 1f, num * 0.05f);
+				float num = Custom.Lerp(personality.Dominance, 1f, 0.15f);
+				DodgeSkill = Custom.Lerp(DodgeSkill, 1f, num * 0.15f); ;
+				MidRangeSkill = Custom.Lerp(MidRangeSkill, 1f, num * 0.1f);
+				BlockingSkill = Custom.Lerp(BlockingSkill, 1f, num * 0.1f);
+				ReactionSkill = Custom.Lerp(ReactionSkill, 1f, num * 0.05f);
 			}
 			else
 			{
 				float num2 = 1f - personality.Dominance;
-				DodgeSkill = float.Lerp(DodgeSkill, 0f, num2 * 0.085f);
-				MidRangeSkill = float.Lerp(MidRangeSkill, 0f, num2 * 0.085f);
-				BlockingSkill = float.Lerp(BlockingSkill, 0f, num2 * 0.05f);
-				ReactionSkill = float.Lerp(ReactionSkill, 0f, num2 * 0.15f);
+				DodgeSkill = Custom.Lerp(DodgeSkill, 0f, num2 * 0.085f);
+				MidRangeSkill = Custom.Lerp(MidRangeSkill, 0f, num2 * 0.085f);
+				BlockingSkill = Custom.Lerp(BlockingSkill, 0f, num2 * 0.05f);
+				ReactionSkill = Custom.Lerp(ReactionSkill, 0f, num2 * 0.15f);
 			}
 			XORShift128.InitState(x, y, z, w);
 		}

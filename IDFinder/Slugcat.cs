@@ -37,10 +37,10 @@
 			Sympathy = Custom.PushFromHalf(Sympathy, 1.5f);
 			Energy = Custom.PushFromHalf(Energy, 1.5f);
 			Bravery = Custom.PushFromHalf(Bravery, 1.5f);
-
-			Nervous = float.Lerp(XORShift128.NextFloat(), float.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Aggression = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Dominance = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
+			
+			Nervous = Custom.Lerp(XORShift128.NextFloat(), Custom.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
+			Aggression = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
+			Dominance = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
 
 			Nervous = Custom.PushFromHalf(Nervous, 2.5f);
 
@@ -58,9 +58,9 @@
 			Energy = Custom.PushFromHalf(Energy, 1.5f);
 			Bravery = Custom.PushFromHalf(Bravery, 1.5f);
 
-			Nervous = float.Lerp(XORShift128.NextFloat(), float.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Aggression = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Dominance = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
+			Nervous = Custom.Lerp(XORShift128.NextFloat(), Custom.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
+			Aggression = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
+			Dominance = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
 
 			Nervous = Custom.PushFromHalf(Nervous, 2.5f);
 
@@ -88,7 +88,7 @@
 			Stealth = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
 			Size = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
 			Wideness = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			H = float.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
+			H = Custom.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
 			S = float.Pow(XORShift128.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
 			Dark = (XORShift128.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
 			L = float.Pow(XORShift128.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);   // Min val = Math.Pow(0.75f, 1.5f) or 0.649519f
@@ -124,7 +124,7 @@
 			Stealth = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
 			Size = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
 			Wideness = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			H = float.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
+			H = Custom.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
 			S = float.Pow(XORShift128.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
 			Dark = (XORShift128.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
 			L = float.Pow(XORShift128.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);
@@ -306,7 +306,7 @@
 				}
 				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
 				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+				foodPreference[c] = Math.Clamp(Custom.Lerp(num - num2, Custom.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
 				c++;
 			}
 			return foodPreference;
@@ -398,7 +398,7 @@
 				}
 				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
 				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+				foodPreference[c] = Math.Clamp(Custom.Lerp(num - num2, Custom.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
 				c++;
 			}
 			return foodPreference;
