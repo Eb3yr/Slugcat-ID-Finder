@@ -163,7 +163,7 @@ namespace IDFinder
 		public float Colored { get; protected set; }
 		public int NumberOfSpines
 		{
-			get
+			get	// I'm pretty sure I can just use BackDecals.Positions? 
 			{
 				if (ColorAlphas is not null)
 					return ColorAlphas.Length;
