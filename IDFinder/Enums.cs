@@ -33,8 +33,15 @@
 		ScavSkills,
 		ScavBackPatterns
 	}
-	public enum SearchParamsEnum
+	public enum ScavBackType
 	{
-
+		HardBackSpikes,
+		WobblyBackTufts
+	}
+	public enum ScavBackPattern	// Migrate to this from BackDecals.BackPattern
+	{
+		SpineRidge,
+		DoubleSpineRidge,
+		RandomBackBlotch
 	}
 }
