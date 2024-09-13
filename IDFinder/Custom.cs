@@ -8,7 +8,7 @@ namespace IDFinder
 {
 	public static class Custom
 	{
-		// All methods but InverseLerp are both functions found in the Rain World codebase, in the Custom class within the RWCustom namespace. InverseLerp is a recreation of the equivalent function in the Mathf Unity namespace based on Unity's documentation.
+		// All methods but InverseLerp are functions found in the Rain World codebase, in the Custom class within the RWCustom namespace. InverseLerp is a recreation of the equivalent function in the Mathf Unity namespace based on Unity's documentation.
 		public static float PushFromHalf(float val, float pushExponent)
 		{
 			if (val == 0.5f)

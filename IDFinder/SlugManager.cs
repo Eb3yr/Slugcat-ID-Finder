@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace IDFinder
 {
+	// Legacy stuff
 	public class SlugManager
 	{
 		public Slugcat? this[int ID]
