@@ -447,12 +447,12 @@ namespace IDFinder
         public (float target, float weight)? Dominance { get; set; }
 		public bool AllNull()
 		{
-			if (Sympathy is null &&
-				Energy is null &&
-				Bravery is null &&
-				Nervous is null &&
-				Aggression is null &&
-				Dominance is null)
+			if ((Sympathy is null || Sympathy.Value.weight == 0f) &&
+				(Energy is null || Energy.Value.weight == 0f) &&
+				(Nervous is null || Nervous.Value.weight == 0f) &&
+				(Bravery is null || Bravery.Value.weight == 0f) &&
+				(Aggression is null || Aggression.Value.weight == 0f) &&
+				(Dominance is null || Dominance.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -472,16 +472,16 @@ namespace IDFinder
         public (float target, float weight)? Wideness { get; set; }
 		public bool AllNull()
 		{
-			if (Met is null &&
-				Bal is null &&
-				Size is null &&
-				Stealth is null &&
-				Dark is null &&
-				EyeColor is null &&
-				H is null &&
-				S is null &&
-				L is null &&
-				Wideness is null)
+			if ((Met is null || Met.Value.weight == 0f) &&
+				(Bal is null || Bal.Value.weight == 0f) &&
+				(Size is null || Size .Value.weight == 0f) &&
+				(Stealth is null || Stealth.Value.weight == 0f) &&
+				(Dark is null || Dark.Value.weight == 0f) &&
+				(EyeColor is null || EyeColor.Value.weight == 0f) &&
+				(H is null || H.Value.weight == 0f) &&
+				(S is null || S.Value.weight == 0f) &&
+				(L is null || L.Value.weight == 0f) &&
+				(Wideness is null || Wideness.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -500,15 +500,15 @@ namespace IDFinder
         public (float target, float weight)? RunSpeedFac { get; set; }
 		public bool AllNull()
 		{
-			if (BodyWeightFac is null &&
-				GeneralVisibilityBonus is null &&
-				VisualStealthInSneakMode is null &&
-				LoudnessFac is null &&
-				LungsFac is null &&
-				ThrowingSkill is null &&
-				PoleClimbSpeedFac is null &&
-				CorridorClimbSpeedFac is null &&
-				RunSpeedFac is null)
+			if ((BodyWeightFac is null || BodyWeightFac.Value.weight == 0f) &&
+				(GeneralVisibilityBonus is null || GeneralVisibilityBonus.Value.weight == 0f) &&
+				(VisualStealthInSneakMode is null || VisualStealthInSneakMode.Value.weight == 0f) &&
+				(LoudnessFac is null || LoudnessFac.Value.weight == 0f) &&
+				(LungsFac is null || LungsFac.Value.weight == 0f) &&
+				(ThrowingSkill is null || ThrowingSkill.Value.weight == 0f) &&
+				(PoleClimbSpeedFac is null || PoleClimbSpeedFac.Value.weight == 0f) &&
+				(CorridorClimbSpeedFac is null || CorridorClimbSpeedFac.Value.weight == 0f) &&
+				(RunSpeedFac is null || RunSpeedFac.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -536,24 +536,24 @@ namespace IDFinder
         public (float target, float weight)? NotCounted { get; set; }
 		public bool AllNull()
 		{
-			if (DangleFruit is null &&
-				WaterNut is null &&
-				JellyFish is null &&
-				SlimeMold is null &&
-				EggBugEgg is null &&
-				FireEgg is null &&
-				Popcorn  is null &&
-				GooieDuck is null &&
-				LilyPuck is null &&
-				GlowWeed is null &&
-				DandelionPeach  is null &&
-				Neuron is null &&
-				Centipede is null &&
-				SmallCentipede is null &&
-				VultureGrub is null &&
-				SmallNeedleWorm is null &&
-				Hazer is null &&
-				NotCounted is null)
+			if ((DangleFruit is null || DangleFruit.Value.weight == 0f) &&
+				(WaterNut is null || WaterNut.Value.weight == 0f) &&
+				(JellyFish is null || JellyFish.Value.weight == 0f) &&
+				(SlimeMold is null || SlimeMold.Value.weight == 0f) &&
+				(EggBugEgg is null || EggBugEgg.Value.weight == 0f) &&
+				(FireEgg is null || FireEgg.Value.weight == 0f) &&
+				(Popcorn  is null || Popcorn.Value.weight == 0f) &&
+				(GooieDuck is null || GooieDuck.Value.weight == 0f) &&
+				(LilyPuck is null || LilyPuck.Value.weight == 0f) &&
+				(GlowWeed is null || GlowWeed.Value.weight == 0f) &&
+				(DandelionPeach  is null || DandelionPeach.Value.weight == 0f) &&
+				(Neuron is null || Neuron.Value.weight == 0f) &&
+				(Centipede is null || Centipede.Value.weight == 0f) &&
+				(SmallCentipede is null || SmallCentipede.Value.weight == 0f) &&
+				(VultureGrub is null || VultureGrub.Value.weight == 0f) &&
+				(SmallNeedleWorm is null || SmallNeedleWorm.Value.weight == 0f) &&
+				(Hazer is null || Hazer.Value.weight == 0f) &&
+				(NotCounted is null || NotCounted.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -586,26 +586,26 @@ namespace IDFinder
 		public (float target, float weight)? GeneralMelanin { get; set; }
 		public bool AllNull()
 		{
-			if (WaistWidth is null &&
-				HeadSize is null &&
-				EartlerWidth is null &&
-				NeckThickness is null &&
-				HandsHeadColor is null &&
-				EyeSize is null &&
-				NarrowEyes is null &&
-				EyesAngle is null &&
-				Fatness is null &&
-				NarrowWaist is null &&
-				LegsSize is null &&
-				ArmThickness is null &&
-				WideTeeth  is null &&
-				PupilSize  is null &&
-				Scruffy is null &&
-				ColoredEartlerTips is null &&
-				DeepPupils is null &&
-				ColoredPupils is null &&
-				TailSegs is null &&
-				GeneralMelanin is null)
+			if ((WaistWidth is null || WaistWidth.Value.weight == 0f) &&
+				(HeadSize is null || HeadSize.Value.weight == 0f) &&
+				(EartlerWidth is null || EartlerWidth.Value.weight == 0f) &&
+				(NeckThickness is null || NeckThickness .Value.weight == 0f) &&
+				(HandsHeadColor is null || HandsHeadColor.Value.weight == 0f) &&
+				(EyeSize is null || EyeSize.Value.weight == 0f) &&
+				(NarrowEyes is null || NarrowEyes.Value.weight == 0f) &&
+				(EyesAngle is null || EyesAngle.Value.weight == 0f) &&
+				(Fatness is null || Fatness.Value.weight == 0f) &&
+				(NarrowWaist is null || NarrowWaist.Value.weight == 0f) &&
+				(LegsSize is null || LegsSize.Value.weight == 0f) &&
+				(ArmThickness is null || ArmThickness.Value.weight == 0f) &&
+				(WideTeeth  is null || WideTeeth.Value.weight == 0f) &&
+				(PupilSize  is null || PupilSize.Value.weight == 0f) &&
+				(Scruffy is null || Scruffy.Value.weight == 0f) &&
+				(ColoredEartlerTips is null || ColoredEartlerTips.Value.weight == 0f) &&
+				(DeepPupils is null || DeepPupils.Value.weight == 0f) &&
+				(ColoredPupils is null || ColoredPupils .Value.weight == 0f) &&
+				(TailSegs is null || TailSegs.Value.weight == 0f) &&
+				(GeneralMelanin is null || GeneralMelanin.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -637,23 +637,23 @@ namespace IDFinder
 		public (float target, float weight)? HeadColorBlack { get; set; }
 		public bool AllNull()
 		{
-			if (BellyColorH is null &&
-				BellyColorS is null &&
-				BellyColorL is null &&
-				BodyColorH is null &&
-				BodyColorS is null &&
-				BodyColorL is null &&
-				DecorationColorH is null &&
-				DecorationColorS is null &&
-				DecorationColorL is null &&
-				EyeColorH is null &&
-				EyeColorL is null &&
-				HeadColorH is null &&
-				HeadColorS is null &&
-				HeadColorL is null &&
-				BellyColorBlack is null &&
-				BodyColorBlack is null &&
-				HeadColorBlack is null)
+			if ((BellyColorH is null || BellyColorH.Value.weight == 0f) &&
+				(BellyColorS is null || BellyColorS.Value.weight == 0f) &&
+				(BellyColorL is null || BellyColorL.Value.weight == 0f) &&
+				(BodyColorH is null || BodyColorH.Value.weight == 0f) &&
+				(BodyColorS is null || BodyColorS.Value.weight == 0f) &&
+				(BodyColorL is null || BodyColorL.Value.weight == 0f) &&
+				(DecorationColorH is null || DecorationColorH.Value.weight == 0f) &&
+				(DecorationColorS is null || DecorationColorS.Value.weight == 0f) &&
+				(DecorationColorL is null || DecorationColorL.Value.weight == 0f) &&
+				(EyeColorH is null || EyeColorH.Value.weight == 0f) &&
+				(EyeColorL is null || EyeColorL.Value.weight == 0f) &&
+				(HeadColorH is null || HeadColorH.Value.weight == 0f) &&
+				(HeadColorS is null || HeadColorS.Value.weight == 0f) &&
+				(HeadColorL is null || HeadColorL.Value.weight == 0f) &&
+				(BellyColorBlack is null || BellyColorBlack .Value.weight == 0f) &&
+				(BodyColorBlack is null || BodyColorBlack.Value.weight == 0f) &&
+				(HeadColorBlack is null || HeadColorBlack.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -668,11 +668,11 @@ namespace IDFinder
 		public (float target, float weight)? ReactionSkill { get; set; }
 		public bool AllNull()
 		{
-			if (BlockingSkill is null &&
-				DodgeSkill is null &&
-				MeleeSkill is null &&
-				MidRangeSkill is null &&
-				ReactionSkill is null)
+			if ((BlockingSkill is null || BlockingSkill .Value.weight == 0f) &&
+				(DodgeSkill is null || DodgeSkill.Value.weight == 0f) &&
+				(MeleeSkill is null || MeleeSkill.Value.weight == 0f) &&
+				(MidRangeSkill is null || MidRangeSkill.Value.weight == 0f) &&
+				(ReactionSkill is null || ReactionSkill.Value.weight == 0f))
 				return true;
 
 			return false;
@@ -692,16 +692,16 @@ namespace IDFinder
 		public (int target, float weight)? NumberOfSpines { get; set; }
 		public bool AllNull()
 		{
-			if (Top is null &&
-				Bottom is null &&
-				Pattern is null &&
-				Type is null &&
-				ColorType is null &&
-				IsColored is null &&
-				ScaleGraf is null &&
-				GeneralSize is null &&
-				Colored is null &&
-				NumberOfSpines is null)
+			if ((Top is null || Top.Value.weight == 0f) &&
+				(Bottom is null || Bottom.Value.weight == 0f) &&
+				(Pattern is null || Pattern.Value.weight == 0f) &&
+				(Type is null || Type.Value.weight == 0f) &&
+				(ColorType is null || ColorType.Value.weight == 0f) &&
+				(IsColored is null || IsColored.Value.weight == 0f) &&
+				(ScaleGraf is null || ScaleGraf.Value.weight == 0f) &&
+				(GeneralSize is null || GeneralSize.Value.weight == 0f) &&
+				(Colored is null || Colored.Value.weight == 0f) &&
+				(NumberOfSpines is null || NumberOfSpines.Value.weight == 0f))
 				return true;
 
 			return false;
