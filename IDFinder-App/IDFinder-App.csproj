@@ -7,4 +7,8 @@
     <RootNamespace>IDFinder_App</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IDFinder\IDFinder.csproj" />
+  </ItemGroup>
+
 </Project>
