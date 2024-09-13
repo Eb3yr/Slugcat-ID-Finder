@@ -8,11 +8,17 @@
 </script>
 
 @code {
-	private bool boundValue = false;
+	private bool boundValue;
 	private int _value = 0;
 	private ElementReference thisRef = new();
 	[Parameter]
 	public EventCallback<bool>? StateChanged { get; set; } = null;
+	[Parameter]
+	public bool InitialValue { get; set; } = false;
+	public Checkbox()
+	{
+		boundValue = InitialValue;
+	}
 	public int Value
 	{
 		get => _value;

@@ -1,0 +1,22 @@
+﻿<li>
+    <span>
+        <!-- Clickable arrow icon to folder -->
+        <Checkbox StateChanged="CheckboxStateChanged"  InitialValue="InitialValue" />
+        @Label
+    </span>
+</li>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = "";
+    [Parameter]
+    public bool InitialValue { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> CheckboxStateChanged { get; set; }
+    [Parameter]
+    public EventCallback<bool> FolderedChanged { get; set; }
+    
+    public ListElement() { }
+
+
+}
