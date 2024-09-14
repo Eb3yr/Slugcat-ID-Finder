@@ -686,7 +686,7 @@ namespace IDFinder
 		public (string target, float weight)? Type { get; set; }	// Target would be BackDecals not string, but this circumvents calling ToString() constantly to compare it.
 		public (ColorTypeEnum target, float weight)? ColorType { get; set; }
 		public (bool target, float weight)? IsColored { get; set; }
-		public (int target, float weight)? ScaleGraf { get; set; }	// Necessary?
+		public (int target, float weight)? ScaleGraf { get; set; }	// At some point map the scale graphics so I know what to target
 		public (float target, float weight)? GeneralSize { get; set; }
 		public (float target, float weight)? Colored { get; set; }
 		public (int target, float weight)? NumberOfSpines { get; set; }
