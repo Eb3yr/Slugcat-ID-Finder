@@ -1,6 +1,6 @@
-﻿<li>
+﻿<li style="list-style-type:none">
     <span>
-        <!-- Clickable arrow icon to folder -->
+        <i class=@((Foldered) ? "iconoir-nav-arrow-right" : "iconoir-nav-arrow-down") @onclick="FolderedClicked" style="cursor: pointer; font-size:8pt;"></i>
         <Checkbox StateChanged="CheckboxStateChanged"  InitialValue="InitialValue" />
         @Label
     </span>
@@ -12,11 +12,15 @@
     [Parameter]
     public bool InitialValue { get; set; } = false;
     [Parameter]
+    public bool Foldered { get; set; } = false;
+    [Parameter]
     public EventCallback<bool> CheckboxStateChanged { get; set; }
     [Parameter]
     public EventCallback<bool> FolderedChanged { get; set; }
-    
-    public ListElement() { }
 
-
+    private void FolderedClicked()
+    {
+        Foldered ^= true;
+        FolderedChanged.InvokeAsync(Foldered);
+    }
 }

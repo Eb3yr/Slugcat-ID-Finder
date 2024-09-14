@@ -1,0 +1,46 @@
+﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
+
+<div style="display: flex; align-items: center; padding: 10px;">
+	@TargetLabel
+	@if (IsFloat)
+	{
+		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+	}
+	else if (IsInt)
+	{
+		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+	}
+	@Target
+	<pre>@WeightLabel</pre>	<!-- Preserves whitespace -->
+	<input type="number" @bind=Weight @bind:event="oninput" size="5em"/>
+	@Weight
+</div>
+
+@code
+{
+	[Parameter]
+	public TValue Target { get; set; } = default!;
+	[Parameter]
+	public float Weight { get; set; } = 0f;
+	[Parameter]
+	public bool IncludePreciseField { get; set; } = true;   // Additional input box for exact inputs
+	[Parameter]
+	public (TValue min, TValue max, TValue step) Range { get; set; } = ((TValue)Convert.ChangeType(0, typeof(TValue)), (TValue)Convert.ChangeType(1, typeof(TValue)), (TValue)Convert.ChangeType(0.01, typeof(TValue)));	// (0, 1, 0.01) default for float, (0, 1, 1) effective default for int
+	[Parameter]
+	public EventCallback<(TValue target, float weight)> InputChanged { get; set; }
+	[Parameter]
+	public string TargetLabel { get; set; } = "";
+	[Parameter]
+	public string WeightLabel { get; set; } = "\t\tWeight: ";
+
+	private bool IsInt = typeof(TValue) == typeof(Int32);
+	private bool IsFloat = typeof(TValue) == typeof(Single);
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		if (!(IsInt || IsFloat))
+			throw new ArgumentException("Only Single and Int32 may be used as generics for SliderInput.");
+	}
+}

@@ -1,13 +1,141 @@
 ﻿@using IDFinder_App.Components
 @page "/"
 
-<h1>Hello, world!</h1>
-<ul>
-    <ListElement Label="EleOne" />
-    <ListElement Label="EleTwo" />
+<h1>Basic Bitch UI Mk.I</h1>
 
-    <ul>
-        <ListElement Label="NestedEleThree" />
-        <ListElement Label="NestedEleFour" />
-    </ul>
+
+
+<SliderInput TValue="float"/>
+
+<ul style="list-style-type:none">
+	<ListElement Label="Scug" InitialValue="CheckedScug" CheckboxStateChanged="(bool b) => CheckedScug = b" Foldered="FolderScug" FolderedChanged="(bool b) => FolderScug = b" />
+	@if (!FolderScug)
+	{
+		<li><ul>
+
+		<ListElement Label="Personality" InitialValue="CheckedPersonality" CheckboxStateChanged="(bool b) => CheckedPersonality = b" Foldered="FolderPersonality" FolderedChanged="(bool b) =>      FolderPersonality = b" />
+		@if (!FolderPersonality)
+		{
+		<li>
+			<ul>
+				<!-- x number of custom input components, with dropdowns, sliders, etc and a simple numeric textbox as well for precise editing. Plus weight defaulting to 1f. Maybe increment-     decrement arrows on the weight input box? I think that's a thing that can be done. -->
+				<!-- Can I dynamically generate these in-code and fill in lambdas that alter the values of instances of SearchParams, which all get added up together at the end? -->
+			</ul>
+		</li>
+		}
+
+		<ListElement Label="NPCStats" InitialValue="CheckedNPCStats" CheckboxStateChanged="(bool b) => CheckedNPCStats = b" Foldered="FolderNPCStats" FolderedChanged="(bool b) => FolderNPCStats = b" />
+		@if (!FolderNPCStats)
+		{
+		<li>
+			<ul>
+			</ul>
+		</li>
+		}
+
+		<ListElement Label="SlugcatStats" InitialValue="CheckedSlugcatStats" CheckboxStateChanged="(bool b) => CheckedSlugcatStats = b" Foldered="FolderSlugcatStats" FolderedChanged="(bool b) => FolderSlugcatStats = b" />
+		@if (!FolderSlugcatStats)
+		{
+		<li>
+			<ul>
+			</ul>
+		</li>
+		}
+
+		<ListElement Label="FoodPrefs" InitialValue="CheckedFoodPrefs" CheckboxStateChanged="(bool b) => CheckedFoodPrefs = b" Foldered="FolderFoodPrefs" FolderedChanged="(bool b) => FolderFoodPrefs = b" />
+		@if (!FolderFoodPrefs)
+		{
+		<li>
+			<ul>
+			</ul>
+		</li>
+		}
+
+		</ul></li>
+	}
+
+	<ListElement Label="Scav" InitialValue="CheckedScav" CheckboxStateChanged="(bool b) => CheckedScav = b" Foldered="FolderScav" FolderedChanged="(bool b) => FolderScav = b" />
+	@if (!FolderScav)
+	{
+		<li><ul>
+
+		<ListElement Label="IVars" InitialValue="CheckedIVars" CheckboxStateChanged="(bool b) => CheckedIVars = b" Foldered="FolderIVars" FolderedChanged="(bool b) => FolderIVars = b" />
+		@if (!FolderIVars)
+		{
+			<li>
+				<ul>
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavColors" InitialValue="CheckedScavColors" CheckboxStateChanged="(bool b) => CheckedScavColors = b" Foldered="FolderScavColors" FolderedChanged="(bool b) => FolderScavColors = b" />
+		@if (!FolderScavColors)
+		{
+			<li>
+				<ul>
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavSkills" InitialValue="CheckedScavSkills" CheckboxStateChanged="(bool b) => CheckedScavSkills = b" Foldered="FolderScavSkills" FolderedChanged="(bool b) => FolderScavSkills = b" />
+		@if (!FolderScavSkills)
+		{
+			<li>
+				<ul>
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavBack" InitialValue="CheckedScavBack" CheckboxStateChanged="(bool b) => CheckedScavBack = b" Foldered="FolderScavBack" FolderedChanged="(bool b) => FolderScavBack = b" />
+		@if (!FolderScavBack)
+		{
+			<li>
+				<ul>
+				</ul>
+			</li>
+		}
+
+		</ul></li>
+	}
 </ul>
+
+@code
+{
+	// Rain World UI isn't too complicated. Thin lines, curved edge rectangles, double bezel on the selected button, and a font. I can find recreations of the font on fontstruct.com
+	// Then it's just about sizing, aligning, and a decent background.
+
+	bool FolderScug = true;
+	bool FolderScav = true;
+
+	bool CheckedScug = false;
+	bool CheckedScav = false;
+
+	bool FolderPersonality = true;
+	bool FolderNPCStats = true;
+	bool FolderSlugcatStats = true;
+	bool FolderFoodPrefs = true;
+	bool FolderIVars = true;
+	bool FolderScavColors = true;
+	bool FolderScavSkills = true;
+	bool FolderScavBack = true;
+
+	bool CheckedPersonality = false;
+	bool CheckedNPCStats = false;
+	bool CheckedSlugcatStats = false;
+	bool CheckedFoodPrefs = false;
+	bool CheckedIVars = false;
+	bool CheckedScavColors = false;
+	bool CheckedScavSkills = false;
+	bool CheckedScavBack = false;
+
+	// When formulating the SearchParams to send to the Searcher (Yes, do this whenever search is called, don't track it, it's a cheap computation and makes things easier), I need to consider what's checked or not. 
+
+	MyEnum enumTracker = MyEnum.Zero;
+
+	enum MyEnum
+	{
+		Zero,
+		One,
+		Two
+	}
+}

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDFinder", "IDFinder\IDFinder.csproj", "{AAE84F1E-D037-42A6-9506-1EBE4EE8BAD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDFinder-App", "IDFinder-App\IDFinder-App.csproj", "{94FDF944-6AEA-48CD-8FFE-406C4E268C22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDFinder-App", "IDFinder-App\IDFinder-App.csproj", "{94FDF944-6AEA-48CD-8FFE-406C4E268C22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,135 @@
+﻿@attribute [Obsolete("Use alternatives in IDFinder_App.Components namespace, tried to make this overly applicable and shot myself in the foot in the progress.")]
+
+<div style="display: flex; align-items: center; padding: 10px;">
+	@switch (Input)
+	{
+		case InputType.SliderFloat:
+			<input type="range" @bind="FloatTarget" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+			break;
+
+		case InputType.SliderInt:
+			<input type="range" @bind="IntTarget" @bind:event="oninput" min="Range.min" max="Range.max" step="Range.step" />
+			break;
+
+		case InputType.Dropdown:
+			<select @bind="IntTarget" > <!-- Gotta figure out a convenient system for  -->
+				
+			</select>
+			break;
+
+		case InputType.Checkbox:
+			<input type="checkbox" />
+			break;
+	}
+	@if (IncludePreciseField)
+	{
+		if (Input == InputType.SliderFloat)
+		{
+			<input type="number" @bind="FloatTarget" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+		}
+		else if (Input == InputType.SliderInt)
+		{
+			<input type="number" @bind="IntTarget" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+		}
+	}
+
+	<!-- weight -->
+	<p style="padding-left:24px">weight:</p>
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public InputType Input { get; set; } = InputType.Checkbox;
+	[Parameter]
+	public bool IncludePreciseField { get; set; } = true;	// Additional input box for exact inputs
+	[Parameter]
+	public (float min, float max, float step) Range { get; set; }
+	[Parameter]
+	public Type DropdownEnum { get; set; } = null!;
+	[Parameter]
+	public object? InitialValue { get; set; }
+	[Parameter]
+	public EventCallback<(float target, float weight)> FloatInputUpdated { get; set; }
+	[Parameter]
+	public EventCallback<(int target, float weight)> IntInputUpdated { get; set; }
+	[Parameter]
+	public EventCallback<(bool target, float weight)> BoolInputUpdated { get; set; }
+	[Parameter]
+	public EventCallback<(int target, float weight)> EnumInputUpdated { get; set; }
+
+
+	private float FloatTarget { get => (float)Target;set => Target = value; }
+	private int IntTarget { get => (int)Target; set => Target = value; }
+	private bool BoolTarget { get => (bool)Target; set => Target = value; }
+
+	private object _target = 0;
+	private object Target
+	{
+		get => _target;
+		set
+		{
+			_target = value;
+			//inputUpdated.InvokeAsync((_target, weight));
+			switch (Input)
+			{
+				case InputType.SliderFloat:
+					FloatInputUpdated.InvokeAsync((FloatTarget, weight));
+					break;
+
+				case InputType.SliderInt:
+					IntInputUpdated.InvokeAsync((IntTarget, weight));
+					break;
+
+				case InputType.Dropdown:
+					EnumInputUpdated.InvokeAsync((IntTarget, weight));
+					break;
+
+				case InputType.Checkbox:
+					BoolInputUpdated.InvokeAsync((BoolTarget, weight));
+					break;
+
+			}
+		}
+	}
+	private float weight;
+
+	protected override Task OnInitializedAsync()
+	{
+		base.OnInitialized();
+		switch (Input)
+		{
+			case InputType.SliderFloat:
+				FloatTarget = (float)0f;
+				break;
+			case InputType.Dropdown:
+				if (DropdownEnum is null)
+					throw new ArgumentNullException("Parameter DropdownEnum not given");
+
+				goto case InputType.SliderInt;
+			case InputType.SliderInt:
+				IntTarget = (int)0;
+				break;
+			case InputType.Checkbox:
+				BoolTarget = false;
+				break;
+			case InputType.Color:
+				throw new NotImplementedException("Color is not implemented");
+			default:
+				throw new ArgumentOutOfRangeException("How did you get here?");
+		}
+
+		if (InitialValue is not null)
+			Target = InitialValue;
+
+		return Task.CompletedTask;
+	}
+
+	public enum InputType
+	{
+		SliderFloat,
+		SliderInt,
+		Dropdown,
+		Checkbox,
+		Color	// <input type="color" /> could have a button on the page that toggles between this and a more typical approach. Or a separate part of the page that lets you convert between an input color and floating point hsl. Could do either, probably will do latter because it's easier.
+	}
+}
