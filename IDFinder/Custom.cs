@@ -26,7 +26,7 @@ namespace IDFinder
 		{
 			if (exponent != null)
 			{
-				return Custom.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), (float)exponent));
+				return Custom.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), exponent.Value));
 			}
 			else
 			{
