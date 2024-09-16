@@ -1,7 +1,7 @@
 ﻿<li style="list-style-type:none">
     <span>
         <i class=@((Foldered) ? "iconoir-nav-arrow-right" : "iconoir-nav-arrow-down") @onclick="FolderedClicked" style="cursor: pointer; font-size:8pt;"></i>
-        <Checkbox StateChanged="CheckboxStateChanged"  InitialValue="InitialValue" />
+        <input type="checkbox" StateChanged="CheckboxStateChanged"  InitialValue="InitialValue" />
         @Label
     </span>
 </li>

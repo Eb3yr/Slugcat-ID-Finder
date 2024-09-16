@@ -1,26 +1,40 @@
 ﻿@typeparam T
-
-<select TValue="T" @attributes="AdditionalAttributes">
-	@foreach (T o in Options)
-	{
-		<option value="@o" onclick="@(() => Change(o))">	<!-- binding to select causes all sorts of weird behaviours, so we use this workaround. -->
-			@o
-		</option>
-	}
-</select>
+<li>
+	<span>
+		<select TValue="T" @attributes="AdditionalAttributes">
+			@foreach (T o in Options)
+			{
+				<option value="@o" onclick="@(() => Change(o))">	<!-- binding to select causes all sorts of weird behaviours, so we use this workaround. -->
+					@o
+				</option>
+			}
+		</select>
+		<pre>@WeightLabel</pre>
+		<input type="number" @bind=Weight @bind:after="InvokeChange" size="3px" style="font-size: @(0.6f * FontSize)px;"/>
+	</span>
+</li>
 
 @code {
 	[Parameter]
 	public T SelectedOption { get; set; }
 	[Parameter]
-	public IEnumerable<T> Options { get; set; } 
+	public IEnumerable<T> Options { get; set; }
 	[Parameter]
-	public EventCallback<T> SelectedOptionChanged { get; set; }
+	public float Weight { get; set; } = 0f;
+	[Parameter]
+	public string WeightLabel { get; set; } = Consts.DefWeightLabel;
+	[Parameter]
+	public float FontSize { get; set; } = Consts.DefFontSize;
+	[Parameter]
+	public EventCallback<(T target, float weight)> SelectedOptionChanged { get; set; }
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
 	protected override void OnInitialized()
 	{
+
+		// I should probably make the weight number input adapt to its contents' width, like I did with the precise input in SliderInput.razor
+
 		if (Options is null || Options.Count() == 0)
 		{
 			if (!typeof(T).IsEnum)
@@ -36,6 +50,10 @@
 	private void Change(T t)
 	{
 		SelectedOption = t;
-		SelectedOptionChanged.InvokeAsync(SelectedOption);
+		InvokeChange();
+	}
+	private void InvokeChange()
+	{
+		SelectedOptionChanged.InvokeAsync((SelectedOption, Weight));
 	}
 }

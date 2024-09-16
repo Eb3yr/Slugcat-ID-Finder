@@ -1,4 +1,6 @@
 ﻿@using IDFinder_App.Components
+@using IDFinder
+
 @page "/"
 <style>
 	body {
@@ -6,11 +8,14 @@
 	}
 </style>
 
-<DropdownInput Options="@(new List<string>(){ "A", "B", "C" })" SelectedOptionChanged="@((string s) => Console.WriteLine("Selected changed to " + s))" />
+<!-- TODO: Rename event callbacks to fit "OnChanged" kinda structure. Do it before I put all the components in here and have to manually edit them. -->
 
-<DropdownInputEnum T="MyEnum" SelectedOptionChanged="@((MyEnum e) => Console.WriteLine("Selected enum changed to " + e + " and type of e is " + e.GetType()))" />
+<StrDropdown Options="@(new List<string>(){ "A", "B", "C" })" SelectedOptionChanged="@(((string s, float w) t) => Console.WriteLine("Selected changed to " + t.s))" />
+
+<EnumDropdown T="MyEnum" SelectedOptionChanged="@(((MyEnum e, float w) t) => Console.WriteLine("Selected enum changed to " + t.e + " and type of e is " + t.e.GetType()))" />
 
 <SliderInput TValue="float" />
+
 
 <ul style="list-style-type:none">
 	<ListElement Label="Scug" InitialValue="CheckedScug" CheckboxStateChanged="(bool b) => CheckedScug = b" Foldered="FolderScug" FolderedChanged="(bool b) => FolderScug = b" />
@@ -23,8 +28,7 @@
 		{
 		<li>
 			<ul>
-				<!-- x number of custom input components, with dropdowns, sliders, etc and a simple numeric textbox as well for precise editing. Plus weight defaulting to 1f. Maybe increment-     decrement arrows on the weight input box? I think that's a thing that can be done. -->
-				<!-- Can I dynamically generate these in-code and fill in lambdas that alter the values of instances of SearchParams, which all get added up together at the end? -->
+				
 			</ul>
 		</li>
 		}
@@ -104,10 +108,32 @@
 	}
 </ul>
 
+<span>
+	<button @onclick="PrintSearchResults">Initiate search</button>
+	@if (isCurrentlySearching)
+	{
+		<button @onclick="@(() => Console.WriteLine("abortplaceholder"))">Abort</button>
+	}
+</span>
+
+<button @onclick="@(() => {Console.WriteLine("Click!"); responsiveCounter++;})">Press me to test responsiveness. Counter: @responsiveCounter</button>
+
 @code
 {
 	// Rain World UI isn't too complicated. Thin lines, curved edge rectangles, double bezel on the selected button, and a font. I can find recreations of the font on fontstruct.com
 	// Then it's just about sizing, aligning, and a decent background.
+
+	bool _cs = false;
+	bool isCurrentlySearching
+	{
+		get => _cs;
+		set
+		{
+			Console.WriteLine(value + " searching");
+			_cs = value;
+		}
+	}
+	int responsiveCounter = 0;
 
 	bool FolderScug = true;
 	bool FolderScav = true;
@@ -134,6 +160,85 @@
 	bool CheckedScavBack = false;
 
 	// When formulating the SearchParams to send to the Searcher (Yes, do this whenever search is called, don't track it, it's a cheap computation and makes things easier), I need to consider what's checked or not. 
+
+	IPersonalityParams personalityParams;
+	INPCStatsParams nPCStatsParams;
+	ISlugcatStatsParams slugcatStatsParams;
+	IFoodPreferencesParams foodPreferencesParams;
+	IIndividualVariationsParams individualVariationsParams;
+	IScavColorsParams scavColorsParams;
+	IScavSkillsParams scavSkillsParams;
+	IScavBackPatternsParams scavBackPatternsParams;
+
+	public Index()
+	{
+		personalityParams = new SearchParams();
+		nPCStatsParams = new SearchParams();
+		slugcatStatsParams = new SearchParams();
+		foodPreferencesParams = new SearchParams();
+		individualVariationsParams = new SearchParams();
+		scavColorsParams = new SearchParams();
+		scavSkillsParams = new SearchParams();
+		scavBackPatternsParams = new SearchParams();
+
+		// default placeholder val
+		personalityParams = new SearchParams()
+			{
+				Aggression = (1f, 1f)
+			};
+	}
+
+	private async void PrintSearchResults()
+	{
+		// TODO: Set up a cancellation token system in these two methods to abort the previous search if the abort button is pressed
+		// Will want an abort button that shows up only when a search is active, tracked by a bool.
+		// Can do that with Thread.Abort
+
+		// TODO: Do this properly. Doesn't work. Read a tutorial
+
+		isCurrentlySearching = true;
+		//new Task(() =>
+		//{
+		//	foreach (var kvp in InitiateSearch().Result)
+		//		Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
+		//}).WaitAsync(CancellationToken.None).Start();
+		//
+		//Thread thread = new Thread(new ThreadStart(() =>
+		//{
+		//	foreach (var kvp in InitiateSearch().Result)
+		//		Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
+		//})).Start();
+
+		await Task.Run(() =>
+		{
+			foreach (var kvp in InitiateSearch().Result)
+				Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
+
+			isCurrentlySearching = false;
+		});
+	}
+
+	private async Task<IEnumerable<KeyValuePair<float, int>>> InitiateSearch()
+	{
+		// Compose it all into a search param, add up, call Search.
+		SearchParams sParams = (SearchParams)personalityParams + (SearchParams)nPCStatsParams + (SearchParams)slugcatStatsParams + (SearchParams)foodPreferencesParams + (SearchParams)individualVariationsParams + (SearchParams)scavColorsParams + (SearchParams)scavSkillsParams + (SearchParams)scavBackPatternsParams;
+
+		// Placeholder vars
+		int start = 0;
+		int stop = 100_000_000;
+		int numToStore = 24;
+		int threads = 8;
+		bool trimNumToStore = true;
+		// Need to set up infrastructure for logging percents properly now.
+		bool printToConsole = true;
+
+		// New Task to run the search on without blocking this thread
+		var task = new Task<IEnumerable<KeyValuePair<float, int>>>(() => Searcher.SearchThreaded(start, stop, numToStore, threads, sParams, trimNumToStore, printToConsole));
+		task.Start();
+		return await task;
+	}
+
+
 
 	MyEnum enumTracker = MyEnum.Zero;
 

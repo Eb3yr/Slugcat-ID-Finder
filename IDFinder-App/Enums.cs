@@ -3,7 +3,7 @@ using static IDFinder.BackTuftsAndRidges;
 
 namespace IDFinder_App
 {
-	enum SearchParams
+	enum SearchParamsEnum
 	{
 		Sympathy,
 		Energy,

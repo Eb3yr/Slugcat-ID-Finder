@@ -1,4 +1,4 @@
-﻿<IDFinder_App.Components.Generics.GenericDropdownInput Options="Options" SelectedOption="SelectedOption" SelectedOptionChanged="SelectedOptionChanged" AdditionalAttributes="AdditionalAttributes"/>
+﻿<IDFinder_App.Components.Generics.GenericDropdownInput T="string" Options="Options" SelectedOption="SelectedOption" SelectedOptionChanged="SelectedOptionChanged" Weight="Weight" AdditionalAttributes="AdditionalAttributes"/>
 
 @code
 {
@@ -8,7 +8,9 @@
 	[Parameter, EditorRequired]
 	public IEnumerable<string> Options { get; set; } = default!;
 	[Parameter]
-	public EventCallback<string> SelectedOptionChanged { get; set; }
+	public EventCallback<(string target, float weight)> SelectedOptionChanged { get; set; }
+	[Parameter]
+	public float Weight { get; set; } = 0f;
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 }

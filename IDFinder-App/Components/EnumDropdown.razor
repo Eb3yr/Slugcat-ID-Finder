@@ -10,7 +10,7 @@
 	[Parameter, EditorRequired]
 	public IEnumerable<T> Options { get; set; }
 	[Parameter]
-	public EventCallback<T> SelectedOptionChanged { get; set; }
+	public EventCallback<(T target, float weight)> SelectedOptionChanged { get; set; }
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 	protected override void OnInitialized()

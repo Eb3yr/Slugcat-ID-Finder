@@ -1,39 +1,41 @@
 ﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
 @inject IJSRuntime JS
 
-<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px" >
-	@TargetLabel
-
-	<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus" style="width: @(SliderWidth)px; padding-right: 18px" />
-
-	@if (thumbSelected)
-	{
-		// Terrible hack to kind-of roughly approximate an offset to center the text. I hate this, but javascript is awful and I dont want to fiddle with that all day for this.
-		// Nicest option to implement in future is this https://stackoverflow.com/questions/63109527/how-to-find-svg-text-size-in-pixels-for-blazor-application
-		string tar = Target.ToString()!;
-		float leftPad = -0.25f * FontSize;
-		leftPad *= tar.Length switch
-		{
-			1 => 2.3f,
-			3 => 3.5f,
-			4 => 4.25f,
-			_ => 1f
-		};
-		if (Convert.ToSingle(Target) == 1f)
-			leftPad -= FontSize * 0.4f;	// 1 formats further right than 0
-
-		<p style="position: relative; width: 0; top: -16px; left: @(leftPad + -1f * SliderWidth * (1f - IDFinder_App.Custom.InverseLerp(Convert.ToSingle(Range.min), Convert.ToSingle(Range.max), Convert.ToSingle(Target))))px; font-size: @(0.6f * FontSize)px; " >@Target</p>
-	}
+<li>
+	<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px" >
+		@TargetLabel
 	
-	@if (IncludePreciseField)
-	{
-		<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" size="3px" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(0.6f * FontSize)px;"/>
-	}
+		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus"	style="width: @(SliderWidth)px; padding-right: 18px" />
+	
+		@if (thumbSelected)
+		{
+			// Terrible hack to kind-of roughly approximate an offset to center the text. I hate this, but javascript is awful and I dont want to fiddle with that all day for this.
+			// Nicest option to implement in future is this https://stackoverflow.com/questions/63109527/how-to-find-svg-text-size-in-pixels-for-blazor-application
+			string tar = Target.ToString()!;
+			float leftPad = -0.25f * FontSize;
+			leftPad *= tar.Length switch
+			{
+				1 => 2.3f,
+				3 => 3.5f,
+				4 => 4.25f,
+				_ => 1f
+			};
+			if (Convert.ToSingle(Target) == 1f)
+				leftPad -= FontSize * 0.4f;	// 1 formats further right than 0
+	
+			<p style="position: relative; width: 0; top: -16px; left: @(leftPad + -1f * SliderWidth * (1f - IDFinder_App.Custom.InverseLerp(Convert.ToSingle(Range.min), Convert.ToSingle   (Range.max), Convert.ToSingle(Target))))px; font-size: @(0.6f * FontSize)px; " >@Target</p>
+		}
+		
+		@if (IncludePreciseField)
+		{
+			<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(0.6f * FontSize)px;"/>
+		}
+	
+		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
 
-	<pre>@WeightLabel</pre>	<!-- Preserves whitespace -->
-	<input type="number" @bind=Weight @bind:after="InvokeChanged" size="3px" style="font-size: @(0.6f * FontSize)px;"/>
-</div>
-
+		<button @onclick="@(() => Console.WriteLine("weight = " + Weight))">Print weight</button>
+	</div>
+</li>
 @code
 {
 	[Parameter]
@@ -53,7 +55,7 @@
 	[Parameter]
 	public int SliderWidth { get; set; } = 320;
 	[Parameter]
-	public float FontSize { get; set; } = 32f;
+	public float FontSize { get; set; } = Consts.DefFontSize;
 
 	private bool thumbSelected = false;
 
@@ -69,6 +71,7 @@
 	{
 		// Only do on slider release or otherwise when modifying it. Else we're spamming this method every single instant the slider is moving. 
 		InputChanged.InvokeAsync((Target, Weight));
+		Console.WriteLine("Changed weight to " + Weight);
 	}
 
 	private async void ClearFocus()

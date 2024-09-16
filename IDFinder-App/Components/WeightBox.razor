@@ -1,0 +1,13 @@
+﻿<pre>@WeightLabel</pre>
+<input type="number" @bind-value="Weight" @bind-value:after="() => WeightChanged.InvokeAsync(Weight)" style="width: @(1.3f * FontSize)px; font-size: @(0.6f * FontSize)px;" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" />
+
+@code {
+	[Parameter]
+	public float Weight { get; set; }
+	[Parameter]
+	public string WeightLabel { get; set; } = Consts.DefWeightLabel;
+	[Parameter]
+	public float FontSize { get; set; } = Consts.DefFontSize;
+	[Parameter]
+	public EventCallback<float> WeightChanged { get; set; }
+}
