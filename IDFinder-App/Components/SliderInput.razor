@@ -1,19 +1,37 @@
 ﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
+@inject IJSRuntime JS
 
-<div style="display: flex; align-items: center; padding: 10px;">
+<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px" >
 	@TargetLabel
-	@if (IsFloat)
+
+	<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus" style="width: @(SliderWidth)px; padding-right: 18px" />
+
+	@if (thumbSelected)
 	{
-		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+		// Terrible hack to kind-of roughly approximate an offset to center the text. I hate this, but javascript is awful and I dont want to fiddle with that all day for this.
+		// Nicest option to implement in future is this https://stackoverflow.com/questions/63109527/how-to-find-svg-text-size-in-pixels-for-blazor-application
+		string tar = Target.ToString()!;
+		float leftPad = -0.25f * FontSize;
+		leftPad *= tar.Length switch
+		{
+			1 => 2.3f,
+			3 => 3.5f,
+			4 => 4.25f,
+			_ => 1f
+		};
+		if (Convert.ToSingle(Target) == 1f)
+			leftPad -= FontSize * 0.4f;	// 1 formats further right than 0
+
+		<p style="position: relative; width: 0; top: -16px; left: @(leftPad + -1f * SliderWidth * (1f - IDFinder_App.Custom.InverseLerp(Convert.ToSingle(Range.min), Convert.ToSingle(Range.max), Convert.ToSingle(Target))))px; font-size: @(0.6f * FontSize)px; " >@Target</p>
 	}
-	else if (IsInt)
+	
+	@if (IncludePreciseField)
 	{
-		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" />
+		<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" size="3px" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(0.6f * FontSize)px;"/>
 	}
-	@Target
+
 	<pre>@WeightLabel</pre>	<!-- Preserves whitespace -->
-	<input type="number" @bind=Weight @bind:event="oninput" size="5em"/>
-	@Weight
+	<input type="number" @bind=Weight @bind:after="InvokeChanged" size="3px" style="font-size: @(0.6f * FontSize)px;"/>
 </div>
 
 @code
@@ -23,24 +41,41 @@
 	[Parameter]
 	public float Weight { get; set; } = 0f;
 	[Parameter]
-	public bool IncludePreciseField { get; set; } = true;   // Additional input box for exact inputs
+	public bool IncludePreciseField { get; set; } = true;   // Additional input box for exact inputs. Not constrained to Range
 	[Parameter]
-	public (TValue min, TValue max, TValue step) Range { get; set; } = ((TValue)Convert.ChangeType(0, typeof(TValue)), (TValue)Convert.ChangeType(1, typeof(TValue)), (TValue)Convert.ChangeType(0.01, typeof(TValue)));	// (0, 1, 0.01) default for float, (0, 1, 1) effective default for int
+	public (TValue min, TValue max, TValue step) Range { get; set; } = ((TValue)Convert.ChangeType(0, typeof(TValue)), (TValue)Convert.ChangeType(1, typeof(TValue)), (TValue)Convert.ChangeType(0.01, typeof(TValue)));
 	[Parameter]
 	public EventCallback<(TValue target, float weight)> InputChanged { get; set; }
 	[Parameter]
 	public string TargetLabel { get; set; } = "";
 	[Parameter]
 	public string WeightLabel { get; set; } = "\t\tWeight: ";
+	[Parameter]
+	public int SliderWidth { get; set; } = 320;
+	[Parameter]
+	public float FontSize { get; set; } = 32f;
 
-	private bool IsInt = typeof(TValue) == typeof(Int32);
-	private bool IsFloat = typeof(TValue) == typeof(Single);
+	private bool thumbSelected = false;
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
-		if (!(IsInt || IsFloat))
-			throw new ArgumentException("Only Single and Int32 may be used as generics for SliderInput.");
+		if (typeof(TValue) != typeof(Int32) && typeof(TValue) != typeof(Single))
+			throw new ArgumentException("Only Single and Int32 may be used as generics for SliderInput.");	// Could support more but would rather not risk it.
+	}
+
+	private void InvokeChanged()
+	{
+		// Only do on slider release or otherwise when modifying it. Else we're spamming this method every single instant the slider is moving. 
+		InputChanged.InvokeAsync((Target, Weight));
+	}
+
+	private async void ClearFocus()
+	{
+		await JS.InvokeAsync<string>("document.activeElement.blur", null);
+		thumbSelected = false;
+		InvokeChanged();
+		StateHasChanged();
 	}
 }

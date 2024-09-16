@@ -1,0 +1,41 @@
+﻿@typeparam T
+
+<select TValue="T" @attributes="AdditionalAttributes">
+	@foreach (T o in Options)
+	{
+		<option value="@o" onclick="@(() => Change(o))">	<!-- binding to select causes all sorts of weird behaviours, so we use this workaround. -->
+			@o
+		</option>
+	}
+</select>
+
+@code {
+	[Parameter]
+	public T SelectedOption { get; set; }
+	[Parameter]
+	public IEnumerable<T> Options { get; set; } 
+	[Parameter]
+	public EventCallback<T> SelectedOptionChanged { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	protected override void OnInitialized()
+	{
+		if (Options is null || Options.Count() == 0)
+		{
+			if (!typeof(T).IsEnum)
+				throw new ArgumentNullException();
+
+			Options = Enum.GetValues(typeof(T)).Cast<T>();
+			SelectedOption = Options.ElementAt(0);
+		}
+
+		if (SelectedOption is null)
+			SelectedOption = Options.ElementAt(0);
+	}
+	private void Change(T t)
+	{
+		SelectedOption = t;
+		SelectedOptionChanged.InvokeAsync(SelectedOption);
+	}
+}

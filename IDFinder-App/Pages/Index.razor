@@ -1,11 +1,16 @@
 ﻿@using IDFinder_App.Components
 @page "/"
+<style>
+	body {
+		background-color: #777;
+	}
+</style>
 
-<h1>Basic Bitch UI Mk.I</h1>
+<DropdownInput Options="@(new List<string>(){ "A", "B", "C" })" SelectedOptionChanged="@((string s) => Console.WriteLine("Selected changed to " + s))" />
 
+<DropdownInputEnum T="MyEnum" SelectedOptionChanged="@((MyEnum e) => Console.WriteLine("Selected enum changed to " + e + " and type of e is " + e.GetType()))" />
 
-
-<SliderInput TValue="float"/>
+<SliderInput TValue="float" />
 
 <ul style="list-style-type:none">
 	<ListElement Label="Scug" InitialValue="CheckedScug" CheckboxStateChanged="(bool b) => CheckedScug = b" Foldered="FolderScug" FolderedChanged="(bool b) => FolderScug = b" />

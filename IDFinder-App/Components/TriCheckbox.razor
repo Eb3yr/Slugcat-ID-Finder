@@ -12,10 +12,10 @@
 	private int _value = 0;
 	private ElementReference thisRef = new();
 	[Parameter]
-	public EventCallback<bool>? StateChanged { get; set; } = null;
+	public EventCallback<bool> StateChanged { get; set; }
 	[Parameter]
 	public bool InitialValue { get; set; } = false;
-	public Checkbox()
+	protected override void OnInitialized()
 	{
 		boundValue = InitialValue;
 	}
@@ -34,8 +34,7 @@
 			else
 				boundValue = false;
 
-			if (StateChanged is not null)
-				((EventCallback<bool>)StateChanged).InvokeAsync(boundValue);
+			StateChanged.InvokeAsync(boundValue);
 		}
 	}
 	public bool? ValueBool
