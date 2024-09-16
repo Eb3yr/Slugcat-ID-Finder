@@ -1,6 +1,6 @@
 ﻿@typeparam T
 <li>
-	<span>
+	<div style="display: flex; align-items: center; padding: 0px; font-size: @(FontSize)px" >
 		<select TValue="T" @attributes="AdditionalAttributes">
 			@foreach (T o in Options)
 			{
@@ -9,9 +9,8 @@
 				</option>
 			}
 		</select>
-		<pre>@WeightLabel</pre>
-		<input type="number" @bind=Weight @bind:after="InvokeChange" size="3px" style="font-size: @(0.6f * FontSize)px;"/>
-	</span>
+		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
+	</div
 </li>
 
 @code {
@@ -50,9 +49,9 @@
 	private void Change(T t)
 	{
 		SelectedOption = t;
-		InvokeChange();
+		InvokeChanged();
 	}
-	private void InvokeChange()
+	private void InvokeChanged()
 	{
 		SelectedOptionChanged.InvokeAsync((SelectedOption, Weight));
 	}

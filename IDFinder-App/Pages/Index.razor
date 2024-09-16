@@ -28,7 +28,12 @@
 		{
 		<li>
 			<ul>
-				
+				<SliderInput TValue="float" Target="personalityParams.Sympathy.Value.target" InputChanged="@(((float, float) t) => personalityParams.Sympathy = t)" />
+				<SliderInput TValue="float" Target="personalityParams.Energy.Value.target" InputChanged="@(((float, float) t) => personalityParams.Energy = t)" />
+				<SliderInput TValue="float" Target="personalityParams.Bravery.Value.target" InputChanged="@(((float, float) t) => personalityParams.Bravery = t)" />
+				<SliderInput TValue="float" Target="personalityParams.Nervous.Value.target" InputChanged="@(((float, float) t) => personalityParams.Nervous = t)" />
+				<SliderInput TValue="float" Target="personalityParams.Aggression.Value.target" InputChanged="@(((float, float) t) => personalityParams.Aggression = t)" />
+				<SliderInput TValue="float" Target="personalityParams.Dominance.Value.target" InputChanged="@(((float, float) t) => personalityParams.Dominance = t)" /> 
 			</ul>
 		</li>
 		}
@@ -118,8 +123,20 @@
 
 <button @onclick="@(() => {Console.WriteLine("Click!"); responsiveCounter++;})">Press me to test responsiveness. Counter: @responsiveCounter</button>
 
+<button @onclick="PrintPersonality">Print out IPersonalityParams</button>
+
 @code
 {
+
+	private void PrintPersonality()
+	{
+		Console.WriteLine($"personalityParams.Sympathy = {personalityParams.Sympathy}");
+		Console.WriteLine($"personalityParams.Energy = {personalityParams.Energy}");
+		Console.WriteLine($"personalityParams.Bravery = {personalityParams.Bravery}");
+		Console.WriteLine($"personalityParams.Nervous = {personalityParams.Nervous}");
+		Console.WriteLine($"personalityParams.Aggression = {personalityParams.Aggression}");
+		Console.WriteLine($"personalityParams.Dominance = {personalityParams.Dominance}");
+	}
 	// Rain World UI isn't too complicated. Thin lines, curved edge rectangles, double bezel on the selected button, and a font. I can find recreations of the font on fontstruct.com
 	// Then it's just about sizing, aligning, and a decent background.
 
@@ -172,14 +189,14 @@
 
 	public Index()
 	{
-		personalityParams = new SearchParams();
-		nPCStatsParams = new SearchParams();
-		slugcatStatsParams = new SearchParams();
-		foodPreferencesParams = new SearchParams();
-		individualVariationsParams = new SearchParams();
-		scavColorsParams = new SearchParams();
-		scavSkillsParams = new SearchParams();
-		scavBackPatternsParams = new SearchParams();
+		personalityParams = new SearchParams(false);
+		nPCStatsParams = new SearchParams(false);
+		slugcatStatsParams = new SearchParams(false);
+		foodPreferencesParams = new SearchParams(false);
+		individualVariationsParams = new SearchParams(false);
+		scavColorsParams = new SearchParams(false);
+		scavSkillsParams = new SearchParams(false);
+		scavBackPatternsParams = new SearchParams(false);
 
 		// default placeholder val
 		personalityParams = new SearchParams()

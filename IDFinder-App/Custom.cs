@@ -5,8 +5,8 @@ namespace IDFinder_App
 {
     public static class Consts
     {
-        public const float DefFontSize = 32f;
-        public const string DefWeightLabel = "\t\tWeight: ";
+        public const float DefFontSize = 16f;
+        public const string DefWeightLabel = "  Weight: ";
     }
     public static class Custom
     {

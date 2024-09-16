@@ -1,0 +1,7 @@
+﻿input[type=number].noscroll {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    font-size: inherit;
+    min-width: 1ch;
+    width: 2ch;
+}

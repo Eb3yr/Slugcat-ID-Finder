@@ -28,12 +28,11 @@
 		
 		@if (IncludePreciseField)
 		{
-			<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(0.6f * FontSize)px;"/>
+			<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(1.0f * FontSize)px;"/>
+			<WeightBox HideArrows="true" Weight="FltTarget" WeightChanged="@((float f) => {FltTarget = f; InvokeChanged(); })" FontSize="FontSize" style="background-color: rgba(0, 0, 0, 0); border: none;"/>
 		}
-	
-		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
 
-		<button @onclick="@(() => Console.WriteLine("weight = " + Weight))">Print weight</button>
+		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
 	</div>
 </li>
 @code
@@ -57,6 +56,7 @@
 	[Parameter]
 	public float FontSize { get; set; } = Consts.DefFontSize;
 
+	private float FltTarget { get => Convert.ToSingle(Target); set => Target = (TValue)Convert.ChangeType(value, typeof(TValue)); }
 	private bool thumbSelected = false;
 
 	protected override void OnInitialized()

@@ -1,7 +1,6 @@
 ﻿<li @attributes="AdditionalAttributes">
 	<input type="checkbox" @bind="Target" @bind:after="InvokeChanged"/>
-	<pre>@WeightLabel</pre>
-	<input type="number" @bind=Weight @bind:after="InvokeChanged" size="3px" style="font-size: @(0.6f * FontSize)px;" />
+	<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
 </li>
 
 @code {
