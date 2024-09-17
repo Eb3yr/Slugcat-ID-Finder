@@ -1,6 +1,10 @@
-﻿<li @attributes="AdditionalAttributes">
-	<input type="checkbox" @bind="Target" @bind:after="InvokeChanged"/>
-	<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
+﻿<li @attributes="AdditionalAttributes" style="font-size: @(FontSize)px; display: flex; align-items: center; padding-top: 0px; padding-bottom: 0px;">
+		<pre style="padding-right: @(FontSize)px; user-select: none;">@Label</pre>
+		<input type="checkbox" @bind="Target" @bind:after="InvokeChanged"/>
+		@if (ShowWeight)
+		{
+			<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
+		}
 </li>
 
 @code {
@@ -8,9 +12,13 @@
 	[Parameter]
 	public bool Target { get; set; } = false;
 	[Parameter]
+	public string Label { get; set; } = "";
+	[Parameter]
 	public float Weight { get; set; } = 0f;
 	[Parameter]
 	public string WeightLabel { get; set; } = Consts.DefWeightLabel;
+	[Parameter]
+	public bool ShowWeight { get; set; } = true;
 	[Parameter]
 	public float FontSize { get; set; } = Consts.DefFontSize;
 	[Parameter]

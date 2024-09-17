@@ -1,13 +1,22 @@
 ﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
 @inject IJSRuntime JS
-
+<style>
+	p {
+		font-size: inherit;
+		user-select: none;
+	}
+	pre {
+		padding-right: @(FontSize)px;
+		user-select: none;
+	}
+</style>
 <li>
-	<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px" >
+	<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px; padding-top: 0px; padding-bottom: 0px;" >
+		<pre>@Label</pre>
+		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus"	style="width: @(SliderWidth)px;" />
 		@TargetLabel
-	
-		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus"	style="width: @(SliderWidth)px; padding-right: 18px" />
-	
-		@if (thumbSelected)
+
+		@if (thumbSelected && !IncludePreciseField)
 		{
 			// Terrible hack to kind-of roughly approximate an offset to center the text. I hate this, but javascript is awful and I dont want to fiddle with that all day for this.
 			// Nicest option to implement in future is this https://stackoverflow.com/questions/63109527/how-to-find-svg-text-size-in-pixels-for-blazor-application
@@ -28,15 +37,16 @@
 		
 		@if (IncludePreciseField)
 		{
-			<input class="noscroll" type="number" @bind="Target" @bind:after="InvokeChanged" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" style="background-color: rgba(0, 0, 0, 0); border: none; font-size: @(1.0f * FontSize)px;"/>
-			<WeightBox HideArrows="true" Weight="FltTarget" WeightChanged="@((float f) => {FltTarget = f; InvokeChanged(); })" FontSize="FontSize" style="background-color: rgba(0, 0, 0, 0); border: none;"/>
+			<WeightBox HideArrows="true" RenderWeightLabel="false" Weight="FltTarget" WeightChanged="@((float f) => {FltTarget = f; InvokeChanged(); })" FontSize="FontSize" />
 		}
 
-		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" />
+		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" style="background-color: rgba(0, 0, 0, 0); border: none;" />
 	</div>
 </li>
 @code
 {
+	[Parameter]
+	public string Label { get; set; } = "";
 	[Parameter]
 	public TValue Target { get; set; } = default!;
 	[Parameter]

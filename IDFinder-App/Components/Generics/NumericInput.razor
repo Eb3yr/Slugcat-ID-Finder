@@ -1,0 +1,50 @@
+﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
+<style>
+	input[type=number].base {
+		width: @(FixWidthToValByCh is null ? Value.ToString().Length + 6 : FixWidthToValByCh.Value)ch;
+		font-size: inherit;
+	}
+	input[type=number].noscroll {
+		-webkit-appearance: none;
+		-moz-appearance: textfield;
+		font-size: inherit;
+		min-width: 1ch;
+		width: 3.5ch;
+	}
+	input[type=number].noscrollandbase {
+		-webkit-appearance: none;
+		-moz-appearance: textfield;
+		font-size: inherit;
+		width: @(FixWidthToValByCh is null ? Value.ToString().Length + 6 : FixWidthToValByCh.Value)ch;
+	}
+</style>
+<div style="display: flex; align-items: center; padding-top: @(Padding)px; padding-bottom: @(Padding)px;">
+	@if (Label is not null)
+	{
+		<pre style="font-size: @(FontSize)px; padding-right: @(FontSize)px; user-select: none;" @attributes="AdditionalAttributes">@Label</pre>
+	}
+	<!-- oninput stops javascript from throwing a fit and refusing the input because of its shitty number system -->
+	<input type="number" oninput="@("if (this.value.length > 19) { this.value = this.value.slice(0, 19); } ")" class="@(NoScrollAndBase ? "noscrollandbase" : HideArrows ? "noscroll" :	"base")" @bind-value="Value" @bind-value:after="() => ValueChanged.InvokeAsync(Value)" style="font-size: @(FontSize)px; min-width: @(0.6 * FontSize + 22)px; @(RemoveBackground ?	"background-color: rgba(0, 0, 0, 0); border: none;" : "")" onkeypress=@(FixWidthToValByCh is not null ? $"{FixWidthToValByCh.Value}ch" : "this.style.width = (this.value.length + 3) +	  'ch'") @attributes="AdditionalAttributes" />
+</div>
+@code {
+	[Parameter]
+	public TValue Value { get; set; }
+	[Parameter]
+	public string Label { get; set; } = null;
+	[Parameter]
+	public bool HideArrows { get; set; } = false;
+	[Parameter]
+	public bool NoScrollAndBase { get; set; } = false;
+	[Parameter]
+	public float FontSize { get; set; } = Consts.DefFontSize;
+	[Parameter]
+	public int? FixWidthToValByCh { get; set; } = null;	
+	[Parameter]
+	public bool RemoveBackground { get; set; } = true;
+	[Parameter]
+	public float Padding { get; set; } = 0;
+	[Parameter]
+	public EventCallback<TValue> ValueChanged { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+}

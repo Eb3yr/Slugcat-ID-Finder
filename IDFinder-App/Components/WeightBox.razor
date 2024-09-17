@@ -1,10 +1,19 @@
-﻿@if (RenderWeightLabel)
+﻿
+<style>
+	input[type=number].base {
+		width: @(Weight.ToString().Length + 6)ch;
+		font-size: inherit;
+	}
+</style>
+
+@if (RenderWeightLabel)
 {
-	<pre style="font-size: @(FontSize)px" @attributes="AdditionalAttributes">@WeightLabel</pre>
+	<pre style="font-size: @(FontSize)px; padding-right: @(FontSize)px; user-select: none;" @attributes="AdditionalAttributes">@WeightLabel</pre>
 }
-<input type="number" class="@(HideArrows ? "noscroll" : "")" @bind-value="Weight" @bind-value:after="() => WeightChanged.InvokeAsync(Weight)" style="font-size: @(FontSize)px; min-width: @(0.6 * FontSize + 22)px;" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" @attributes="AdditionalAttributes" />
+<input type="number" class="@(HideArrows ? "noscroll" : "base")" @bind-value="Weight" @bind-value:after="() => WeightChanged.InvokeAsync(Weight)" style="font-size: @(FontSize)px; min-width: @(0.6 * FontSize + 22)px; @(RemoveBackground ? "background-color: rgba(0, 0, 0, 0); border: none;" : "")" onkeypress="this.style.width = (this.value.length + 3) + 'ch'" @attributes="AdditionalAttributes" />
 
 <!-- onkeypress js could be improved. Has an arbitrary constant that creates an increasingly large excessive width of the box, but prevents smaller length inputs from getting squashed. -->
+<!-- Investigate resizing via setting width via classes and code in <style> tags above. IDK if it'll work beyond the start, but it's worth a try -->
 
 @code {
 	[Parameter]
@@ -17,6 +26,8 @@
 	public bool HideArrows { get; set; } = false;
 	[Parameter]
 	public float FontSize { get; set; } = Consts.DefFontSize;
+	[Parameter]
+	public bool RemoveBackground { get; set; } = true;
 	[Parameter]
 	public EventCallback<float> WeightChanged { get; set; }
 	[Parameter(CaptureUnmatchedValues = true)]

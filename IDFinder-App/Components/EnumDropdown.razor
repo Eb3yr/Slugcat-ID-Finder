@@ -1,4 +1,5 @@
-﻿@typeparam T where T : Enum
+﻿@typeparam TEnum where TEnum : Enum
+@attribute [Obsolete("Dysfunctional bindings (I think? Is the case for str, not sure about enum). Not sure why, but for now use GenericDropdownInput as that functions as expected.")]
 
 <IDFinder_App.Components.Generics.GenericDropdownInput Options="Options" SelectedOption="SelectedOption" SelectedOptionChanged="SelectedOptionChanged" AdditionalAttributes="AdditionalAttributes"/>
 
@@ -6,18 +7,18 @@
 {
 	// Component inheritance seems to be bugged. May work in .NET 8, will apparently work in older versions of .NET 7, but for now will take a manual approach
 	[Parameter]
-	public T SelectedOption { get; set; }
-	[Parameter, EditorRequired]
-	public IEnumerable<T> Options { get; set; }
+	public TEnum SelectedOption { get; set; }
 	[Parameter]
-	public EventCallback<(T target, float weight)> SelectedOptionChanged { get; set; }
+	public IEnumerable<TEnum> Options { get; set; }
+	[Parameter]
+	public EventCallback<(TEnum target, float weight)> SelectedOptionChanged { get; set; }
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 	protected override void OnInitialized()
 	{
 		if (Options is null)
 		{
-			Options = Enum.GetValues(typeof(T)).Cast<T>();
+			Options = Enum.GetValues(typeof(TEnum)).Cast<TEnum>();
 		}
 	}
 }

@@ -6,7 +6,8 @@ namespace IDFinder_App
     public static class Consts
     {
         public const float DefFontSize = 16f;
-        public const string DefWeightLabel = "  Weight: ";
+        public const string DefWeightLabel = "\tWeight: ";
+        public const float LabelVertMargins = 1f;
     }
     public static class Custom
     {

@@ -3,6 +3,13 @@ using static IDFinder.BackTuftsAndRidges;
 
 namespace IDFinder_App
 {
+	enum ColoredPupilsEnum
+	{
+		// Map to correct colour source when moving ColoredPupils component to an enum dropdownlist
+		_0,
+		_1,
+		_2
+	}
 	enum SearchParamsEnum
 	{
 		Sympathy,
