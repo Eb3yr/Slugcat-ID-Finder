@@ -97,7 +97,7 @@ namespace IDFinder
 		public (float target, float weight) Top { get; set; }
 		public (float target, float weight) Bottom { get; set; }
 		public (BackPattern target, float weight) Pattern { get; set; }
-		public (string target, float weight) Type { get; set; }
+		public (string target, float weight) Type { get; set; } = ("HardBackSpikes", 0f);	// Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
 		public (ColorTypeEnum target, float weight) ColorType { get; set; }
 		public (bool target, float weight) IsColored { get; set; }
 		public (int target, float weight) ScaleGraf { get; set; }
@@ -361,7 +361,7 @@ namespace IDFinder
 		public (float target, float weight) Top { get; set; }
 		public (float target, float weight) Bottom { get; set; }
 		public (BackPattern target, float weight) Pattern { get; set; }
-		public (string target, float weight) Type { get; set; }
+		public (string target, float weight) Type { get; set; } = ("HardBackSpikes", 0f);   // Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
 		public (ColorTypeEnum target, float weight) ColorType { get; set; }
 		public (bool target, float weight) IsColored { get; set; }
 		public (int target, float weight) ScaleGraf { get; set; }
