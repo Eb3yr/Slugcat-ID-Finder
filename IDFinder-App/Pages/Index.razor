@@ -260,7 +260,6 @@
 	int Threads = 2;
 	bool TrimNumToStore = true;
 	IEnumerable<KeyValuePair<float, int>> PrevResults = new List<KeyValuePair<float, int>>();
-	Task<IEnumerable<KeyValuePair<float, int>>> SearchTask;
 
 	bool previewParams = false;
 
@@ -352,16 +351,9 @@
 		// Will want an abort button that shows up only when a search is active, tracked by a bool.
 
 		isCurrentlySearching = true;
-		await Task.Run(async () =>
+		await Task.Run(() =>
 		{
-			SearchTask = InitiateSearch();
-			await SearchTask.WaitAsync();
-			if (!SearchTask.IsCompletedSuccessfully)
-			{
-				Console.WriteLine("SearchTask did not complete successfully.");
-				return;
-			}
-			PrevResults = SearchTask.Result;
+			PrevResults = InitiateSearch().Result;
 			foreach (var kvp in PrevResults)
 				Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
 		});
