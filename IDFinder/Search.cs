@@ -58,7 +58,7 @@ namespace IDFinder
 			if (sParams.EyeColor.weight != 0f)
 				weight += sParams.EyeColor.weight * Math.Abs(npc.EyeColor - sParams.EyeColor.target);
 			if (sParams.H.weight != 0f)
-				weight += sParams.H.weight * Math.Abs(npc.H - sParams.H.target);
+				weight += sParams.H.weight * Custom.HueDiff(npc.H, sParams.H.target);
 			if (sParams.S.weight != 0f)
 				weight += sParams.S.weight * Math.Abs(npc.S - sParams.S.target);
 			if (sParams.L.weight != 0f)
@@ -179,27 +179,29 @@ namespace IDFinder
 		private static float EartlersWeight() => throw new NotImplementedException();
 		private static float ScavColorsWeight(ScavColors colors, IScavColorsParams sParams)
 		{
+			// Logic error: hues don't wrap around.
+
 			float weight = 0f;
 			if (sParams.BellyColorH.weight != 0f)
-				weight += sParams.BellyColorH.weight * Math.Abs(sParams.BellyColorH.target - colors.BellyColor.H);
+				weight += sParams.BellyColorH.weight * Custom.HueDiff(sParams.BellyColorH.target, colors.BellyColor.H);
 			if (sParams.BellyColorS.weight != 0f)
 					weight += sParams.BellyColorS.weight * Math.Abs(sParams.BellyColorS.target - colors.BellyColor.S);
 			if (sParams.BellyColorL.weight != 0f)
 			weight += sParams.BellyColorL.weight * Math.Abs(sParams.BellyColorL.target - colors.BellyColor.L);
 			if (sParams.BodyColorH.weight != 0f)
-				weight += sParams.BodyColorH.weight * Math.Abs(sParams.BodyColorH.target - colors.BodyColor.H);
+				weight += sParams.BodyColorH.weight * Custom.HueDiff(sParams.BodyColorH.target, colors.BodyColor.H);
 			if (sParams.BodyColorS.weight != 0f)
 					weight += sParams.BodyColorS.weight * Math.Abs(sParams.BodyColorS.target - colors.BodyColor.S);
 			if (sParams.BodyColorL.weight != 0f)
 			weight += sParams.BodyColorL.weight * Math.Abs(sParams.BodyColorL.target - colors.BodyColor.L);
 			if (sParams.DecorationColorH.weight != 0f)
-				weight += sParams.DecorationColorH.weight * Math.Abs(sParams.DecorationColorH.target - colors.DecorationColor.H);
+				weight += sParams.DecorationColorH.weight * Custom.HueDiff(sParams.DecorationColorH.target, colors.DecorationColor.H);
 			if (sParams.DecorationColorS.weight != 0f)
 					weight += sParams.DecorationColorS.weight * Math.Abs(sParams.DecorationColorS.target - colors.DecorationColor.S);
 			if (sParams.DecorationColorL.weight != 0f)
 			weight += sParams.DecorationColorL.weight * Math.Abs(sParams.DecorationColorL.target - colors.DecorationColor.L);
 			if (sParams.EyeColorH.weight != 0f)
-				weight += sParams.EyeColorH.weight * Math.Abs(sParams.EyeColorH.target - colors.EyeColor.H);
+				weight += sParams.EyeColorH.weight * Custom.HueDiff(sParams.EyeColorH.target, colors.EyeColor.H);
 			if (sParams.EyeColorL.weight != 0f)
 					weight += sParams.EyeColorL.weight * Math.Abs(sParams.EyeColorL.target - colors.EyeColor.L);
 			if (sParams.HeadColorH.weight != 0f)

@@ -147,5 +147,16 @@ namespace IDFinder
 		{
 			return new Vector2(float.Sin(ang * 0.017453292f), float.Cos(ang * 0.017453292f));
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static float HueDiff(float targetH, float H)
+        {
+            if (targetH > H)
+                return HueDiff(H, targetH); // Enforce targetH < H
+
+            float diff = H - targetH;
+            float diffPlusOne = targetH + 1 - H;
+            return float.Min(diff, diffPlusOne);
+        }
 	}
 }
