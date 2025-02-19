@@ -4,6 +4,7 @@
 @using System.Text.Json;
 @page "/"
 @inject IIndexState State
+@inject IWriter Writer
 
 <style>
 	body {
@@ -20,7 +21,7 @@
 <!-- TODO: Move Personality outside of slugcat and into its own listelement -->
 <!-- TODO: checkboxes actually doing something -->
 <!-- TODO BIG: Save/Load functionality to store searchparams locally, and cache so that they don't get deleted. Plus store results  -->
-
+<!-- TODO: Consider adding functionality that assigns weight to 1 if it's currently 0 and a control is clicked for the first time? Posible QoL improvement -->
 <!-- Would like to stick ALL of the list below into a flex container's first column, then on the right column add the output window, previews, etc. -->
 <!-- Or investigate being able to just... align to the right of the ul, since the ul's bounds don't take up the entire screen, nor close to it -->
 
@@ -119,14 +120,13 @@
 	@if (!FolderScav)
 	{
 		<li><ul>
-
+		<Checkbox Label="Elite" Target="individualVariationsParams.Elite" OnChanged="((bool b, float w) t) => individualVariationsParams.Elite = t.b" ShowWeight="false" />
 		<ListElement Label="IVars" InitialValue="CheckedIVars" CheckboxStateChanged="(bool b) => CheckedIVars = b" Foldered="FolderIVars" FolderedChanged="(bool b) => FolderIVars = b" />
 		@if (!FolderIVars)
 		{
 			<!-- TODO: Make sure int ranges are correct. -->
 			<li>
 				<ul>
-					<Checkbox Label="Elite" Target="individualVariationsParams.Elite" OnChanged="((bool b, float w) t) => individualVariationsParams.Elite = t.b" ShowWeight="false" />
 					<SliderInput TValue="float" Label="WaistWidth" Target="individualVariationsParams.WaistWidth.target" InputChanged="@(((float, float) t) => individualVariationsParams.WaistWidth = t)" />
 					<SliderInput TValue="float" Label="HeadSize" Target="individualVariationsParams.HeadSize.target" InputChanged="@(((float, float) t) => individualVariationsParams.HeadSize = t)" />
 					<SliderInput TValue="float" Label="EartlerWidth" Target="individualVariationsParams.EartlerWidth.target" InputChanged="@(((float, float) t) => individualVariationsParams.EartlerWidth = t)" />
@@ -309,9 +309,11 @@
 	IScavBackPatternsParams scavBackPatternsParams = new SearchParams();
 	#endregion
 
-	private void SaveToFile(string name = "Results.txt")
+	private void SaveToFile(/*string name = "Results.txt"	cannot do this, it's an event callback you muppet */)
 	{
-		File.WriteAllLines(name, PrevResults.Select(res => $"{res.Value}: {res.Key}"));
+		string name = "Results.txt";
+		//File.WriteAllLines(name, PrevResults.Select(res => $"{res.Value}: {res.Key}"));
+		Writer.WriteToFile(name, PrevResults.Select(res => $"{res.Value}: {res.Key}"));
 	}
 	private void SaveScavSpawnCommands(string name = "Results.txt")
 	{
@@ -351,14 +353,15 @@
 		// Will want an abort button that shows up only when a search is active, tracked by a bool.
 
 		isCurrentlySearching = true;
-		await Task.Run(() =>
+		Task.Run(() =>
 		{
 			PrevResults = InitiateSearch().Result;
 			foreach (var kvp in PrevResults)
 				Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
+
+			InvokeAsync(StateHasChanged);
 		});
 		isCurrentlySearching = false;
-		StateHasChanged();
 	}
 
 	private SearchParams CoalesceParams()
