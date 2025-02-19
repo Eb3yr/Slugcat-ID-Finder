@@ -28,25 +28,25 @@
 		public float Dominance { get; private set; }
 		public Personality(int seed)
 		{
-			XORShift128.InitSeed(seed);
+			XORShift128.Shared.InitSeed(seed);
 
-			Sympathy = XORShift128.NextFloat();
-			Energy = XORShift128.NextFloat();
-			Bravery = XORShift128.NextFloat();
+			Sympathy = XORShift128.Shared.NextFloat();
+			Energy = XORShift128.Shared.NextFloat();
+			Bravery = XORShift128.Shared.NextFloat();
 
 			Sympathy = Custom.PushFromHalf(Sympathy, 1.5f);
 			Energy = Custom.PushFromHalf(Energy, 1.5f);
 			Bravery = Custom.PushFromHalf(Bravery, 1.5f);
 			
-			Nervous = Custom.Lerp(XORShift128.NextFloat(), Custom.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Aggression = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Dominance = Custom.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
+			Nervous = Custom.Lerp(XORShift128.Shared.NextFloat(), Custom.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
+			Aggression = Custom.Lerp(XORShift128.Shared.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
+			Dominance = Custom.Lerp(XORShift128.Shared.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
 
 			Nervous = Custom.PushFromHalf(Nervous, 2.5f);
 
 			Aggression = Custom.PushFromHalf(Aggression, 2.5f);
 		}
-		internal Personality(int seed, InstanceXORShift128 XORShift128)	// For multithreading
+		internal Personality(int seed, XORShift128 XORShift128)	// For multithreading
 		{
 			XORShift128.InitSeed(seed);
 
@@ -81,18 +81,18 @@
 		public float Wideness { get; private set; }
 		public NPCStats(int ID)
 		{
-			XORShift128.InitSeed(ID);
+			XORShift128.Shared.InitSeed(ID);
 
-			Bal = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Met = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Stealth = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Size = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Wideness = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			H = Custom.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
-			S = float.Pow(XORShift128.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
-			Dark = (XORShift128.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
-			L = float.Pow(XORShift128.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);   // Min val = Math.Pow(0.75f, 1.5f) or 0.649519f
-			EyeColor = float.Pow(XORShift128.NextFloatRange(0f, 1f), 2f - this.Stealth * 1.5f);
+			Bal = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Met = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Stealth = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Size = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Wideness = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			H = Custom.Lerp(XORShift128.Shared.NextFloatRange(0.15f, 0.58f), XORShift128.Shared.NextFloat(), float.Pow(XORShift128.Shared.NextFloat(), 1.5f - this.Met));
+			S = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
+			Dark = (XORShift128.Shared.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
+			L = float.Pow(XORShift128.Shared.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);   // Min val = Math.Pow(0.75f, 1.5f) or 0.649519f
+			EyeColor = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 2f - this.Stealth * 1.5f);
 
 			switch (ID)
 			{
@@ -115,7 +115,7 @@
 					break;
 			}
 		}
-		internal NPCStats(int ID, InstanceXORShift128 XORShift128)
+		internal NPCStats(int ID, XORShift128 XORShift128)
 		{
 			XORShift128.InitSeed(ID);
 
@@ -197,7 +197,7 @@
 			NotCounted = preferences[17];
 		}
 		public FoodPreferences(int ID) : this(ID, new(ID)) { }
-		internal FoodPreferences(int ID, Personality p, InstanceXORShift128 XORShift128)
+		internal FoodPreferences(int ID, Personality p, XORShift128 XORShift128)
 		{
 			float[] preferences = GetPreferencesRNGParam(ID, p, XORShift128);
 			DangleFruit = preferences[0];
@@ -222,7 +222,7 @@
 		public static float[] GetPreferences(int ID, Personality p)
 		{
 			float[] foodPreference = new float[18];
-			XORShift128.InitSeed(ID);
+			XORShift128.Shared.InitSeed(ID);
 			Food f;
 			float num, num2;
 
@@ -304,14 +304,14 @@
 						num2 = p.Sympathy;
 						break;
 				}
-				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference[c] = Math.Clamp(Custom.Lerp(num - num2, Custom.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+				num *= Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f);
+				num2 *= Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f);
+				foodPreference[c] = Math.Clamp(Custom.Lerp(num - num2, Custom.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f)), -1f, 1f);
 				c++;
 			}
 			return foodPreference;
 		}
-		internal static float[] GetPreferencesRNGParam(int ID, Personality p, InstanceXORShift128 XORShift128)
+		internal static float[] GetPreferencesRNGParam(int ID, Personality p, XORShift128 XORShift128)
 		{
 			float[] foodPreference = new float[18];
 			XORShift128.InitSeed(ID);
@@ -440,7 +440,7 @@
 			poleClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * stats.Bal + 0.1f * (1f - stats.Stealth);
 			corridorClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
 		}
-		internal SlugcatStats(int ID, InstanceXORShift128 XORShift128, bool isSlugpup = true)
+		internal SlugcatStats(int ID, XORShift128 XORShift128, bool isSlugpup = true)
 		{
 			NPCStats stats = new(ID, XORShift128);
 			if (isSlugpup)

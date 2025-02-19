@@ -345,7 +345,7 @@ namespace IDFinder
 
 					if (!(boolScavBack || boolScavColors))   // Avoid having to call GetGraphics if only variations are needed
 					{
-						XORShift128.InitSeed(i);
+						XORShift128.Shared.InitSeed(i);
 						weight += IndividualVariationsWeight(new IndividualVariations(personality, isElite), SearchParams);
 					}
 					else
@@ -406,7 +406,7 @@ namespace IDFinder
 
 			Parallel.For(0, threads, i =>
 			{
-				var res = XORShiftSearch(chunks[i][0], chunks[i][1], numToStore, SearchParams.Clone(), new InstanceXORShift128(), threads, i, logPercents);
+				var res = XORShiftSearch(chunks[i][0], chunks[i][1], numToStore, SearchParams.Clone(), new XORShift128(), threads, i, logPercents);
 				resultCollection.Add(res);
 			});
 
@@ -421,7 +421,7 @@ namespace IDFinder
 
 			return resultsSorted;
 		}
-		private static List<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, int threads, int whichThreadAmI, bool logPercents = false)
+		private static List<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, XORShift128 XORShift128, int threads, int whichThreadAmI, bool logPercents = false)
 		{
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllWeightless();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllWeightless();
