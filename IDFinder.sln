@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDFinder-App", "IDFinder-Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColourLib", "..\ColourLib\ColourLib\ColourLib.csproj", "{3CC91C5E-D903-4F5C-AF4E-55853EE1D573}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{2B52B3D9-3DE8-4224-9B89-671D98EF5A60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3CC91C5E-D903-4F5C-AF4E-55853EE1D573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC91C5E-D903-4F5C-AF4E-55853EE1D573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC91C5E-D903-4F5C-AF4E-55853EE1D573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B52B3D9-3DE8-4224-9B89-671D98EF5A60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B52B3D9-3DE8-4224-9B89-671D98EF5A60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B52B3D9-3DE8-4224-9B89-671D98EF5A60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B52B3D9-3DE8-4224-9B89-671D98EF5A60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
