@@ -7,7 +7,7 @@ namespace IDFinder
 	{
 		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
 		private static bool abortSearch = false;   // I'd rather this be a private field and have an Abort() method invoked that sets it to true, awaits a Task.Delay, and sets it back to false afterwards. I feel there's too much risk to forget to reset it, or for race condition shenanigans. 
-		private static float[] _completions = new float[0];
+		private static float[] _completions = new float[0];	// Used for multithreaded progress tracking
 		public static float CompletionPercent
 		{
 			get => (float)Math.Round(_completions.Average(), 2, MidpointRounding.AwayFromZero);
@@ -25,7 +25,8 @@ namespace IDFinder
 			// All searches call Init so no need to set abortSearch to false. 
 		}
 		#region Weights
-		private static float PersonalityWeight(Personality p, IPersonalityParams sParams)
+		// Consider making all Weight funcs take ref personalities, as I expect copying literally billions of quite large structs (larger than what's recommended for sure) is hurting perf
+		private static float PersonalityWeight(in Personality p, IPersonalityParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.Sympathy.weight != 0f)
@@ -42,7 +43,7 @@ namespace IDFinder
 				weight += sParams.Dominance.weight * Math.Abs(p.Dominance - sParams.Dominance.target);
 			return weight;
 		}
-		private static float NPCStatsWeight(NPCStats npc, INPCStatsParams sParams)
+		private static float NPCStatsWeight(in NPCStats npc, INPCStatsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.Met.weight != 0f)
@@ -67,7 +68,7 @@ namespace IDFinder
 				weight += sParams.Wideness.weight * Math.Abs(npc.Wideness - sParams.Wideness.target);
 			return weight;
 		}
-		private static float SlugcatStatsWeight(SlugcatStats slug, ISlugcatStatsParams sParams)
+		private static float SlugcatStatsWeight(in SlugcatStats slug, ISlugcatStatsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.BodyWeightFac.weight != 0f)
@@ -90,7 +91,7 @@ namespace IDFinder
 				weight += sParams.RunSpeedFac.weight * Math.Abs(slug.runSpeedFac - sParams.RunSpeedFac.target);
 			return weight;
 		}
-		private static float FoodPreferencesWeight(FoodPreferences foodPref, IFoodPreferencesParams sParams)
+		private static float FoodPreferencesWeight(in FoodPreferences foodPref, IFoodPreferencesParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.DangleFruit.weight != 0f)
@@ -131,7 +132,7 @@ namespace IDFinder
 				weight += sParams.NotCounted.weight * Math.Abs(foodPref.NotCounted - sParams.NotCounted.target);
 			return weight;
 		}
-		private static float IndividualVariationsWeight(IndividualVariations iVars, IIndividualVariationsParams sParams)
+		private static float IndividualVariationsWeight(in IndividualVariations iVars, IIndividualVariationsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.WaistWidth.weight != 0f)
@@ -177,7 +178,7 @@ namespace IDFinder
 			return weight;
 		}
 		private static float EartlersWeight() => throw new NotImplementedException();
-		private static float ScavColorsWeight(ScavColors colors, IScavColorsParams sParams)
+		private static float ScavColorsWeight(in ScavColors colors, IScavColorsParams sParams)
 		{
 			// Logic error: hues don't wrap around.
 
@@ -218,7 +219,7 @@ namespace IDFinder
 					weight += sParams.HeadColorBlack.weight * Math.Abs(sParams.HeadColorBlack.target - colors.HeadColorBlack);
 			return weight;
 		}
-		private static float ScavSkillsWeight(ScavSkills skills, IScavSkillsParams sParams)
+		private static float ScavSkillsWeight(in ScavSkills skills, IScavSkillsParams sParams)
 		{
 			float weight = 0f;
 			if (sParams.BlockingSkill.weight != 0f)
@@ -291,7 +292,7 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (int i = start; i <= stop; i++)
 			{
-				if ((i & 127) == 0)	// More performant than i % 128
+				if ((i & 1023) == 0)	// More performant than i % 128
 				{
 					if (abortSearch)
 						return vals;
@@ -369,7 +370,7 @@ namespace IDFinder
 						saturated = true;
 					}
 				}
-				else if (vals.Last().Key > weight)
+				else if (vals[vals.Count - 1].Key > weight)
 				{
 					// vals is certainly ordered at this point, as vals is sorted when vals.Count == numToStore. Therefore I can do a binary search ( log(n) ) to find the index of the next largest or equal weight, insert there ( O(n) where n is list.count - index ), and remove the final element ( O(1) ). Much faster than appending a value and sorting the whole list each time and significantly decreases search time with large numToStore.
 					kvp = new(weight, i);
@@ -385,8 +386,7 @@ namespace IDFinder
 					break;
 			}
 
-			vals = vals.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value).ToList();	// When weights are equal, ordered by ID in ascending order.
-			return vals;
+			return vals.OrderBy(kvp => kvp.Key).ThenBy(kvp => kvp.Value);	// When weights are equal, ordered by ID in ascending order.
 		}
 
 
@@ -421,7 +421,7 @@ namespace IDFinder
 
 			return resultsSorted;
 		}
-		private static IEnumerable<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, int threads, int whichThreadAmI, bool logPercents = false)
+		private static List<KeyValuePair<float, int>> XORShiftSearch(int start, int stop, int numToStore, SearchParams SearchParams, InstanceXORShift128 XORShift128, int threads, int whichThreadAmI, bool logPercents = false)
 		{
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllWeightless();
 			bool boolNpcStats = !((INPCStatsParams)SearchParams).AllWeightless();
