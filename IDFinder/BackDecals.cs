@@ -132,16 +132,11 @@ namespace IDFinder
 					break;
 			}
 
-			List<Vector2> list = new();
-			for (int m = 0; m < Positions.Length; m++)
-			{
-				list.Add(Positions[m]);
-			}
-			IEnumerable<Vector2> source = from pet in list
-										  orderby pet.Y descending
-										  select pet;
-			Positions = source.ToArray();
+
+			Array.Sort(Positions, compareDescending);
 		}
+
+		private Comparison<Vector2> compareDescending = new((vec1, vec2) => vec2.Y.CompareTo(vec1.Y));
 	}
 	public abstract class BackTuftsAndRidges : BackDecals
 	{
