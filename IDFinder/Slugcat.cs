@@ -154,6 +154,28 @@
 	}
 	public struct FoodPreferences
 	{
+		public enum Food
+		{
+			DangleFruit,
+			WaterNut,
+			JellyFish,
+			SlimeMold,
+			EggBugEgg,
+			FireEgg,
+			Popcorn,
+			GooieDuck,
+			LilyPuck,
+			GlowWeed,
+			DandelionPeach,
+			Neuron,
+			Centipede,
+			SmallCentipede,
+			VultureGrub,
+			SmallNeedleWorm,
+			Hazer,
+			NotCounted
+		}
+
 		#region Properties
 		public float DangleFruit {get; private set; }
 		public float WaterNut {get; private set; }
@@ -223,11 +245,11 @@
 		{
 			float[] foodPreference = new float[18];
 			XORShift128.Shared.InitSeed(ID);
-			Food f;
+			FoodPreferences.Food f;
 			float num, num2;
 
 			int c = 0;
-			foreach (Food i in Enum.GetValues<Food>())
+			foreach (FoodPreferences.Food i in Enum.GetValues<FoodPreferences.Food>())
 			{
 				f = i;
 				switch (f)
@@ -235,71 +257,71 @@
 					default:
 						num = num2 = 0f;
 						break;
-					case Food.DangleFruit:
+					case FoodPreferences.Food.DangleFruit:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.WaterNut:
+					case FoodPreferences.Food.WaterNut:
 						num = p.Sympathy;
 						num2 = p.Aggression;
 						break;
-					case Food.JellyFish:
+					case FoodPreferences.Food.JellyFish:
 						num = p.Energy;
 						num2 = p.Nervous;
 						break;
-					case Food.SlimeMold:
+					case FoodPreferences.Food.SlimeMold:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.EggBugEgg:
+					case FoodPreferences.Food.EggBugEgg:
 						num = p.Dominance;
 						num2 = p.Energy;
 						break;
-					case Food.FireEgg:
+					case FoodPreferences.Food.FireEgg:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Popcorn:
+					case FoodPreferences.Food.Popcorn:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.GooieDuck:
+					case FoodPreferences.Food.GooieDuck:
 						num = p.Sympathy;
 						num2 = p.Bravery;
 						break;
-					case Food.LilyPuck:
+					case FoodPreferences.Food.LilyPuck:
 						num = p.Aggression;
 						num2 = p.Nervous;
 						break;
-					case Food.GlowWeed:
+					case FoodPreferences.Food.GlowWeed:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.DandelionPeach:
+					case FoodPreferences.Food.DandelionPeach:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.Neuron:
+					case FoodPreferences.Food.Neuron:
 						num = p.Bravery;
 						num2 = p.Nervous;
 						break;
-					case Food.Centipede:
+					case FoodPreferences.Food.Centipede:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.SmallCentipede:
+					case FoodPreferences.Food.SmallCentipede:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.VultureGrub:
+					case FoodPreferences.Food.VultureGrub:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.SmallNeedleWorm:
+					case FoodPreferences.Food.SmallNeedleWorm:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Hazer:
+					case FoodPreferences.Food.Hazer:
 						num = p.Nervous;
 						num2 = p.Sympathy;
 						break;
@@ -315,11 +337,11 @@
 		{
 			float[] foodPreference = new float[18];
 			XORShift128.InitSeed(ID);
-			Food f;
+			FoodPreferences.Food f;
 			float num, num2;
 
 			int c = 0;
-			foreach (Food i in Enum.GetValues<Food>())
+			foreach (FoodPreferences.Food i in Enum.GetValues<FoodPreferences.Food>())
 			{
 				f = i;
 				switch (f)
@@ -327,71 +349,71 @@
 					default:
 						num = num2 = 0f;
 						break;
-					case Food.DangleFruit:
+					case FoodPreferences.Food.DangleFruit:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.WaterNut:
+					case FoodPreferences.Food.WaterNut:
 						num = p.Sympathy;
 						num2 = p.Aggression;
 						break;
-					case Food.JellyFish:
+					case FoodPreferences.Food.JellyFish:
 						num = p.Energy;
 						num2 = p.Nervous;
 						break;
-					case Food.SlimeMold:
+					case FoodPreferences.Food.SlimeMold:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.EggBugEgg:
+					case FoodPreferences.Food.EggBugEgg:
 						num = p.Dominance;
 						num2 = p.Energy;
 						break;
-					case Food.FireEgg:
+					case FoodPreferences.Food.FireEgg:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Popcorn:
+					case FoodPreferences.Food.Popcorn:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.GooieDuck:
+					case FoodPreferences.Food.GooieDuck:
 						num = p.Sympathy;
 						num2 = p.Bravery;
 						break;
-					case Food.LilyPuck:
+					case FoodPreferences.Food.LilyPuck:
 						num = p.Aggression;
 						num2 = p.Nervous;
 						break;
-					case Food.GlowWeed:
+					case FoodPreferences.Food.GlowWeed:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.DandelionPeach:
+					case FoodPreferences.Food.DandelionPeach:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.Neuron:
+					case FoodPreferences.Food.Neuron:
 						num = p.Bravery;
 						num2 = p.Nervous;
 						break;
-					case Food.Centipede:
+					case FoodPreferences.Food.Centipede:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.SmallCentipede:
+					case FoodPreferences.Food.SmallCentipede:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.VultureGrub:
+					case FoodPreferences.Food.VultureGrub:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.SmallNeedleWorm:
+					case FoodPreferences.Food.SmallNeedleWorm:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Hazer:
+					case FoodPreferences.Food.Hazer:
 						num = p.Nervous;
 						num2 = p.Sympathy;
 						break;
