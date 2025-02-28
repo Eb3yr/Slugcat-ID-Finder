@@ -151,7 +151,18 @@ namespace IDFinder
 			Decoration,
 			Head
 		}
-		public string Type { get => this.GetType().Name; }
+
+		public enum BackTuftsAndRidgesType
+		{
+			HardBackSpikes,
+			WobblyBackTufts
+		}
+
+		//public string Type { get => this.GetType().Name; }	// Should really be an enum, not a string. It's implemented this way so that I can get the type of derived classes easily, but I 'd much rather have it be a field of BackTuftsAndRidges that gets set in the derived types. Or hell, an abstract property getter
+		
+		// Eg:
+		public abstract BackTuftsAndRidgesType Type { get; }
+
 		public ColorTypeEnum ColorType { get => IsColored ? (UseDetailColor ? ColorTypeEnum.Decoration : ColorTypeEnum.Head) : ColorTypeEnum.None; }
 		public bool IsColored { get => Colored > 0f; }
 		public int ScaleGraf { get; protected set; }
@@ -222,8 +233,10 @@ namespace IDFinder
 			UseDetailColor = (XORShift128.NextFloat() < 0.5f);
 		}
 	}
-	public class HardBackSpikes : BackTuftsAndRidges
+	public sealed class HardBackSpikes : BackTuftsAndRidges
 	{
+		public override BackTuftsAndRidgesType Type => BackTuftsAndRidgesType.HardBackSpikes;
+
 		[JsonIgnore]
 		public float[] Sizes { get; private set; }
 		public HardBackSpikes(IndividualVariations iVars, Personality personality) : base(iVars)
@@ -331,8 +344,11 @@ namespace IDFinder
 
 		}
 	}
-	public class WobblyBackTufts : BackTuftsAndRidges
+
+	public sealed class WobblyBackTufts : BackTuftsAndRidges
 	{
+		public override BackTuftsAndRidgesType Type => BackTuftsAndRidgesType.WobblyBackTufts;
+
 		public float DownAlongSpine { get; private set; }
 		public float OutToSides { get; private set; }
 		[JsonIgnore]
