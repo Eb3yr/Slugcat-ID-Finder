@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using static IDFinder.BackDecals;
 using static IDFinder.BackTuftsAndRidges;
 
 namespace IDFinder
 {
 	#region classes
+	[StructLayout(LayoutKind.Sequential)]	// Prevent re-ordering
 	public class SearchParams : ISearchParams, IPersonalityParams, INPCStatsParams, ISlugcatStatsParams, IFoodPreferencesParams, IIndividualVariationsParams, IEartlersParams, IScavColorsParams, IScavSkillsParams, IScavBackPatternsParams     // H, S, L should be more clear that it's slugcat npcstats. Likewise for some others. So long as everything has unique names no bugs should arise, but I wouldn't recommend directly assigning properties in this class, rather use SlugParams, ScavParams.
 																																																	{
 		#region Properties
@@ -97,7 +99,7 @@ namespace IDFinder
 		public (float target, float weight) Top { get; set; }
 		public (float target, float weight) Bottom { get; set; }
 		public (BackPattern target, float weight) Pattern { get; set; }
-		public (string target, float weight) Type { get; set; } = ("HardBackSpikes", 0f);	// Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
+		public (BackTuftsAndRidgesType target, float weight) Type { get; set; } = (BackTuftsAndRidgesType.HardBackSpikes, 0f);	// Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
 		public (ColorTypeEnum target, float weight) ColorType { get; set; }
 		public (bool target, float weight) IsColored { get; set; }
 		public (int target, float weight) ScaleGraf { get; set; }
@@ -361,7 +363,7 @@ namespace IDFinder
 		public (float target, float weight) Top { get; set; }
 		public (float target, float weight) Bottom { get; set; }
 		public (BackPattern target, float weight) Pattern { get; set; }
-		public (string target, float weight) Type { get; set; } = ("HardBackSpikes", 0f);   // Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
+		public (BackTuftsAndRidgesType target, float weight) Type { get; set; } = (BackTuftsAndRidgesType.HardBackSpikes, 0f);   // Arbitrarily picking HardBackSpikes to be default so IDFinder-App default isn't null
 		public (ColorTypeEnum target, float weight) ColorType { get; set; }
 		public (bool target, float weight) IsColored { get; set; }
 		public (int target, float weight) ScaleGraf { get; set; }
@@ -437,14 +439,14 @@ namespace IDFinder
 	#endregion
 	#region interfaces
 	public interface ISearchParams { }
-    public interface IPersonalityParams : ISearchParams
-    {
-        public (float target, float weight) Sympathy { get; set; }
-        public (float target, float weight) Energy { get; set; }
-        public (float target, float weight) Bravery { get; set; }
-        public (float target, float weight) Nervous { get; set; }
-        public (float target, float weight) Aggression { get; set; }
-        public (float target, float weight) Dominance { get; set; }
+	public interface IPersonalityParams : ISearchParams
+	{
+		public (float target, float weight) Sympathy { get; set; }
+		public (float target, float weight) Energy { get; set; }
+		public (float target, float weight) Bravery { get; set; }
+		public (float target, float weight) Nervous { get; set; }
+		public (float target, float weight) Aggression { get; set; }
+		public (float target, float weight) Dominance { get; set; }
 		public bool AllWeightless()
 		{
 			if ((Sympathy.weight == 0f) &&
@@ -457,19 +459,19 @@ namespace IDFinder
 
 			return false;
 		}
-    }
-    public interface INPCStatsParams : ISearchParams
-    {
-        public (float target, float weight) Met { get; set; }
-        public (float target, float weight) Bal { get; set; }
-        public (float target, float weight) Size { get; set; }
-        public (float target, float weight) Stealth { get; set; }
-        public (bool target, float weight) Dark { get; set; }
-        public (float target, float weight) EyeColor { get; set; }
-        public (float target, float weight) H { get; set; }
-        public (float target, float weight) S { get; set; }
-        public (float target, float weight) L { get; set; }
-        public (float target, float weight) Wideness { get; set; }
+	}
+	public interface INPCStatsParams : ISearchParams
+	{
+		public (float target, float weight) Met { get; set; }
+		public (float target, float weight) Bal { get; set; }
+		public (float target, float weight) Size { get; set; }
+		public (float target, float weight) Stealth { get; set; }
+		public (bool target, float weight) Dark { get; set; }
+		public (float target, float weight) EyeColor { get; set; }
+		public (float target, float weight) H { get; set; }
+		public (float target, float weight) S { get; set; }
+		public (float target, float weight) L { get; set; }
+		public (float target, float weight) Wideness { get; set; }
 		public bool AllWeightless()
 		{
 			if ((Met.weight == 0f) &&
@@ -486,18 +488,18 @@ namespace IDFinder
 
 			return false;
 		}
-    }
-    public interface ISlugcatStatsParams : ISearchParams
-    {
-        public (float target, float weight) BodyWeightFac { get; set; }
-        public (float target, float weight) GeneralVisibilityBonus { get; set; }
-        public (float target, float weight) VisualStealthInSneakMode { get; set; }
-        public (float target, float weight) LoudnessFac { get; set; }
-        public (float target, float weight) LungsFac { get; set; }
-        public (int target, float weight) ThrowingSkill { get; set; }
-        public (float target, float weight) PoleClimbSpeedFac { get; set; }
-        public (float target, float weight) CorridorClimbSpeedFac { get; set; }
-        public (float target, float weight) RunSpeedFac { get; set; }
+	}
+	public interface ISlugcatStatsParams : ISearchParams
+	{
+		public (float target, float weight) BodyWeightFac { get; set; }
+		public (float target, float weight) GeneralVisibilityBonus { get; set; }
+		public (float target, float weight) VisualStealthInSneakMode { get; set; }
+		public (float target, float weight) LoudnessFac { get; set; }
+		public (float target, float weight) LungsFac { get; set; }
+		public (int target, float weight) ThrowingSkill { get; set; }
+		public (float target, float weight) PoleClimbSpeedFac { get; set; }
+		public (float target, float weight) CorridorClimbSpeedFac { get; set; }
+		public (float target, float weight) RunSpeedFac { get; set; }
 		public bool AllWeightless()
 		{
 			if ((BodyWeightFac.weight == 0f) &&
@@ -513,27 +515,27 @@ namespace IDFinder
 
 			return false;
 		}
-    }
-    public interface IFoodPreferencesParams : ISearchParams
-    {
-        public (float target, float weight) DangleFruit { get; set; }
-        public (float target, float weight) WaterNut { get; set; }
-        public (float target, float weight) JellyFish { get; set; }
-        public (float target, float weight) SlimeMold { get; set; }
-        public (float target, float weight) EggBugEgg { get; set; }
-        public (float target, float weight) FireEgg { get; set; }
-        public (float target, float weight) Popcorn { get; set; }
-        public (float target, float weight) GooieDuck { get; set; }
-        public (float target, float weight) LilyPuck { get; set; }
-        public (float target, float weight) GlowWeed { get; set; }
-        public (float target, float weight) DandelionPeach { get; set; }
-        public (float target, float weight) Neuron { get; set; }
-        public (float target, float weight) Centipede { get; set; }
-        public (float target, float weight) SmallCentipede { get; set; }
-        public (float target, float weight) VultureGrub { get; set; }
-        public (float target, float weight) SmallNeedleWorm { get; set; }
-        public (float target, float weight) Hazer { get; set; }
-        public (float target, float weight) NotCounted { get; set; }
+	}
+	public interface IFoodPreferencesParams : ISearchParams
+	{
+		public (float target, float weight) DangleFruit { get; set; }
+		public (float target, float weight) WaterNut { get; set; }
+		public (float target, float weight) JellyFish { get; set; }
+		public (float target, float weight) SlimeMold { get; set; }
+		public (float target, float weight) EggBugEgg { get; set; }
+		public (float target, float weight) FireEgg { get; set; }
+		public (float target, float weight) Popcorn { get; set; }
+		public (float target, float weight) GooieDuck { get; set; }
+		public (float target, float weight) LilyPuck { get; set; }
+		public (float target, float weight) GlowWeed { get; set; }
+		public (float target, float weight) DandelionPeach { get; set; }
+		public (float target, float weight) Neuron { get; set; }
+		public (float target, float weight) Centipede { get; set; }
+		public (float target, float weight) SmallCentipede { get; set; }
+		public (float target, float weight) VultureGrub { get; set; }
+		public (float target, float weight) SmallNeedleWorm { get; set; }
+		public (float target, float weight) Hazer { get; set; }
+		public (float target, float weight) NotCounted { get; set; }
 		public bool AllWeightless()
 		{
 			if ((DangleFruit.weight == 0f) &&
@@ -558,10 +560,10 @@ namespace IDFinder
 
 			return false;
 		}
-    }
+	}
 
-    public interface IIndividualVariationsParams : ISearchParams
-    {
+	public interface IIndividualVariationsParams : ISearchParams
+	{
 		// Elites not here as it's a parameter in the Scavenger constructor, and influences other traits. Like slugcats and scavs are different, scavs and elite scavs are also different.
 		public bool Elite { get; set; }
 		public (float target, float weight) WaistWidth { get; set; }
@@ -611,12 +613,12 @@ namespace IDFinder
 			return false;
 		}
 	}
-    public interface IEartlersParams : ISearchParams
-    {
-        // Does this even need to be visible The data itself is quite abstracted from its in-game appearance. It could be searched for some more interesting observations though, like eartler size, complexity, etc. Needs to be thought over and experimented with ingame. 
-    }
-    public interface IScavColorsParams : ISearchParams
-    {
+	public interface IEartlersParams : ISearchParams
+	{
+		// Does this even need to be visible The data itself is quite abstracted from its in-game appearance. It could be searched for some more interesting observations though, like eartler size, complexity, etc. Needs to be thought over and experimented with ingame. 
+	}
+	public interface IScavColorsParams : ISearchParams
+	{
 		// I think this is better than the alternative of HSLColor structs, because it'd be convoluted figuring out which color channels to check. 
 		public (float target, float weight) BellyColorH { get; set; }
 		public (float target, float weight) BellyColorS { get; set; }
@@ -659,8 +661,8 @@ namespace IDFinder
 			return false;
 		}
 	}
-    public interface IScavSkillsParams : ISearchParams
-    {
+	public interface IScavSkillsParams : ISearchParams
+	{
 		public (float target, float weight) BlockingSkill { get; set; }
 		public (float target, float weight) DodgeSkill { get; set; }
 		public (float target, float weight) MeleeSkill { get; set; }
@@ -678,12 +680,12 @@ namespace IDFinder
 			return false;
 		}
 	}
-    public interface IScavBackPatternsParams : ISearchParams
-    {
+	public interface IScavBackPatternsParams : ISearchParams
+	{
 		public (float target, float weight) Top { get; set; }
 		public (float target, float weight) Bottom { get; set; }
 		public (BackPattern target, float weight) Pattern { get; set; }
-		public (string target, float weight) Type { get; set; }	// Target would be BackDecals not string, but this circumvents calling ToString() constantly to compare it.
+		public (BackTuftsAndRidgesType target, float weight) Type { get; set; }	// Target would be BackDecals not string, but this circumvents calling ToString() constantly to compare it.
 		public (ColorTypeEnum target, float weight) ColorType { get; set; }
 		public (bool target, float weight) IsColored { get; set; }
 		public (int target, float weight) ScaleGraf { get; set; }	// At some point map the scale graphics so I know what to target
@@ -707,5 +709,5 @@ namespace IDFinder
 			return false;
 		}
 	}
-    #endregion
+	#endregion
 }
