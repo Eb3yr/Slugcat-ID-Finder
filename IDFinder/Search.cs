@@ -160,6 +160,18 @@ namespace IDFinder
 
 			// Shallow copying SearchParams in the expectation that a bottleneck could arise when multiple threads access the same instance. I don't think this is true given it'll only be reading, but I don't want to touch and break anything
 
+			// Could do with adding private event handlers to get the event data for each search, then average it and emit it as a single invocation of the event handler args given to SearchThreaded
+
+			if (progressEventHandler is not null)
+			{
+
+			}
+
+			if (workingValsEventHandler is not null)
+			{
+
+			}
+
 			Parallel.For(0, threads, i =>
 			{
 				var res = Search(chunks[i][0], chunks[i][1], numToStore, SearchParams.Clone(), progressEventHandler, workingValsEventHandler, progressInterval, workingValsInterval);
@@ -309,10 +321,10 @@ namespace IDFinder
 					vals.Insert(largerThanIndex, kvp);
 					vals.RemoveAt(numToStore);
 				}
-
-				if (i == int.MaxValue)  // Guards against overflow causing infinite looping, allows int stop to be inclusive rather than exclusive.
-					break;
 			}
+
+			progressTimer?.Dispose();
+			workingValsTimer?.Dispose();
 
 			return vals;
 		}

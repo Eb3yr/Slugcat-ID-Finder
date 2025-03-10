@@ -9,7 +9,6 @@ namespace IDFinder
 {
 	public static class Custom
 	{
-		public static float Lerp(float value1, float value2, float amount) => (value1 * (1.0f - amount)) + (value2 * amount);
 		// All methods but InverseLerp are both functions found in the Rain World codebase, in the Custom class within the RWCustom namespace. InverseLerp is a recreation of the equivalent function in the Mathf Unity namespace based on Unity's documentation.
 		public static float PushFromHalf(float val, float pushExponent)
 		{
@@ -27,11 +26,11 @@ namespace IDFinder
 		{
 			if (exponent != null)
 			{
-				return Custom.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), exponent.Value));
+				return float.Lerp(fromB, toB, float.Pow(InverseLerp(fromA, toA, val), exponent.Value));
 			}
 			else
 			{
-				return Custom.Lerp(fromB, toB, InverseLerp(fromA, toA, val));
+				return float.Lerp(fromB, toB, InverseLerp(fromA, toA, val));
 			}
 		}
 		public static float ClampedRandomVariation(float baseValue, float maxDeviation, float k)

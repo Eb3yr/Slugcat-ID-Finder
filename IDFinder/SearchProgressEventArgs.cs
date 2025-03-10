@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace IDFinder
 {
-	public class SearchProgressEventArgs : EventArgs
+	public sealed class SearchProgressEventArgs : EventArgs
 	{
-		public float Progress { get; init; }
+		public float Progress { get; init; }	// Percentage - make it more clear
 
 		public SearchProgressEventArgs(float progress)
 		{

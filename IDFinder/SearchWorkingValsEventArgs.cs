@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace IDFinder
 {
 	// The working idea is that a TimerCallback gets used to invoke both this and SearchProgressEventArgs periodically. That removes the if statements from the main loop that were previously used to update the console, and those timers can run as their own tasks.
-	public class SearchWorkingValsEventArgs : EventArgs
+	public sealed class SearchWorkingValsEventArgs : EventArgs
 	{
 		public List<KeyValuePair<float, int>> WeightIDPairs { get; init; }
 

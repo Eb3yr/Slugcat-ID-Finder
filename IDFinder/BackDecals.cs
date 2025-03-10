@@ -24,44 +24,44 @@ namespace IDFinder
 			switch (Pattern)
 			{
 				case BackPattern.SpineRidge:
-					Top = Custom.Lerp(0.07f, 0.3f, XORShift128.Shared.NextFloat());
-					Bottom = Custom.Lerp(0.6f, 1f, XORShift128.Shared.NextFloat());
-					float num = Custom.Lerp(2.5f, 12f, XORShift128.Shared.NextFloat());
+					Top = float.Lerp(0.07f, 0.3f, XORShift128.Shared.NextFloat());
+					Bottom = float.Lerp(0.6f, 1f, XORShift128.Shared.NextFloat());
+					float num = float.Lerp(2.5f, 12f, XORShift128.Shared.NextFloat());
 					int num2 = (int)((Bottom - Top) * 100f / num);
 					Positions = new Vector2[num2];
 					for (int i = 0; i < Positions.Length; i++)
-						Positions[i] = new Vector2(0f, Custom.Lerp(Top, Bottom, (float)i / (float)(num2 - 1)));
+						Positions[i] = new Vector2(0f, float.Lerp(Top, Bottom, (float)i / (float)(num2 - 1)));
 
 					break;
 
 				case BackPattern.DoubleSpineRidge:
-					Top = Custom.Lerp(0.07f, 0.3f, XORShift128.Shared.NextFloat());
-					Bottom = Custom.Lerp(0.6f, 1f, XORShift128.Shared.NextFloat());
+					Top = float.Lerp(0.07f, 0.3f, XORShift128.Shared.NextFloat());
+					Bottom = float.Lerp(0.6f, 1f, XORShift128.Shared.NextFloat());
 					if (this is WobblyBackTufts)
 					{
-						Bottom = Custom.Lerp(Bottom, 0.5f, XORShift128.Shared.NextFloat());
+						Bottom = float.Lerp(Bottom, 0.5f, XORShift128.Shared.NextFloat());
 					}
-					float num3 = Custom.Lerp(4.5f, 12f, XORShift128.Shared.NextFloat());
+					float num3 = float.Lerp(4.5f, 12f, XORShift128.Shared.NextFloat());
 					int num4 = (int)((Bottom - Top) * 100f / num3);
 					Positions = new Vector2[num4 * 2];
 					for (int j = 0; j < num4; j++)
 					{
-						Positions[j * 2] = new Vector2(-0.9f, Custom.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
-						Positions[j * 2 + 1] = new Vector2(0.9f, Custom.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
+						Positions[j * 2] = new Vector2(-0.9f, float.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
+						Positions[j * 2 + 1] = new Vector2(0.9f, float.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
 					}
 
 					break;
 
 				case BackPattern.RandomBackBlotch:
 					float value = XORShift128.Shared.NextFloat();
-					int num5 = (int)Custom.Lerp(Custom.Lerp(20f, 4f, iVars.Scruffy), 40f, Custom.Lerp(value, XORShift128.Shared.NextFloat(), 0.5f * XORShift128.Shared.NextFloat()));
+					int num5 = (int)float.Lerp(float.Lerp(20f, 4f, iVars.Scruffy), 40f, float.Lerp(value, XORShift128.Shared.NextFloat(), 0.5f * XORShift128.Shared.NextFloat()));
 					Positions = new Vector2[num5];
 					for (int k = 0; k < num5; k++)
 					{
 						Positions[k] = Custom.RNV();
 					}
-					Top = Custom.Lerp(0.02f, 0.2f, XORShift128.Shared.NextFloat());
-					Bottom = Custom.Lerp(0.4f, 0.9f, float.Pow(XORShift128.Shared.NextFloat(), 1.5f));
+					Top = float.Lerp(0.02f, 0.2f, XORShift128.Shared.NextFloat());
+					Bottom = float.Lerp(0.4f, 0.9f, float.Pow(XORShift128.Shared.NextFloat(), 1.5f));
 					for (int l = 0; l < num5; l++)
 					{
 						Positions[l].Y = Custom.LerpMap(Positions[l].Y, -1f, 1f, Top, Bottom);
@@ -70,15 +70,19 @@ namespace IDFinder
 					break;
 			}
 
-			List<Vector2> list = new();
-			for (int m = 0; m < Positions.Length; m++)
-			{
-				list.Add(Positions[m]);
-			}
-			IEnumerable<Vector2> source = from pet in list
-										  orderby pet.Y descending
-										  select pet;
-			Positions = source.ToArray();
+			// Joar why did you do it like this
+			//List<Vector2> list = new();
+			//for (int m = 0; m < Positions.Length; m++)
+			//{
+			//	list.Add(Positions[m]);
+			//}
+			//IEnumerable<Vector2> source = from pet in list
+			//							  orderby pet.Y descending
+			//							  select pet;
+			//
+			//Positions = source.ToArray();
+
+			Array.Sort(Positions, (left, right) => right.Y.CompareTo(left.Y));
 		}
 		internal void GeneratePatternRNGParam(BackPattern inPattern, IndividualVariations iVars, XORShift128 XORShift128)
 		{
@@ -86,44 +90,44 @@ namespace IDFinder
 			switch (Pattern)
 			{
 				case BackPattern.SpineRidge:
-					Top = Custom.Lerp(0.07f, 0.3f, XORShift128.NextFloat());
-					Bottom = Custom.Lerp(0.6f, 1f, XORShift128.NextFloat());
-					float num = Custom.Lerp(2.5f, 12f, XORShift128.NextFloat());
+					Top = float.Lerp(0.07f, 0.3f, XORShift128.NextFloat());
+					Bottom = float.Lerp(0.6f, 1f, XORShift128.NextFloat());
+					float num = float.Lerp(2.5f, 12f, XORShift128.NextFloat());
 					int num2 = (int)((Bottom - Top) * 100f / num);
 					Positions = new Vector2[num2];
 					for (int i = 0; i < Positions.Length; i++)
-						Positions[i] = new Vector2(0f, Custom.Lerp(Top, Bottom, (float)i / (float)(num2 - 1)));
+						Positions[i] = new Vector2(0f, float.Lerp(Top, Bottom, (float)i / (float)(num2 - 1)));
 
 					break;
 
 				case BackPattern.DoubleSpineRidge:
-					Top = Custom.Lerp(0.07f, 0.3f, XORShift128.NextFloat());
-					Bottom = Custom.Lerp(0.6f, 1f, XORShift128.NextFloat());
+					Top = float.Lerp(0.07f, 0.3f, XORShift128.NextFloat());
+					Bottom = float.Lerp(0.6f, 1f, XORShift128.NextFloat());
 					if (this is WobblyBackTufts)
 					{
-						Bottom = Custom.Lerp(Bottom, 0.5f, XORShift128.NextFloat());
+						Bottom = float.Lerp(Bottom, 0.5f, XORShift128.NextFloat());
 					}
-					float num3 = Custom.Lerp(4.5f, 12f, XORShift128.NextFloat());
+					float num3 = float.Lerp(4.5f, 12f, XORShift128.NextFloat());
 					int num4 = (int)((Bottom - Top) * 100f / num3);
 					Positions = new Vector2[num4 * 2];
 					for (int j = 0; j < num4; j++)
 					{
-						Positions[j * 2] = new Vector2(-0.9f, Custom.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
-						Positions[j * 2 + 1] = new Vector2(0.9f, Custom.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
+						Positions[j * 2] = new Vector2(-0.9f, float.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
+						Positions[j * 2 + 1] = new Vector2(0.9f, float.Lerp(Top, Bottom, (float)j / (float)(num4 - 1)));
 					}
 
 					break;
 
 				case BackPattern.RandomBackBlotch:
 					float value = XORShift128.NextFloat();
-					int num5 = (int)Custom.Lerp(Custom.Lerp(20f, 4f, iVars.Scruffy), 40f, Custom.Lerp(value, XORShift128.NextFloat(), 0.5f * XORShift128.NextFloat()));
+					int num5 = (int)float.Lerp(float.Lerp(20f, 4f, iVars.Scruffy), 40f, float.Lerp(value, XORShift128.NextFloat(), 0.5f * XORShift128.NextFloat()));
 					Positions = new Vector2[num5];
 					for (int k = 0; k < num5; k++)
 					{
 						Positions[k] = Custom.RNVRNGParam(XORShift128);
 					}
-					Top = Custom.Lerp(0.02f, 0.2f, XORShift128.NextFloat());
-					Bottom = Custom.Lerp(0.4f, 0.9f, float.Pow(XORShift128.NextFloat(), 1.5f));
+					Top = float.Lerp(0.02f, 0.2f, XORShift128.NextFloat());
+					Bottom = float.Lerp(0.4f, 0.9f, float.Pow(XORShift128.NextFloat(), 1.5f));
 					for (int l = 0; l < num5; l++)
 					{
 						Positions[l].Y = Custom.LerpMap(Positions[l].Y, -1f, 1f, Top, Bottom);
@@ -132,22 +136,21 @@ namespace IDFinder
 					break;
 			}
 
-
 			Array.Sort(Positions, compareDescending);
 		}
 
-		private Comparison<Vector2> compareDescending = new((vec1, vec2) => vec2.Y.CompareTo(vec1.Y));
+		private static readonly Comparison<Vector2> compareDescending = new((vec1, vec2) => vec2.Y.CompareTo(vec1.Y));
 	}
 	public abstract class BackTuftsAndRidges : BackDecals
 	{
-		public enum ColorTypeEnum
+		public enum ColorTypeEnum : byte
 		{
 			None,
 			Decoration,
 			Head
 		}
 
-		public enum BackTuftsAndRidgesType
+		public enum BackTuftsAndRidgesType : byte
 		{
 			HardBackSpikes,
 			WobblyBackTufts
@@ -251,14 +254,14 @@ namespace IDFinder
 					ScaleGraf = 6;
 			}
 			Sizes = new float[Positions.Length];
-			float a = Custom.Lerp(0.1f, 0.6f, XORShift128.Shared.NextFloat());
-			float p = Custom.Lerp(0.3f, 1f, XORShift128.Shared.NextFloat());
+			float a = float.Lerp(0.1f, 0.6f, XORShift128.Shared.NextFloat());
+			float p = float.Lerp(0.3f, 1f, XORShift128.Shared.NextFloat());
 			GeneralSize = Custom.LerpMap((float)Positions.Length, 5f, 35f, 1f, 0.2f);
-			GeneralSize = Custom.Lerp(GeneralSize, personality.Dominance, XORShift128.Shared.NextFloat());
-			GeneralSize = Custom.Lerp(GeneralSize, float.Pow(XORShift128.Shared.NextFloat(), 0.75f), XORShift128.Shared.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, personality.Dominance, XORShift128.Shared.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, float.Pow(XORShift128.Shared.NextFloat(), 0.75f), XORShift128.Shared.NextFloat());
 			for (int i = 0; i < Sizes.Length; i++)
 			{
-				Sizes[i] = Custom.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
+				Sizes[i] = float.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
 			}
 			if (IsColored)
 			{
@@ -272,10 +275,10 @@ namespace IDFinder
 						a2 = float.Min(a2, Positions[j].Y);
 						num = float.Max(num, Positions[j].Y);
 					}
-					float p2 = Custom.Lerp(0.2f, 1.2f, XORShift128.Shared.NextFloat());
+					float p2 = float.Lerp(0.2f, 1.2f, XORShift128.Shared.NextFloat());
 					for (int k = 0; k < ColorAlphas.Length; k++)
 					{
-						ColorAlphas[k] = Custom.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num, Positions[k].Y), p2));
+						ColorAlphas[k] = float.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num, Positions[k].Y), p2));
 					}
 					return;
 				}
@@ -303,14 +306,14 @@ namespace IDFinder
 					ScaleGraf = 6;
 			}
 			Sizes = new float[Positions.Length];
-			float a = Custom.Lerp(0.1f, 0.6f, XORShift128.NextFloat());
-			float p = Custom.Lerp(0.3f, 1f, XORShift128.NextFloat());
+			float a = float.Lerp(0.1f, 0.6f, XORShift128.NextFloat());
+			float p = float.Lerp(0.3f, 1f, XORShift128.NextFloat());
 			GeneralSize = Custom.LerpMap((float)Positions.Length, 5f, 35f, 1f, 0.2f);
-			GeneralSize = Custom.Lerp(GeneralSize, personality.Dominance, XORShift128.NextFloat());
-			GeneralSize = Custom.Lerp(GeneralSize, float.Pow(XORShift128.NextFloat(), 0.75f), XORShift128.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, personality.Dominance, XORShift128.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, float.Pow(XORShift128.NextFloat(), 0.75f), XORShift128.NextFloat());
 			for (int i = 0; i < Sizes.Length; i++)
 			{
-				Sizes[i] = Custom.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
+				Sizes[i] = float.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
 			}
 			if (IsColored)
 			{
@@ -324,10 +327,10 @@ namespace IDFinder
 						a2 = float.Min(a2, Positions[j].Y);
 						num = float.Max(num, Positions[j].Y);
 					}
-					float p2 = Custom.Lerp(0.2f, 1.2f, XORShift128.NextFloat());
+					float p2 = float.Lerp(0.2f, 1.2f, XORShift128.NextFloat());
 					for (int k = 0; k < ColorAlphas.Length; k++)
 					{
-						ColorAlphas[k] = Custom.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num, Positions[k].Y), p2));
+						ColorAlphas[k] = float.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num, Positions[k].Y), p2));
 					}
 					return;
 				}
@@ -395,17 +398,17 @@ namespace IDFinder
 			DownAlongSpine = XORShift128.Shared.NextFloat();
 			//int TotalSprites = Positions.Length * (IsColored ? 2 : 1);
 			Scales = new Scale[Positions.Length];
-			GeneralSize = Custom.Lerp(XORShift128.Shared.NextFloat(), personality.Dominance, XORShift128.Shared.NextFloat());
-			GeneralSize = Custom.Lerp(GeneralSize, XORShift128.Shared.NextFloat(), XORShift128.Shared.NextFloat());
-			GeneralSize = float.Pow(GeneralSize, Custom.Lerp(2f, 0.65f, personality.Dominance));
-			float grav = Custom.Lerp(0f, 0.9f, XORShift128.Shared.NextFloat());
-			float airFric = Custom.Lerp(0.2f, 0.95f, XORShift128.Shared.NextFloat());
-			float num = Custom.Lerp(0.1f, 9f, float.Pow(XORShift128.Shared.NextFloat(), 0.2f));
-			float rigidGradRad = Custom.Lerp(float.Max(4f, num * 1.5f), 37f, float.Pow(XORShift128.Shared.NextFloat(), 2f));
-			float rigidExp = Custom.Lerp(1f, 6f, float.Pow(XORShift128.Shared.NextFloat(), 5f));
+			GeneralSize = float.Lerp(XORShift128.Shared.NextFloat(), personality.Dominance, XORShift128.Shared.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, XORShift128.Shared.NextFloat(), XORShift128.Shared.NextFloat());
+			GeneralSize = float.Pow(GeneralSize, float.Lerp(2f, 0.65f, personality.Dominance));
+			float grav = float.Lerp(0f, 0.9f, XORShift128.Shared.NextFloat());
+			float airFric = float.Lerp(0.2f, 0.95f, XORShift128.Shared.NextFloat());
+			float num = float.Lerp(0.1f, 9f, float.Pow(XORShift128.Shared.NextFloat(), 0.2f));
+			float rigidGradRad = float.Lerp(float.Max(4f, num * 1.5f), 37f, float.Pow(XORShift128.Shared.NextFloat(), 2f));
+			float rigidExp = float.Lerp(1f, 6f, float.Pow(XORShift128.Shared.NextFloat(), 5f));
 			Scale.ScaleStats stats = new(grav, airFric, num, rigidGradRad, rigidExp, 0.5f + XORShift128.Shared.NextFloat() * 0.5f);
-			float num2 = Custom.Lerp(0.1f, 0.6f, XORShift128.Shared.NextFloat());
-			float p = Custom.Lerp(1.2f, 0.3f, XORShift128.Shared.NextFloat());
+			float num2 = float.Lerp(0.1f, 0.6f, XORShift128.Shared.NextFloat());
+			float p = float.Lerp(1.2f, 0.3f, XORShift128.Shared.NextFloat());
 			float a = num2 * XORShift128.Shared.NextFloat();
 			RandomDirs = new Vector2[Scales.Length];
 			for (int i = 0; i < Scales.Length; i++)
@@ -414,23 +417,23 @@ namespace IDFinder
 				float num3;
 				if (Pattern == BackPattern.SpineRidge || Pattern == BackPattern.DoubleSpineRidge)
 				{
-					num3 = Custom.Lerp(num2, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
+					num3 = float.Lerp(num2, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
 				}
 				else if (Pattern == BackPattern.RandomBackBlotch)
 				{
-					num3 = Custom.Lerp(num2, 1f, XORShift128.Shared.NextFloat());
-					num3 = float.Min(num3, Custom.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f)));
+					num3 = float.Lerp(num2, 1f, XORShift128.Shared.NextFloat());
+					num3 = float.Min(num3, float.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f)));
 					RandomDirs[i] = Custom.RNV() * (1f - 2f * float.Abs(0.5f - Custom.InverseLerp(Top, Bottom, Positions[i].Y)));
 				}
 				else
 				{
-					num3 = Custom.Lerp(1f, num2, Custom.InverseLerp(Top, Bottom, Positions[i].Y));
+					num3 = float.Lerp(1f, num2, Custom.InverseLerp(Top, Bottom, Positions[i].Y));
 				}
 				if (XORShift128.Shared.NextFloat() < iVars.Scruffy)
 				{
-					num3 = Custom.Lerp(num3, XORShift128.Shared.NextFloat(), float.Pow(XORShift128.Shared.NextFloat(), Custom.Lerp(4f, 0.5f, iVars.Scruffy)));
+					num3 = float.Lerp(num3, XORShift128.Shared.NextFloat(), float.Pow(XORShift128.Shared.NextFloat(), float.Lerp(4f, 0.5f, iVars.Scruffy)));
 				}
-				Scales[i] = new Scale(i, stats, 40f * num3 * Custom.Lerp(0.1f, 1f, GeneralSize));
+				Scales[i] = new Scale(i, stats, 40f * num3 * float.Lerp(0.1f, 1f, GeneralSize));
 			}
 			if (IsColored)
 			{
@@ -444,10 +447,10 @@ namespace IDFinder
 						a2 = float.Min(a2, Positions[j].Y);
 						num4 = float.Max(num4, Positions[j].Y);
 					}
-					float p2 = Custom.Lerp(0.2f, 1.2f, XORShift128.Shared.NextFloat());
+					float p2 = float.Lerp(0.2f, 1.2f, XORShift128.Shared.NextFloat());
 					for (int k = 0; k < ColorAlphas.Length; k++)
 					{
-						ColorAlphas[k] = Custom.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num4, Positions[k].Y), p2));
+						ColorAlphas[k] = float.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num4, Positions[k].Y), p2));
 					}
 					return;
 				}
@@ -502,17 +505,17 @@ namespace IDFinder
 			DownAlongSpine = XORShift128.NextFloat();
 			//int TotalSprites = Positions.Length * (IsColored ? 2 : 1);
 			Scales = new Scale[Positions.Length];
-			GeneralSize = Custom.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat());
-			GeneralSize = Custom.Lerp(GeneralSize, XORShift128.NextFloat(), XORShift128.NextFloat());
-			GeneralSize = float.Pow(GeneralSize, Custom.Lerp(2f, 0.65f, personality.Dominance));
-			float grav = Custom.Lerp(0f, 0.9f, XORShift128.NextFloat());
-			float airFric = Custom.Lerp(0.2f, 0.95f, XORShift128.NextFloat());
-			float num = Custom.Lerp(0.1f, 9f, float.Pow(XORShift128.NextFloat(), 0.2f));
-			float rigidGradRad = Custom.Lerp(float.Max(4f, num * 1.5f), 37f, float.Pow(XORShift128.NextFloat(), 2f));
-			float rigidExp = Custom.Lerp(1f, 6f, float.Pow(XORShift128.NextFloat(), 5f));
+			GeneralSize = float.Lerp(XORShift128.NextFloat(), personality.Dominance, XORShift128.NextFloat());
+			GeneralSize = float.Lerp(GeneralSize, XORShift128.NextFloat(), XORShift128.NextFloat());
+			GeneralSize = float.Pow(GeneralSize, float.Lerp(2f, 0.65f, personality.Dominance));
+			float grav = float.Lerp(0f, 0.9f, XORShift128.NextFloat());
+			float airFric = float.Lerp(0.2f, 0.95f, XORShift128.NextFloat());
+			float num = float.Lerp(0.1f, 9f, float.Pow(XORShift128.NextFloat(), 0.2f));
+			float rigidGradRad = float.Lerp(float.Max(4f, num * 1.5f), 37f, float.Pow(XORShift128.NextFloat(), 2f));
+			float rigidExp = float.Lerp(1f, 6f, float.Pow(XORShift128.NextFloat(), 5f));
 			Scale.ScaleStats stats = new(grav, airFric, num, rigidGradRad, rigidExp, 0.5f + XORShift128.NextFloat() * 0.5f);
-			float num2 = Custom.Lerp(0.1f, 0.6f, XORShift128.NextFloat());
-			float p = Custom.Lerp(1.2f, 0.3f, XORShift128.NextFloat());
+			float num2 = float.Lerp(0.1f, 0.6f, XORShift128.NextFloat());
+			float p = float.Lerp(1.2f, 0.3f, XORShift128.NextFloat());
 			float a = num2 * XORShift128.NextFloat();
 			RandomDirs = new Vector2[Scales.Length];
 			for (int i = 0; i < Scales.Length; i++)
@@ -521,23 +524,23 @@ namespace IDFinder
 				float num3;
 				if (Pattern == BackPattern.SpineRidge || Pattern == BackPattern.DoubleSpineRidge)
 				{
-					num3 = Custom.Lerp(num2, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
+					num3 = float.Lerp(num2, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f));
 				}
 				else if (Pattern == BackPattern.RandomBackBlotch)
 				{
-					num3 = Custom.Lerp(num2, 1f, XORShift128.NextFloat());
-					num3 = float.Min(num3, Custom.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f)));
+					num3 = float.Lerp(num2, 1f, XORShift128.NextFloat());
+					num3 = float.Min(num3, float.Lerp(a, 1f, float.Sin(float.Pow(Custom.InverseLerp(Top, Bottom, Positions[i].Y), p) * 3.1415927f)));
 					RandomDirs[i] = Custom.RNVRNGParam(XORShift128) * (1f - 2f * float.Abs(0.5f - Custom.InverseLerp(Top, Bottom, Positions[i].Y)));
 				}
 				else
 				{
-					num3 = Custom.Lerp(1f, num2, Custom.InverseLerp(Top, Bottom, Positions[i].Y));
+					num3 = float.Lerp(1f, num2, Custom.InverseLerp(Top, Bottom, Positions[i].Y));
 				}
 				if (XORShift128.NextFloat() < iVars.Scruffy)
 				{
-					num3 = Custom.Lerp(num3, XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), Custom.Lerp(4f, 0.5f, iVars.Scruffy)));
+					num3 = float.Lerp(num3, XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), float.Lerp(4f, 0.5f, iVars.Scruffy)));
 				}
-				Scales[i] = new Scale(i, stats, 40f * num3 * Custom.Lerp(0.1f, 1f, GeneralSize));
+				Scales[i] = new Scale(i, stats, 40f * num3 * float.Lerp(0.1f, 1f, GeneralSize));
 			}
 			if (IsColored)
 			{
@@ -551,10 +554,10 @@ namespace IDFinder
 						a2 = float.Min(a2, Positions[j].Y);
 						num4 = float.Max(num4, Positions[j].Y);
 					}
-					float p2 = Custom.Lerp(0.2f, 1.2f, XORShift128.NextFloat());
+					float p2 = float.Lerp(0.2f, 1.2f, XORShift128.NextFloat());
 					for (int k = 0; k < ColorAlphas.Length; k++)
 					{
-						ColorAlphas[k] = Custom.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num4, Positions[k].Y), p2));
+						ColorAlphas[k] = float.Lerp(Colored, 0f, float.Pow(Custom.InverseLerp(a2, num4, Positions[k].Y), p2));
 					}
 					return;
 				}
