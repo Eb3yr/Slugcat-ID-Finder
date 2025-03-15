@@ -151,10 +151,13 @@ namespace IDFinder
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static float HueDiff(float targetH, float H)
 		{
-			float diff = H - targetH;
+			float diff = float.Abs(H - targetH);
 			if (diff > 0.5f)
+			{
+				Debug.Assert(1f - diff >= 0f);
 				return 1f - diff;
-
+			}
+			Debug.Assert(diff >= 0f);
 			return diff;
 		}
 	}
