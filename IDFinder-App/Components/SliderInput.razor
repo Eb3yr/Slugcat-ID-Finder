@@ -1,0 +1,94 @@
+﻿@typeparam TValue where TValue : System.Numerics.INumber<TValue>
+@inject IJSRuntime JS
+<style>
+	p {
+		font-size: inherit;
+		user-select: none;
+	}
+	pre {
+		padding-right: @(FontSize)px;
+		user-select: none;
+	}
+</style>
+<li>
+	<div style="display: flex; align-items: center; padding: 10px; font-size: @(FontSize)px; padding-top: 0px; padding-bottom: 0px;" >
+		<pre>@Label</pre>
+		<input type="range" @bind="Target" @bind:event="oninput" min="@Range.min" max="@Range.max" step="@Range.step" @onmousedown="@(() => thumbSelected = true)" @onmouseup="ClearFocus"	style="width: @(SliderWidth)px;" />
+		@TargetLabel
+
+		@if (thumbSelected && !IncludePreciseField)
+		{
+			// Terrible hack to kind-of roughly approximate an offset to center the text. I hate this, but javascript is awful and I dont want to fiddle with that all day for this.
+			// Nicest option to implement in future is this https://stackoverflow.com/questions/63109527/how-to-find-svg-text-size-in-pixels-for-blazor-application
+			string tar = Target.ToString()!;
+			float leftPad = -0.25f * FontSize;
+			leftPad *= tar.Length switch
+			{
+				1 => 2.3f,
+				3 => 3.5f,
+				4 => 4.25f,
+				_ => 1f
+			};
+			if (Convert.ToSingle(Target) == 1f)
+				leftPad -= FontSize * 0.4f;	// 1 formats further right than 0
+	
+			<p style="position: relative; width: 0; top: -16px; left: @(leftPad + -1f * SliderWidth * (1f - IDFinder_App.Custom.InverseLerp(Convert.ToSingle(Range.min), Convert.ToSingle   (Range.max), Convert.ToSingle(Target))))px; font-size: @(0.6f * FontSize)px; " >@Target</p>
+		}
+		
+		@if (IncludePreciseField)
+		{
+			<WeightBox HideArrows="true" RenderWeightLabel="false" Weight="FltTarget" WeightChanged="@((float f) => {FltTarget = f; InvokeChanged(); })" FontSize="FontSize" />
+		}
+
+		<WeightBox @bind-Weight="Weight" @bind-Weight:after="InvokeChanged" FontSize="FontSize" style="background-color: rgba(0, 0, 0, 0); border: none;" />
+	</div>
+</li>
+@code
+{
+	[Parameter]
+	public string Label { get; set; } = "";
+	[Parameter]
+	public TValue Target { get; set; } = default!;
+	[Parameter]
+	public float Weight { get; set; } = 0f;
+	[Parameter]
+	public bool IncludePreciseField { get; set; } = true;   // Additional input box for exact inputs. Not constrained to Range
+	[Parameter]
+	public (TValue min, TValue max, TValue step) Range { get; set; } = ((TValue)Convert.ChangeType(0, typeof(TValue)), (TValue)Convert.ChangeType(1, typeof(TValue)), (TValue)Convert.ChangeType(0.01, typeof(TValue)));
+	[Parameter]
+	public EventCallback<(TValue target, float weight)> InputChanged { get; set; }
+	[Parameter]
+	public string TargetLabel { get; set; } = "";
+	[Parameter]
+	public string WeightLabel { get; set; } = "\t\tWeight: ";
+	[Parameter]
+	public int SliderWidth { get; set; } = 320;
+	[Parameter]
+	public float FontSize { get; set; } = Consts.DefFontSize;
+
+	private float FltTarget { get => Convert.ToSingle(Target); set => Target = (TValue)Convert.ChangeType(value, typeof(TValue)); }
+	private bool thumbSelected = false;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		if (typeof(TValue) != typeof(Int32) && typeof(TValue) != typeof(Single))
+			throw new ArgumentException("Only Single and Int32 may be used as generics for SliderInput.");	// Could support more but would rather not risk it.
+	}
+
+	private void InvokeChanged()
+	{
+		// Only do on slider release or otherwise when modifying it. Else we're spamming this method every single instant the slider is moving. 
+		InputChanged.InvokeAsync((Target, Weight));
+		Console.WriteLine("Changed weight to " + Weight);
+	}
+
+	private async void ClearFocus()
+	{
+		await JS.InvokeAsync<string>("document.activeElement.blur", null);
+		thumbSelected = false;
+		InvokeChanged();
+		StateHasChanged();
+	}
+}

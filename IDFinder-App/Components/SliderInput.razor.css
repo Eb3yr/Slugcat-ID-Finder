@@ -1,0 +1,46 @@
+﻿/* Time to Rain all over the World (range input) */
+/* If you use chromium, my condolences. */
+
+input[type=number].noscroll {
+	-webkit-appearance: none;
+	-moz-appearance: textfield;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent;
+	cursor: pointer;
+}
+
+input[type=range]::-moz-range-track { /* "not a valid pseudo-element" BZZZZ WRONG, BUGGER OFF CHROMIUM */
+	background: #151515;
+	height: 2px;
+	border-radius: 1rem;
+}
+
+input[type=range]::-moz-range-thumb {
+	border: solid;
+	border-radius: 5.5px;
+	border-width: 1px;
+	border-color: #DDD;
+
+	height: 18px;
+	width: 10px;
+	background-color: #222222;
+}
+
+input[type=range]:focus {
+	border: none;
+	outline: none;
+}
+
+input[type=range]:focus::-moz-range-thumb { /* If I go down this route I need to lose focus when mouse deselects, instead of  */
+	height: 15px;
+	border-radius: 5.5px;
+	background-color: #DDD;
+}
+
+/* CONSIDER: https://dev.to/cydstumpel/css-transitions-3gdn */
+
+/* Instead of using JS to track and put text, I could use the pos of the component (relative maybe?), it's length, and inverselerp the selected val to get how far down along I need to position the label. Then vertically offset it and BAM. IDK how easy it is to get the pos of the component but w/e */

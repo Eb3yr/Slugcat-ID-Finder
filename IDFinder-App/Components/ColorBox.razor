@@ -1,0 +1,17 @@
+﻿@using ColourLib
+
+<!-- Use to draw colours using HSL. Put after a set of HSL or HL components, add some padding to the bottom of THIS component to distinguish it from below components -->
+<!-- As of right now DRAWING ONLY, NOT an input! -->
+
+
+@code {
+	// Get hex colour from casting a HslColor to Color
+	[Parameter, EditorRequired]
+	public float H { get; set; }
+	[Parameter, EditorRequired]
+	public float S { get; set; }
+	[Parameter, EditorRequired]
+	public float L { get; set; }
+
+	private string HtmlHex { get => "#" + ((ColourLib.Color)(new HslColor(H, S, L))).ToHex(); }
+}

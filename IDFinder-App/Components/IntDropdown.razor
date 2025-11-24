@@ -1,0 +1,14 @@
+﻿<IDFinder_App.Components.Generics.GenericDropdownInput T="int" Options="Options" SelectedOption="SelectedOption" SelectedOptionChanged="SelectedOptionChanged" AdditionalAttributes="AdditionalAttributes" />
+
+@code
+{
+	// Component inheritance seems to be bugged. May work in .NET 8, will apparently work in older versions of .NET 7, but for now will take a manual approach
+	[Parameter]
+	public int SelectedOption { get; set; } = default!;
+	[Parameter, EditorRequired]
+	public IEnumerable<int> Options { get; set; } = default!;
+	[Parameter]
+	public EventCallback<(int target, float weight)> SelectedOptionChanged { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+}

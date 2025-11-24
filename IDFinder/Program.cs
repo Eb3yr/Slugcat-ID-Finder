@@ -27,7 +27,7 @@ namespace IDFinder
 			var ts = TimeSpan.Zero;
 			
 			dt = DateTime.Now;
-			result = Searcher.SearchThreaded(0, int.MaxValue / 64, 24, 12, sParams, true, true);
+			result = Searcher.SearchThreaded(0, int.MaxValue / 64, 24, 12, sParams, true);
 			//Searcher.Search(0, 1000000, 4, sParams, true);
 			ts += DateTime.Now.Subtract(dt);
 
