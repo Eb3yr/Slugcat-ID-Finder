@@ -1,0 +1,26 @@
+﻿<li style="list-style-type:none">
+    <span>
+        <i class=@((Foldered) ? "iconoir-nav-arrow-right" : "iconoir-nav-arrow-down") @onclick="FolderedClicked" style="cursor: pointer; font-size:8pt;"></i>
+        <input type="checkbox" StateChanged="CheckboxStateChanged"  InitialValue="InitialValue" />
+        @Label
+    </span>
+</li>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = "";
+    [Parameter]
+    public bool InitialValue { get; set; } = false;
+    [Parameter]
+    public bool Foldered { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> CheckboxStateChanged { get; set; }
+    [Parameter]
+    public EventCallback<bool> FolderedChanged { get; set; }
+
+    private void FolderedClicked()
+    {
+        Foldered ^= true;
+        FolderedChanged.InvokeAsync(Foldered);
+    }
+}

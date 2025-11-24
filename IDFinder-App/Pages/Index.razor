@@ -1,0 +1,398 @@
+﻿@using IDFinder_App.Components
+@using IDFinder_App.Components.Generics
+@using IDFinder
+@using System.Text.Json;
+@page "/"
+@inject IIndexState State
+@inject IWriter Writer
+
+<style>
+	body {
+		background-color: #656565;
+	}
+	pre {
+		margins: inherit;
+		margin-top: @(Consts.LabelVertMargins)px;
+		margin-bottom: @(Consts.LabelVertMargins)px;
+	}
+</style>
+<!-- TODO: Rename event callbacks to fit "OnChanged" kinda structure. Do it before I put all the components in here and have to manually edit them. -->
+<!-- TODO: Replace default spinners with custom ones that aren't awful and fit the theme -->
+<!-- TODO: Move Personality outside of slugcat and into its own listelement -->
+<!-- TODO: checkboxes actually doing something -->
+<!-- TODO BIG: Save/Load functionality to store searchparams locally, and cache so that they don't get deleted. Plus store results  -->
+<!-- TODO: Consider adding functionality that assigns weight to 1 if it's currently 0 and a control is clicked for the first time? Posible QoL improvement -->
+<!-- Would like to stick ALL of the list below into a flex container's first column, then on the right column add the output window, previews, etc. -->
+<!-- Or investigate being able to just... align to the right of the ul, since the ul's bounds don't take up the entire screen, nor close to it -->
+
+
+<!-- Important: Run through and add Weight parameter to sliders. It shouldn't be getting set outside of the slider components, but if it is then this'll stop it from breaking -->
+
+<ul style="font-size: 20px;">
+	<ListElement Label="Personality" InitialValue="State.CheckedPersonality" CheckboxStateChanged="(bool b) => State.CheckedPersonality = b" Foldered="State.FolderPersonality" FolderedChanged="(bool b) => FolderPersonality = b" />
+	@if (!FolderPersonality)
+	{
+	<li class="nopad">
+		<ul>
+			<SliderInput Label="Sympathy" TValue="float" Target="personalityParams.Sympathy.target" InputChanged="@(((float, float) t) => personalityParams.Sympathy = t)" />
+			<SliderInput Label="Energy" TValue="float" Target="personalityParams.Energy.target" InputChanged="@(((float, float) t) => personalityParams.Energy = t)" />
+			<SliderInput Label="Bravery" TValue="float" Target="personalityParams.Bravery.target" InputChanged="@(((float, float) t) => personalityParams.Bravery = t)" />
+			<SliderInput Label="Nervous" TValue="float" Target="personalityParams.Nervous.target" InputChanged="@(((float, float) t) => personalityParams.Nervous = t)" />
+			<SliderInput Label="Aggression" TValue="float" Target="personalityParams.Aggression.target" InputChanged="@(((float, float) t) => personalityParams.Aggression = t)" />
+			<SliderInput Label="Dominance" TValue="float" Target="personalityParams.Dominance.target" InputChanged="@(((float, float) t) => personalityParams.Dominance = t)" /> 
+		</ul>
+	</li>
+	}
+
+	<ListElement Label="Scug" InitialValue="CheckedScug" CheckboxStateChanged="(bool b) => CheckedScug = b" Foldered="FolderScug" FolderedChanged="(bool b) => FolderScug = b" />
+	@if (!FolderScug)
+	{
+		<li><ul>
+
+		<ListElement Label="NPCStats" InitialValue="CheckedNPCStats" CheckboxStateChanged="(bool b) => CheckedNPCStats = b" Foldered="FolderNPCStats" FolderedChanged="(bool b) => FolderNPCStats = b" />
+		@if (!FolderNPCStats)
+		{
+		<li>
+			<ul>
+				<SliderInput Label="Met" TValue="float" Target="nPCStatsParams.Met.target" InputChanged="@(((float, float) t) => nPCStatsParams.Met = t)" />
+				<SliderInput Label="Bal" TValue="float" Target="nPCStatsParams.Bal.target" InputChanged="@(((float, float) t) => nPCStatsParams.Bal = t)" />
+				<SliderInput Label="Size" TValue="float" Target="nPCStatsParams.Size.target" InputChanged="@(((float, float) t) => nPCStatsParams.Size = t)" />
+				<SliderInput Label="Stealth" TValue="float" Target="nPCStatsParams.Stealth.target" InputChanged="@(((float, float) t) => nPCStatsParams.Stealth = t)" />
+				<Checkbox Label="Dark" Target="nPCStatsParams.Dark.target" OnChanged="@(((bool, float) t) => nPCStatsParams.Dark = t)" />
+				<SliderInput Label="EyeColor" TValue="float" Target="nPCStatsParams.EyeColor.target" InputChanged="@(((float, float) t) => nPCStatsParams.EyeColor = t)" />
+				<SliderInput Label="H" TValue="float" Target="nPCStatsParams.H.target" InputChanged="@(((float, float) t) => nPCStatsParams.H = t)" />
+				<SliderInput Label="S" TValue="float" Target="nPCStatsParams.S.target" InputChanged="@(((float, float) t) => nPCStatsParams.S = t)" />
+				<SliderInput Label="L" TValue="float" Target="nPCStatsParams.L.target" InputChanged="@(((float, float) t) => nPCStatsParams.L = t)" />
+				<SliderInput Label="Wideness" TValue="float" Target="nPCStatsParams.Wideness.target" InputChanged="@(((float, float) t) => nPCStatsParams.Wideness = t)" />
+			</ul>
+		</li>
+		}
+
+		<ListElement Label="SlugcatStats" InitialValue="CheckedSlugcatStats" CheckboxStateChanged="(bool b) => CheckedSlugcatStats = b" Foldered="FolderSlugcatStats" FolderedChanged="(bool b) => FolderSlugcatStats = b" />
+		@if (!FolderSlugcatStats)
+		{
+		<li>
+			<ul>
+				<SliderInput Label="BodyWeightFac" TValue="float" Target="slugcatStatsParams.BodyWeightFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.BodyWeightFac = t)" />
+				<SliderInput Label="GeneralVisibilityBonus" TValue="float" Target="slugcatStatsParams.GeneralVisibilityBonus.target" InputChanged="@(((float, float) t) => slugcatStatsParams.GeneralVisibilityBonus = t)" />
+				<SliderInput Label="VisualStealthInSneakMode" TValue="float" Target="slugcatStatsParams.VisualStealthInSneakMode.target" InputChanged="@(((float, float) t) => slugcatStatsParams.VisualStealthInSneakMode = t)" />
+				<SliderInput Label="LoudnessFac" TValue="float" Target="slugcatStatsParams.LoudnessFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.LoudnessFac = t)" />
+				<SliderInput Label="LungsFac" TValue="float" Target="slugcatStatsParams.LungsFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.LungsFac = t)" />
+				<SliderInput Label="ThrowingSkill" TValue="int" Target="slugcatStatsParams.ThrowingSkill.target" InputChanged="@(((int, float) t) => slugcatStatsParams.ThrowingSkill = t)" />
+				<SliderInput Label="PoleClimbSpeedFac" TValue="float" Target="slugcatStatsParams.PoleClimbSpeedFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.PoleClimbSpeedFac = t)" />
+				<SliderInput Label="CorridorClimbSpeedFac" TValue="float" Target="slugcatStatsParams.CorridorClimbSpeedFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.CorridorClimbSpeedFac = t)" />
+				<SliderInput Label="RunSpeedFac" TValue="float" Target="slugcatStatsParams.RunSpeedFac.target" InputChanged="@(((float, float) t) => slugcatStatsParams.RunSpeedFac = t)" />
+			</ul>
+		</li>
+		}
+
+		<ListElement Label="FoodPrefs" InitialValue="CheckedFoodPrefs" CheckboxStateChanged="(bool b) => CheckedFoodPrefs = b" Foldered="FolderFoodPrefs" FolderedChanged="(bool b) => FolderFoodPrefs = b" />
+		@if (!FolderFoodPrefs)
+		{
+		<li>
+			<ul>
+				<SliderInput Label="DangleFruit" TValue="float" Target="foodPreferencesParams.DangleFruit.target" Weight="foodPreferencesParams.DangleFruit.weight" InputChanged="((float, float) t) => foodPreferencesParams.DangleFruit = t" />
+				<SliderInput Label="WaterNut" TValue="float" Target="foodPreferencesParams.WaterNut.target" Weight="foodPreferencesParams.WaterNut.weight" InputChanged="((float, float) t) => foodPreferencesParams.WaterNut = t" />
+				<SliderInput Label="JellyFish" TValue="float" Target="foodPreferencesParams.JellyFish.target" Weight="foodPreferencesParams.JellyFish.weight" InputChanged="((float, float) t) => foodPreferencesParams.JellyFish = t" />
+				<SliderInput Label="SlimeMold" TValue="float" Target="foodPreferencesParams.SlimeMold.target" Weight="foodPreferencesParams.SlimeMold.weight" InputChanged="((float, float) t) => foodPreferencesParams.SlimeMold = t" />
+				<SliderInput Label="EggBugEgg" TValue="float" Target="foodPreferencesParams.EggBugEgg.target" Weight="foodPreferencesParams.EggBugEgg.weight" InputChanged="((float, float) t) => foodPreferencesParams.EggBugEgg = t" />
+				<SliderInput Label="FireEgg" TValue="float" Target="foodPreferencesParams.FireEgg.target" Weight="foodPreferencesParams.FireEgg.weight" InputChanged="((float, float) t) => foodPreferencesParams.FireEgg = t" />
+				<SliderInput Label="Popcorn" TValue="float" Target="foodPreferencesParams.Popcorn.target" Weight="foodPreferencesParams.Popcorn.weight" InputChanged="((float, float) t) => foodPreferencesParams.Popcorn = t" />
+				<SliderInput Label="GooieDuck" TValue="float" Target="foodPreferencesParams.GooieDuck.target" Weight="foodPreferencesParams.GooieDuck.weight" InputChanged="((float, float) t) => foodPreferencesParams.GooieDuck = t" />
+				<SliderInput Label="LilyPuck" TValue="float" Target="foodPreferencesParams.LilyPuck.target" Weight="foodPreferencesParams.LilyPuck.weight" InputChanged="((float, float) t) => foodPreferencesParams.LilyPuck = t" />
+				<SliderInput Label="GlowWeed" TValue="float" Target="foodPreferencesParams.GlowWeed.target" Weight="foodPreferencesParams.GlowWeed.weight" InputChanged="((float, float) t) => foodPreferencesParams.GlowWeed = t" />
+				<SliderInput Label="DandelionPeach" TValue="float" Target="foodPreferencesParams.DandelionPeach.target" Weight="foodPreferencesParams.DandelionPeach.weight" InputChanged="((float, float) t) => foodPreferencesParams.DandelionPeach = t" />
+				<SliderInput Label="Neuron" TValue="float" Target="foodPreferencesParams.Neuron.target" Weight="foodPreferencesParams.Neuron.weight" InputChanged="((float, float) t) => foodPreferencesParams.Neuron = t" />
+				<SliderInput Label="Centipede" TValue="float" Target="foodPreferencesParams.Centipede.target" Weight="foodPreferencesParams.Centipede.weight" InputChanged="((float, float) t) => foodPreferencesParams.Centipede = t" />
+				<SliderInput Label="SmallCentipede" TValue="float" Target="foodPreferencesParams.SmallCentipede.target" Weight="foodPreferencesParams.SmallCentipede.weight" InputChanged="((float, float) t) => foodPreferencesParams.SmallCentipede = t" />
+				<SliderInput Label="VultureGrub" TValue="float" Target="foodPreferencesParams.VultureGrub.target" Weight="foodPreferencesParams.VultureGrub.weight" InputChanged="((float, float) t) => foodPreferencesParams.VultureGrub = t" />
+				<SliderInput Label="SmallNeedleWorm" TValue="float" Target="foodPreferencesParams.SmallNeedleWorm.target" Weight="foodPreferencesParams.SmallNeedleWorm.weight" InputChanged="((float, float) t) => foodPreferencesParams.SmallNeedleWorm = t" />
+				<SliderInput Label="Hazer" TValue="float" Target="foodPreferencesParams.Hazer.target" Weight="foodPreferencesParams.Hazer.weight" InputChanged="((float, float) t) => foodPreferencesParams.Hazer = t" />
+				<SliderInput Label="NotCounted" TValue="float" Target="foodPreferencesParams.NotCounted.target" Weight="foodPreferencesParams.NotCounted.weight" InputChanged="((float, float) t) => foodPreferencesParams.NotCounted = t" />
+			</ul>
+		</li>
+		}
+
+		</ul></li>
+	}
+
+	<ListElement Label="Scav" InitialValue="CheckedScav" CheckboxStateChanged="(bool b) => CheckedScav = b" Foldered="FolderScav" FolderedChanged="(bool b) => FolderScav = b" />
+	@if (!FolderScav)
+	{
+		<li><ul>
+		<Checkbox Label="Elite" Target="individualVariationsParams.Elite" OnChanged="((bool b, float w) t) => individualVariationsParams.Elite = t.b" ShowWeight="false" />
+		<ListElement Label="IVars" InitialValue="CheckedIVars" CheckboxStateChanged="(bool b) => CheckedIVars = b" Foldered="FolderIVars" FolderedChanged="(bool b) => FolderIVars = b" />
+		@if (!FolderIVars)
+		{
+			<!-- TODO: Make sure int ranges are correct. -->
+			<li>
+				<ul>
+					<SliderInput TValue="float" Label="WaistWidth" Target="individualVariationsParams.WaistWidth.target" InputChanged="@(((float, float) t) => individualVariationsParams.WaistWidth = t)" />
+					<SliderInput TValue="float" Label="HeadSize" Target="individualVariationsParams.HeadSize.target" InputChanged="@(((float, float) t) => individualVariationsParams.HeadSize = t)" />
+					<SliderInput TValue="float" Label="EartlerWidth" Target="individualVariationsParams.EartlerWidth.target" InputChanged="@(((float, float) t) => individualVariationsParams.EartlerWidth = t)" />
+					<SliderInput TValue="float" Label="NeckThickness" Target="individualVariationsParams.NeckThickness.target" InputChanged="@(((float, float) t) => individualVariationsParams.NeckThickness = t)" />
+					<SliderInput TValue="float" Label="HandsHeadColor" Target="individualVariationsParams.HandsHeadColor.target" InputChanged="@(((float, float) t) => individualVariationsParams.HandsHeadColor = t)" />
+					<SliderInput TValue="float" Label="EyeSize" Target="individualVariationsParams.EyeSize.target" InputChanged="@(((float, float) t) => individualVariationsParams.EyeSize = t)" />
+					<SliderInput TValue="float" Label="NarrowEyes" Target="individualVariationsParams.NarrowEyes.target" InputChanged="@(((float, float) t) => individualVariationsParams.NarrowEyes = t)" />
+					<SliderInput TValue="float" Label="EyesAngle" Target="individualVariationsParams.EyesAngle.target" InputChanged="@(((float, float) t) => individualVariationsParams.EyesAngle = t)" />
+					<SliderInput TValue="float" Label="Fatness" Target="individualVariationsParams.Fatness.target" InputChanged="@(((float, float) t) => individualVariationsParams.Fatness = t)" />
+					<SliderInput TValue="float" Label="NarrowWaist" Target="individualVariationsParams.NarrowWaist.target" InputChanged="@(((float, float) t) => individualVariationsParams.NarrowWaist = t)" />
+					<SliderInput TValue="float" Label="LegsSize" Target="individualVariationsParams.LegsSize.target" InputChanged="@(((float, float) t) => individualVariationsParams.LegsSize = t)" />
+					<SliderInput TValue="float" Label="ArmThickness" Target="individualVariationsParams.ArmThickness.target" InputChanged="@(((float, float) t) => individualVariationsParams.ArmThickness = t)" />
+					<SliderInput TValue="float" Label="WideTeeth" Target="individualVariationsParams.WideTeeth.target" InputChanged="@(((float, float) t) => individualVariationsParams.WideTeeth = t)" />
+					<SliderInput TValue="float" Label="PupilSize" Target="individualVariationsParams.PupilSize.target" InputChanged="@(((float, float) t) => individualVariationsParams.PupilSize = t)" />
+					<SliderInput TValue="float" Label="Scruffy" Target="individualVariationsParams.Scruffy.target" InputChanged="@(((float, float) t) => individualVariationsParams.Scruffy = t)" />
+					<Checkbox Label="ColoredEartlerTips" Target="individualVariationsParams.ColoredEartlerTips.target" OnChanged="((bool, float) t) => individualVariationsParams.ColoredEartlerTips = t" />
+					<Checkbox Label="DeepPupils" Target="individualVariationsParams.DeepPupils.target" OnChanged="((bool, float) t) => individualVariationsParams.DeepPupils = t" />
+					<SliderInput TValue="int" Label="ColoredPupils" Target="individualVariationsParams.ColoredPupils.target" InputChanged="@(((int, float) t) => individualVariationsParams.ColoredPupils = t)" Range="(0, 2, 1)" />	   <!-- Would be better off as a dropdown, or with an annotation explaining them -->
+					<SliderInput TValue="int" Label="TailSegs" Target="individualVariationsParams.TailSegs.target" InputChanged="@(((int, float) t) => individualVariationsParams.TailSegs = t)" Range="(1, 4, 1)" />
+					<SliderInput TValue="float" Label="GeneralMelanin" Target="individualVariationsParams.GeneralMelanin.target" InputChanged="@(((float, float) t) => individualVariationsParams.GeneralMelanin = t)" />
+					<!-- ColoredPupils needs turning into a dropdown -->
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavColors" InitialValue="CheckedScavColors" CheckboxStateChanged="(bool b) => CheckedScavColors = b" Foldered="FolderScavColors" FolderedChanged="(bool b) => FolderScavColors = b" />
+		@if (!FolderScavColors)
+		{
+			<!-- <ColorBox> say what -->
+			<li>
+				<ul>
+					<SliderInput TValue="float" Label="BellyColorH" Target="scavColorsParams.BellyColorH.target" InputChanged="((float, float) t) => scavColorsParams.BellyColorH = t" />
+					<SliderInput TValue="float" Label="BellyColorS" Target="scavColorsParams.BellyColorS.target" InputChanged="((float, float) t) => scavColorsParams.BellyColorS = t" />
+					<SliderInput TValue="float" Label="BellyColorL" Target="scavColorsParams.BellyColorL.target" InputChanged="((float, float) t) => scavColorsParams.BellyColorL = t" />
+					<SliderInput TValue="float" Label="BodyColorH" Target="scavColorsParams.BodyColorH.target" InputChanged="((float, float) t) => scavColorsParams.BodyColorH = t" />
+					<SliderInput TValue="float" Label="BodyColorS" Target="scavColorsParams.BodyColorS.target" InputChanged="((float, float) t) => scavColorsParams.BodyColorS = t" />
+					<SliderInput TValue="float" Label="BodyColorL" Target="scavColorsParams.BodyColorL.target" InputChanged="((float, float) t) => scavColorsParams.BodyColorL = t" />
+					<SliderInput TValue="float" Label="DecorationColorH" Target="scavColorsParams.DecorationColorH.target" InputChanged="((float, float) t) => scavColorsParams.DecorationColorH = t" />
+					<SliderInput TValue="float" Label="DecorationColorS" Target="scavColorsParams.DecorationColorS.target" InputChanged="((float, float) t) => scavColorsParams.DecorationColorS = t" />
+					<SliderInput TValue="float" Label="DecorationColorL" Target="scavColorsParams.DecorationColorL.target" InputChanged="((float, float) t) => scavColorsParams.DecorationColorL = t" />
+					<SliderInput TValue="float" Label="EyeColorH" Target="scavColorsParams.EyeColorH.target" InputChanged="((float, float) t) => scavColorsParams.EyeColorH = t" />
+					<SliderInput TValue="float" Label="EyeColorL" Target="scavColorsParams.EyeColorL.target" InputChanged="((float, float) t) => scavColorsParams.EyeColorL = t" />
+					<SliderInput TValue="float" Label="HeadColorH" Target="scavColorsParams.HeadColorH.target" InputChanged="((float, float) t) => scavColorsParams.HeadColorH = t" />
+					<SliderInput TValue="float" Label="HeadColorS" Target="scavColorsParams.HeadColorS.target" InputChanged="((float, float) t) => scavColorsParams.HeadColorS = t" />
+					<SliderInput TValue="float" Label="HeadColorL" Target="scavColorsParams.HeadColorL.target" InputChanged="((float, float) t) => scavColorsParams.HeadColorL = t" />
+					<SliderInput TValue="float" Label="BellyColorBlack" Target="scavColorsParams.BellyColorBlack.target" InputChanged="((float, float) t) => scavColorsParams.BellyColorBlack = t" />
+					<SliderInput TValue="float" Label="BodyColorBlack" Target="scavColorsParams.BodyColorBlack.target" InputChanged="((float, float) t) => scavColorsParams.BodyColorBlack = t" />
+					<SliderInput TValue="float" Label="HeadColorBlack" Target="scavColorsParams.HeadColorBlack.target" InputChanged="((float, float) t) => scavColorsParams.HeadColorBlack = t" />
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavSkills" InitialValue="CheckedScavSkills" CheckboxStateChanged="(bool b) => CheckedScavSkills = b" Foldered="FolderScavSkills" FolderedChanged="(bool b) => FolderScavSkills = b" />
+		@if (!FolderScavSkills)
+		{
+			<li>
+				<ul>
+					<SliderInput TValue="float" Label="BlockingSkill" Target="scavSkillsParams.BlockingSkill.target" InputChanged="((float, float) t) => scavSkillsParams.BlockingSkill = t" />
+					<SliderInput TValue="float" Label="DodgeSkill" Target="scavSkillsParams.DodgeSkill.target" InputChanged="((float, float) t) => scavSkillsParams.DodgeSkill = t" />
+					<SliderInput TValue="float" Label="MeleeSkill" Target="scavSkillsParams.MeleeSkill.target" InputChanged="((float, float) t) => scavSkillsParams.MeleeSkill = t" />
+					<SliderInput TValue="float" Label="MidRangeSkill" Target="scavSkillsParams.MidRangeSkill.target" InputChanged="((float, float) t) => scavSkillsParams.MidRangeSkill = t" />
+					<SliderInput TValue="float" Label="ReactionSkill" Target="scavSkillsParams.ReactionSkill.target" InputChanged="((float, float) t) => scavSkillsParams.ReactionSkill = t" />
+				</ul>
+			</li>
+		}
+
+		<ListElement Label="ScavBack" InitialValue="CheckedScavBack" CheckboxStateChanged="(bool b) => CheckedScavBack = b" Foldered="FolderScavBack" FolderedChanged="(bool b) => FolderScavBack = b" />
+		@if (!FolderScavBack)
+		{
+			<li>
+				<ul>
+					<SliderInput TValue="float" Label="Top" Target="scavBackPatternsParams.Top.target" Weight="scavBackPatternsParams.Top.weight" InputChanged="((float, float) t) => scavBackPatternsParams.Top = t" />
+					<SliderInput TValue="float" Label="Bottom" Target="scavBackPatternsParams.Bottom.target" Weight="scavBackPatternsParams.Bottom.weight" InputChanged="((float, float) t) => scavBackPatternsParams.Bottom = t" />
+					<GenericDropdownInput Label="@("BackPattern")" TValue="BackDecals.BackPattern" SelectedOption="scavBackPatternsParams.Pattern.target" SelectedOptionChanged="((BackDecals.BackPattern, float) t) => scavBackPatternsParams.Pattern = t" />
+					<GenericDropdownInput Label="@("SpineType")" TValue="string"  SelectedOption="scavBackPatternsParams.Type.target" Options="@(new List<string>{ "HardBackSpikes", "WobblyBackTufts" })" SelectedOptionChanged="((string, float) t) => scavBackPatternsParams.Type = t"/>
+					<GenericDropdownInput Label="@("ColorType")" TValue="BackTuftsAndRidges.ColorTypeEnum" SelectedOption="scavBackPatternsParams.ColorType.target" SelectedOptionChanged="((BackTuftsAndRidges.ColorTypeEnum, float) t) => scavBackPatternsParams.ColorType = t" />
+					<Checkbox Label="IsColored" Target="scavBackPatternsParams.IsColored.target" Weight="scavBackPatternsParams.IsColored.weight" OnChanged="((bool, float) t) => scavBackPatternsParams.IsColored = t" />
+					<SliderInput TValue="int" Label="ScaleGraf" Target="scavBackPatternsParams.ScaleGraf.target" Weight="scavBackPatternsParams.ScaleGraf.weight" InputChanged="((int, float) t) => scavBackPatternsParams.ScaleGraf = t" Range="(0, 6, 1)" />
+					<SliderInput TValue="float" Label="GeneralSize" Target="scavBackPatternsParams.GeneralSize.target" Weight="scavBackPatternsParams.GeneralSize.weight" InputChanged="((float, float) t) => scavBackPatternsParams.GeneralSize = t" />
+					<SliderInput TValue="float" Label="Colored" Target="scavBackPatternsParams.Colored.target" Weight="scavBackPatternsParams.Colored.weight" InputChanged="((float, float) t) => scavBackPatternsParams.Colored = t" />
+					<SliderInput TValue="int" Label="NumberOfSpines" Target="scavBackPatternsParams.NumberOfSpines.target" Weight="scavBackPatternsParams.NumberOfSpines.weight" InputChanged="((int, float) t) => scavBackPatternsParams.NumberOfSpines = t" />
+				</ul>
+			</li>
+		}
+
+		</ul></li>
+	}
+</ul>
+
+<NumericInput TValue="long" Padding="1" NoScrollAndBase="true" Label="Start: " Value="Start" ValueChanged="(long i) => Start = (int)long.Clamp(i, int.MinValue, int.MaxValue)" FixWidthToValByCh="14" />
+<NumericInput TValue="long" Padding="1" NoScrollAndBase="true" Label="Stop: " Value="Stop" ValueChanged="(long i) => Stop = (int)long.Clamp(i, int.MinValue, int.MaxValue)" FixWidthToValByCh="14"/>
+<NumericInput TValue="int" Padding="1" NoScrollAndBase="false" Label="Results: " Value="NumToStore" ValueChanged="(int i) => NumToStore = int.Clamp(i, 0, 10_000_000)" FixWidthToValByCh="12" />
+<NumericInput TValue="int" Padding="1" NoScrollAndBase="false" Label="Threads: " Value="Threads" ValueChanged="(int i) => Threads = int.Clamp(i, 1, 8192)" FixWidthToValByCh="10" />
+<!-- If you need more threads then stop using quantum computing and use silicon like the rest of us plebs -->
+<Checkbox Label="Trim threads to results: " ShowWeight="false" Target="TrimNumToStore" OnChanged="((bool b, float f) t) => TrimNumToStore = t.b" />
+
+<span>
+	<button @onclick="PrintSearchResultsToConsole">Initiate search</button>
+	@if (isCurrentlySearching)
+	{
+		<button @onclick="@(() => Console.WriteLine("abortplaceholder"))">Abort</button>
+	}
+	else
+	{
+		<button @onclick="@(() => previewParams ^= true)">Preview params</button>
+		if (previewParams)
+		{
+			<pre>@PreviewSearchParams()</pre>
+		}
+	}
+	@if (PrevResults.Count() > 0)	// Don't like a count method, should probably cast to a list and use .Length instead
+	{
+		<div>
+			<button><a style="color: inherit; text-decoration: inherit;" href="@("https://scugfinder.azurewebsites.net/" + CollapseResultsToString())" target="_blank" >Open search results as scugs</a></button>
+			<button><a style="color: inherit; text-decoration: inherit;" href="@("https://scugfinder.azurewebsites.net/scavs/" + CollapseResultsToString())" target="_blank" >Open search results as scavs</a></button>
+		</div>
+		<div>
+			<button onclick="@SaveToFile">Save to file Results.txt</button>
+			<button onclick="@SaveScavSpawnCommands">Save scav spawn commands</button>
+		</div>
+	}
+</span>
+
+@code
+{
+	// Rain World UI isn't too complicated. Thin lines, curved edge rectangles, double bezel on the selected button, and a font. I can find recreations of the font on fontstruct.com
+	// Then it's just about sizing, aligning, and a decent background.
+	int Start = 0;
+	int Stop = 10_000;
+	int NumToStore = 32;
+	int Threads = 2;
+	bool TrimNumToStore = true;
+	IEnumerable<KeyValuePair<float, int>> PrevResults = new List<KeyValuePair<float, int>>();
+
+	bool previewParams = false;
+
+	bool _cs = false;
+	bool isCurrentlySearching
+	{
+		get => _cs;
+		set
+		{
+			Console.WriteLine(value + " searching");
+			_cs = value;
+		}
+	}
+	#region fields
+	bool FolderPersonality = true;
+	bool FolderScug = true;
+	bool FolderScav = true;
+
+	bool CheckedScug = false;
+	bool CheckedScav = false;
+
+	bool FolderNPCStats = true;
+	bool FolderSlugcatStats = true;
+	bool FolderFoodPrefs = true;
+	bool FolderIVars = true;
+	bool FolderScavColors = true;
+	bool FolderScavSkills = true;
+	bool FolderScavBack = true;
+
+	bool CheckedPersonality = false;
+	bool CheckedNPCStats = false;
+	bool CheckedSlugcatStats = false;
+	bool CheckedFoodPrefs = false;
+	bool CheckedIVars = false;
+	bool CheckedScavColors = false;
+	bool CheckedScavSkills = false;
+	bool CheckedScavBack = false;
+
+	// These should point to some global singleton or static state, NOT be fields in the component, or else they're erased whenever the page is refreshed. 
+	IPersonalityParams personalityParams = new SearchParams();
+	INPCStatsParams nPCStatsParams = new SearchParams();
+	ISlugcatStatsParams slugcatStatsParams = new SearchParams();
+	IFoodPreferencesParams foodPreferencesParams = new SearchParams();
+	IIndividualVariationsParams individualVariationsParams = new SearchParams();
+	IScavColorsParams scavColorsParams = new SearchParams();
+	IScavSkillsParams scavSkillsParams = new SearchParams();
+	IScavBackPatternsParams scavBackPatternsParams = new SearchParams();
+	#endregion
+
+	private void SaveToFile(/*string name = "Results.txt"	cannot do this, it's an event callback you muppet */)
+	{
+		string name = "Results.txt";
+		//File.WriteAllLines(name, PrevResults.Select(res => $"{res.Value}: {res.Key}"));
+		Writer.WriteToFile(name, PrevResults.Select(res => $"{res.Value}: {res.Key}"));
+	}
+	private void SaveScavSpawnCommands(string name = "Results.txt")
+	{
+		File.WriteAllLines(name.Split('.')[0] + "CopyPasteScav" + name.Split('.')[1], PrevResults.Select(res => $"at <cursor> spawn Scavenger ID.-1.{res.Value}"));
+	}
+
+	private string CollapseResultsToString()
+	{
+		// Collapses result IDs to a string and separates them with commas
+		string str = "";
+		foreach (var kvp in PrevResults)
+		{
+			str += $"{kvp.Value},";
+		}
+		return str.Remove(str.Length - 1);
+	}
+
+	private string PreviewSearchParams()
+	{
+		var opt = new JsonSerializerOptions()
+		{
+			WriteIndented = true,
+			IncludeFields = true
+		};
+		string str = JsonSerializer.Serialize(CoalesceParams(), opt);
+		str = str.Replace("Item1", "target").Replace("Item2", "weight");
+
+		// Then find some way to filter out zero weight ones, maybe split on a "}," (NOT comma, commas also split target, weight) separator and remove any with "weight: 0" ?
+		// And find a way to collapse each down to one line?
+
+		return str;
+	}
+
+	private async void PrintSearchResultsToConsole()
+	{
+		// TODO: Set up a cancellation token system in these two methods to abort the previous search if the abort button is pressed
+		// Will want an abort button that shows up only when a search is active, tracked by a bool.
+
+		isCurrentlySearching = true;
+		Task.Run(() =>
+		{
+			PrevResults = InitiateSearch().Result;
+			foreach (var kvp in PrevResults)
+				Console.WriteLine("kvp: " + kvp.Value + "," + kvp.Key);
+
+			InvokeAsync(StateHasChanged);
+		});
+		isCurrentlySearching = false;
+	}
+
+	private SearchParams CoalesceParams()
+	{
+		return (SearchParams)personalityParams + (SearchParams)nPCStatsParams + (SearchParams)slugcatStatsParams + (SearchParams)foodPreferencesParams + (SearchParams)individualVariationsParams + (SearchParams)scavColorsParams + (SearchParams)scavSkillsParams + (SearchParams)scavBackPatternsParams;
+	}
+
+	private async Task<IEnumerable<KeyValuePair<float, int>>> InitiateSearch()
+	{
+		// Compose it all into a search param, add up, call Search.
+		SearchParams sParams = CoalesceParams();
+		Console.WriteLine("sparams.sympathy = " + sParams.Sympathy);
+		// Need to set up infrastructure for logging percents properly now.
+		bool printToConsole = true;
+
+		Console.WriteLine($"Search args: Start={Start}, Stop={Stop}");
+
+		// New Task to run the search on without blocking this thread
+		var task = new Task<IEnumerable<KeyValuePair<float, int>>>(() => Searcher.SearchThreaded(Start, Stop, NumToStore, Threads, sParams, TrimNumToStore, printToConsole));
+		task.Start();
+		return await task;
+	}
+
+
+
+	MyEnum enumTracker = MyEnum.Zero;
+
+	enum MyEnum
+	{
+		Zero,
+		One,
+		Two
+	}
+}

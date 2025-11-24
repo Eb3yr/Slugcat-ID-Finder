@@ -1,4 +1,6 @@
-﻿namespace IDFinder
+﻿using System.Diagnostics;
+
+namespace IDFinder
 {
 	public class Slugcat
 	{
@@ -28,25 +30,25 @@
 		public float Dominance { get; private set; }
 		public Personality(int seed)
 		{
-			XORShift128.InitSeed(seed);
+			XORShift128.Shared.InitSeed(seed);
 
-			Sympathy = XORShift128.NextFloat();
-			Energy = XORShift128.NextFloat();
-			Bravery = XORShift128.NextFloat();
+			Sympathy = XORShift128.Shared.NextFloat();
+			Energy = XORShift128.Shared.NextFloat();
+			Bravery = XORShift128.Shared.NextFloat();
 
 			Sympathy = Custom.PushFromHalf(Sympathy, 1.5f);
 			Energy = Custom.PushFromHalf(Energy, 1.5f);
 			Bravery = Custom.PushFromHalf(Bravery, 1.5f);
-
-			Nervous = float.Lerp(XORShift128.NextFloat(), float.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Aggression = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.NextFloat(), 0.25f));
-			Dominance = float.Lerp(XORShift128.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.NextFloat(), 0.25f));
+			
+			Nervous = float.Lerp(XORShift128.Shared.NextFloat(), float.Lerp(Energy, 1f - Bravery, 0.5f), float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
+			Aggression = float.Lerp(XORShift128.Shared.NextFloat(), (Energy + Bravery) / 2f * (1f - Sympathy), float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
+			Dominance = float.Lerp(XORShift128.Shared.NextFloat(), (Energy + Bravery + Aggression) / 3f, float.Pow(XORShift128.Shared.NextFloat(), 0.25f));
 
 			Nervous = Custom.PushFromHalf(Nervous, 2.5f);
 
 			Aggression = Custom.PushFromHalf(Aggression, 2.5f);
 		}
-		internal Personality(int seed, InstanceXORShift128 XORShift128)	// For multithreading
+		internal Personality(int seed, XORShift128 XORShift128)	// For multithreading
 		{
 			XORShift128.InitSeed(seed);
 
@@ -81,18 +83,18 @@
 		public float Wideness { get; private set; }
 		public NPCStats(int ID)
 		{
-			XORShift128.InitSeed(ID);
+			XORShift128.Shared.InitSeed(ID);
 
-			Bal = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Met = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Stealth = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Size = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			Wideness = float.Pow(XORShift128.NextFloatRange(0f, 1f), 1.5f);
-			H = float.Lerp(XORShift128.NextFloatRange(0.15f, 0.58f), XORShift128.NextFloat(), float.Pow(XORShift128.NextFloat(), 1.5f - this.Met));
-			S = float.Pow(XORShift128.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
-			Dark = (XORShift128.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
-			L = float.Pow(XORShift128.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);   // Min val = Math.Pow(0.75f, 1.5f) or 0.649519f
-			EyeColor = float.Pow(XORShift128.NextFloatRange(0f, 1f), 2f - this.Stealth * 1.5f);
+			Bal = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Met = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Stealth = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Size = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			Wideness = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 1.5f);
+			H = float.Lerp(XORShift128.Shared.NextFloatRange(0.15f, 0.58f), XORShift128.Shared.NextFloat(), float.Pow(XORShift128.Shared.NextFloat(), 1.5f - this.Met));
+			S = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 0.3f + this.Stealth * 0.3f);
+			Dark = (XORShift128.Shared.NextFloatRange(0f, 1f) <= 0.3f + this.Stealth * 0.2f);
+			L = float.Pow(XORShift128.Shared.NextFloatRange(this.Dark ? 0.9f : 0.75f, 1f), 1.5f - this.Stealth);   // Min val = Math.Pow(0.75f, 1.5f) or 0.649519f
+			EyeColor = float.Pow(XORShift128.Shared.NextFloatRange(0f, 1f), 2f - this.Stealth * 1.5f);
 
 			switch (ID)
 			{
@@ -115,7 +117,7 @@
 					break;
 			}
 		}
-		internal NPCStats(int ID, InstanceXORShift128 XORShift128)
+		internal NPCStats(int ID, XORShift128 XORShift128)
 		{
 			XORShift128.InitSeed(ID);
 
@@ -154,6 +156,28 @@
 	}
 	public struct FoodPreferences
 	{
+		public enum Food
+		{
+			DangleFruit,
+			WaterNut,
+			JellyFish,
+			SlimeMold,
+			EggBugEgg,
+			FireEgg,
+			Popcorn,
+			GooieDuck,
+			LilyPuck,
+			GlowWeed,
+			DandelionPeach,
+			Neuron,
+			Centipede,
+			SmallCentipede,
+			VultureGrub,
+			SmallNeedleWorm,
+			Hazer,
+			NotCounted
+		}
+
 		#region Properties
 		public float DangleFruit {get; private set; }
 		public float WaterNut {get; private set; }
@@ -197,37 +221,44 @@
 			NotCounted = preferences[17];
 		}
 		public FoodPreferences(int ID) : this(ID, new(ID)) { }
-		internal FoodPreferences(int ID, Personality p, InstanceXORShift128 XORShift128)
+		internal FoodPreferences(int ID, Personality p, XORShift128 XORShift128)
 		{
-			float[] preferences = GetPreferencesRNGParam(ID, p, XORShift128);
-			DangleFruit = preferences[0];
-			WaterNut = preferences[1];
-			JellyFish = preferences[2];
-			SlimeMold = preferences[3];
-			EggBugEgg = preferences[4];
-			FireEgg = preferences[5];
-			Popcorn = preferences[6];
-			GooieDuck = preferences[7];
-			LilyPuck = preferences[8];
-			GlowWeed = preferences[9];
-			DandelionPeach = preferences[10];
-			Neuron = preferences[11];
-			Centipede = preferences[12];
-			SmallCentipede = preferences[13];
-			VultureGrub = preferences[14];
-			SmallNeedleWorm = preferences[15];
-			Hazer = preferences[16];
-			NotCounted = preferences[17];
+			Span<float> preferences = stackalloc float[18];
+			GetPreferencesRNGParam(ID, p, preferences, XORShift128);
+			unsafe
+			{
+				fixed (float* ptr = preferences)	// Ensure no bounds checks. I'm fairly certain the compiler would do this anyway, but it doesn't hurt to force it
+				{
+					DangleFruit = ptr[0];
+					WaterNut = ptr[1];
+					JellyFish = ptr[2];
+					SlimeMold = ptr[3];
+					EggBugEgg = ptr[4];
+					FireEgg = ptr[5];
+					Popcorn = ptr[6];
+					GooieDuck = ptr[7];
+					LilyPuck = ptr[8];
+					GlowWeed = ptr[9];
+					DandelionPeach = ptr[10];
+					Neuron = ptr[11];
+					Centipede = ptr[12];
+					SmallCentipede = ptr[13];
+					VultureGrub = ptr[14];
+					SmallNeedleWorm = ptr[15];
+					Hazer = ptr[16];
+					NotCounted = ptr[17];
+				}
+			}
 		}
 		public static float[] GetPreferences(int ID, Personality p)
 		{
 			float[] foodPreference = new float[18];
-			XORShift128.InitSeed(ID);
-			Food f;
+			XORShift128.Shared.InitSeed(ID);
+			FoodPreferences.Food f;
 			float num, num2;
 
 			int c = 0;
-			foreach (Food i in Enum.GetValues<Food>())
+			foreach (FoodPreferences.Food i in Enum.GetValues<FoodPreferences.Food>())
 			{
 				f = i;
 				switch (f)
@@ -235,173 +266,175 @@
 					default:
 						num = num2 = 0f;
 						break;
-					case Food.DangleFruit:
+					case FoodPreferences.Food.DangleFruit:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.WaterNut:
+					case FoodPreferences.Food.WaterNut:
 						num = p.Sympathy;
 						num2 = p.Aggression;
 						break;
-					case Food.JellyFish:
+					case FoodPreferences.Food.JellyFish:
 						num = p.Energy;
 						num2 = p.Nervous;
 						break;
-					case Food.SlimeMold:
+					case FoodPreferences.Food.SlimeMold:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.EggBugEgg:
+					case FoodPreferences.Food.EggBugEgg:
 						num = p.Dominance;
 						num2 = p.Energy;
 						break;
-					case Food.FireEgg:
+					case FoodPreferences.Food.FireEgg:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Popcorn:
+					case FoodPreferences.Food.Popcorn:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.GooieDuck:
+					case FoodPreferences.Food.GooieDuck:
 						num = p.Sympathy;
 						num2 = p.Bravery;
 						break;
-					case Food.LilyPuck:
+					case FoodPreferences.Food.LilyPuck:
 						num = p.Aggression;
 						num2 = p.Nervous;
 						break;
-					case Food.GlowWeed:
+					case FoodPreferences.Food.GlowWeed:
 						num = p.Nervous;
 						num2 = p.Energy;
 						break;
-					case Food.DandelionPeach:
+					case FoodPreferences.Food.DandelionPeach:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.Neuron:
+					case FoodPreferences.Food.Neuron:
 						num = p.Bravery;
 						num2 = p.Nervous;
 						break;
-					case Food.Centipede:
+					case FoodPreferences.Food.Centipede:
 						num = p.Bravery;
 						num2 = p.Dominance;
 						break;
-					case Food.SmallCentipede:
+					case FoodPreferences.Food.SmallCentipede:
 						num = p.Energy;
 						num2 = p.Aggression;
 						break;
-					case Food.VultureGrub:
+					case FoodPreferences.Food.VultureGrub:
 						num = p.Dominance;
 						num2 = p.Bravery;
 						break;
-					case Food.SmallNeedleWorm:
+					case FoodPreferences.Food.SmallNeedleWorm:
 						num = p.Aggression;
 						num2 = p.Sympathy;
 						break;
-					case Food.Hazer:
+					case FoodPreferences.Food.Hazer:
 						num = p.Nervous;
 						num2 = p.Sympathy;
 						break;
 				}
-				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+				num *= Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f);
+				num2 *= Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f);
+				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.Shared.NextFloat(), 2f)), -1f, 1f);
 				c++;
 			}
 			return foodPreference;
 		}
-		internal static float[] GetPreferencesRNGParam(int ID, Personality p, InstanceXORShift128 XORShift128)
+		internal static unsafe void GetPreferencesRNGParam(int ID, Personality p, Span<float> foodPrefBuffer, XORShift128 XORShift128)
 		{
-			float[] foodPreference = new float[18];
+			Debug.Assert(foodPrefBuffer.Length == 18);
 			XORShift128.InitSeed(ID);
-			Food f;
+			FoodPreferences.Food f;
 			float num, num2;
 
-			int c = 0;
-			foreach (Food i in Enum.GetValues<Food>())
+			int count = 0;
+			fixed (float* ptr = foodPrefBuffer)	// Avoid bounds checks
 			{
-				f = i;
-				switch (f)
+				foreach (FoodPreferences.Food i in Enum.GetValues<FoodPreferences.Food>())
 				{
-					default:
-						num = num2 = 0f;
-						break;
-					case Food.DangleFruit:
-						num = p.Nervous;
-						num2 = p.Energy;
-						break;
-					case Food.WaterNut:
-						num = p.Sympathy;
-						num2 = p.Aggression;
-						break;
-					case Food.JellyFish:
-						num = p.Energy;
-						num2 = p.Nervous;
-						break;
-					case Food.SlimeMold:
-						num = p.Energy;
-						num2 = p.Aggression;
-						break;
-					case Food.EggBugEgg:
-						num = p.Dominance;
-						num2 = p.Energy;
-						break;
-					case Food.FireEgg:
-						num = p.Aggression;
-						num2 = p.Sympathy;
-						break;
-					case Food.Popcorn:
-						num = p.Dominance;
-						num2 = p.Bravery;
-						break;
-					case Food.GooieDuck:
-						num = p.Sympathy;
-						num2 = p.Bravery;
-						break;
-					case Food.LilyPuck:
-						num = p.Aggression;
-						num2 = p.Nervous;
-						break;
-					case Food.GlowWeed:
-						num = p.Nervous;
-						num2 = p.Energy;
-						break;
-					case Food.DandelionPeach:
-						num = p.Bravery;
-						num2 = p.Dominance;
-						break;
-					case Food.Neuron:
-						num = p.Bravery;
-						num2 = p.Nervous;
-						break;
-					case Food.Centipede:
-						num = p.Bravery;
-						num2 = p.Dominance;
-						break;
-					case Food.SmallCentipede:
-						num = p.Energy;
-						num2 = p.Aggression;
-						break;
-					case Food.VultureGrub:
-						num = p.Dominance;
-						num2 = p.Bravery;
-						break;
-					case Food.SmallNeedleWorm:
-						num = p.Aggression;
-						num2 = p.Sympathy;
-						break;
-					case Food.Hazer:
-						num = p.Nervous;
-						num2 = p.Sympathy;
-						break;
+					f = i;
+					switch (f)
+					{
+						default:
+							num = num2 = 0f;
+							break;
+						case FoodPreferences.Food.DangleFruit:
+							num = p.Nervous;
+							num2 = p.Energy;
+							break;
+						case FoodPreferences.Food.WaterNut:
+							num = p.Sympathy;
+							num2 = p.Aggression;
+							break;
+						case FoodPreferences.Food.JellyFish:
+							num = p.Energy;
+							num2 = p.Nervous;
+							break;
+						case FoodPreferences.Food.SlimeMold:
+							num = p.Energy;
+							num2 = p.Aggression;
+							break;
+						case FoodPreferences.Food.EggBugEgg:
+							num = p.Dominance;
+							num2 = p.Energy;
+							break;
+						case FoodPreferences.Food.FireEgg:
+							num = p.Aggression;
+							num2 = p.Sympathy;
+							break;
+						case FoodPreferences.Food.Popcorn:
+							num = p.Dominance;
+							num2 = p.Bravery;
+							break;
+						case FoodPreferences.Food.GooieDuck:
+							num = p.Sympathy;
+							num2 = p.Bravery;
+							break;
+						case FoodPreferences.Food.LilyPuck:
+							num = p.Aggression;
+							num2 = p.Nervous;
+							break;
+						case FoodPreferences.Food.GlowWeed:
+							num = p.Nervous;
+							num2 = p.Energy;
+							break;
+						case FoodPreferences.Food.DandelionPeach:
+							num = p.Bravery;
+							num2 = p.Dominance;
+							break;
+						case FoodPreferences.Food.Neuron:
+							num = p.Bravery;
+							num2 = p.Nervous;
+							break;
+						case FoodPreferences.Food.Centipede:
+							num = p.Bravery;
+							num2 = p.Dominance;
+							break;
+						case FoodPreferences.Food.SmallCentipede:
+							num = p.Energy;
+							num2 = p.Aggression;
+							break;
+						case FoodPreferences.Food.VultureGrub:
+							num = p.Dominance;
+							num2 = p.Bravery;
+							break;
+						case FoodPreferences.Food.SmallNeedleWorm:
+							num = p.Aggression;
+							num2 = p.Sympathy;
+							break;
+						case FoodPreferences.Food.Hazer:
+							num = p.Nervous;
+							num2 = p.Sympathy;
+							break;
+					}
+					num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
+					num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
+					ptr[count] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
+					count++;
 				}
-				num *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				num2 *= Custom.PushFromHalf(XORShift128.NextFloat(), 2f);
-				foodPreference[c] = Math.Clamp(float.Lerp(num - num2, float.Lerp(-1f, 1f, Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), Custom.PushFromHalf(XORShift128.NextFloat(), 2f)), -1f, 1f);
-				c++;
 			}
-			return foodPreference;
 		}
 	}
 	public struct SlugcatStats
@@ -440,7 +473,7 @@
 			poleClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * stats.Bal + 0.1f * (1f - stats.Stealth);
 			corridorClimbSpeedFac *= 0.85f + 0.15f * stats.Met + 0.15f * (1f - stats.Bal) + 0.1f * (1f - stats.Stealth);
 		}
-		internal SlugcatStats(int ID, InstanceXORShift128 XORShift128, bool isSlugpup = true)
+		internal SlugcatStats(int ID, XORShift128 XORShift128, bool isSlugpup = true)
 		{
 			NPCStats stats = new(ID, XORShift128);
 			if (isSlugpup)

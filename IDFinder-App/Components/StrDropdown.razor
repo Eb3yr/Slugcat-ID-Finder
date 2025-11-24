@@ -1,0 +1,17 @@
+﻿@attribute [Obsolete("Dysfunctional bindings. Not sure why, but for now use GenericDropdownInput as that functions as expected.")]
+
+<IDFinder_App.Components.Generics.GenericDropdownInput T="string" Options="Options" SelectedOption="SelectedOption" SelectedOptionChanged="SelectedOptionChanged" Weight="Weight" AdditionalAttributes="AdditionalAttributes"/>
+
+@code
+{
+	[Parameter]
+	public string SelectedOption { get; set; }
+	[Parameter]
+	public IEnumerable<string> Options { get; set; }
+	[Parameter]
+	public EventCallback<(string target, float weight)> SelectedOptionChanged { get; set; }
+	[Parameter]
+	public float Weight { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+}

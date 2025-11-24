@@ -1,0 +1,57 @@
+﻿@typeparam TValue
+
+<li>
+	<div style="display: flex; align-items: center; padding: 0px; font-size: @(FontSize)px;  padding-top: 0px; padding-bottom: 0px;" >
+		@if (Label is not null)
+		{
+			<pre style="padding-right: @(FontSize)px; user-select: none;">@Label</pre>
+		}
+		<Microsoft.AspNetCore.Components.Forms.InputSelect TValue="TValue" @bind-Value="SelectedOption" @bind-Value:after="InvokeChanged" @attributes="AdditionalAttributes">
+			@foreach (TValue o in Options)
+			{
+					<option value="@o">
+						@o
+					</option>
+			}
+		</Microsoft.AspNetCore.Components.Forms.InputSelect>
+		<WeightBox Weight="Weight" WeightChanged="@((float w) => { Weight = w; InvokeChanged(); })" FontSize="FontSize" />
+	</div
+</li>
+
+@code {
+	[Parameter]
+	public TValue SelectedOption { get; set; }
+	[Parameter]
+	public IEnumerable<TValue> Options { get; set; }
+	[Parameter]
+	public string Label { get; set; } = null;
+	[Parameter]
+	public float Weight { get; set; } = 0f;
+	[Parameter]
+	public string WeightLabel { get; set; } = Consts.DefWeightLabel;
+	[Parameter]
+	public float FontSize { get; set; } = Consts.DefFontSize;
+	[Parameter]
+	public EventCallback<(TValue target, float weight)> SelectedOptionChanged { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	protected override void OnInitialized()
+	{
+		// I should probably make the weight number input adapt to its contents' width, like I did with the precise input in SliderInput.razor
+		if (Options is null || Options.Count() == 0)
+		{
+			if (!typeof(TValue).IsEnum)
+				throw new ArgumentNullException();
+
+			Options = Enum.GetValues(typeof(TValue)).Cast<TValue>();
+			SelectedOption = Options.ElementAt(0);
+		}
+
+		if (SelectedOption is null)
+			SelectedOption = Options.ElementAt(0);
+	}
+	// Oddly, whenever weight = 0f, SelectedOption gets set to default (eg 0 for enums and ints, null for string, etc). Doesn't have any real impact to our use case, but it is odd.
+	// Would like to test a version without weight in prototyping solution in the future
+	private void InvokeChanged() => SelectedOptionChanged.InvokeAsync((SelectedOption, Weight));
+}
