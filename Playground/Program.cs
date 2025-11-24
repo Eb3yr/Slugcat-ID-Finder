@@ -2,6 +2,12 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using ColourLib;
+
+//var col = (HslColor)ColourLib.Color.FromHex("D7FAE6");
+//Console.WriteLine($"Green scup: {col.ToString()}");
+//var col2 = (HslColor)ColourLib.Color.FromHex("C18BF5");
+//Console.WriteLine($"Purple scup: {col2.ToString()}");
 
 var opt = new JsonSerializerOptions()
 {
@@ -38,23 +44,40 @@ else
 	foreach (var file in Directory.EnumerateFiles(Directory.GetCurrentDirectory(), "finderdata/searcherRes*.csv"))
 		File.Delete(file);
 
-	SearchParams sParams = new()
+	SearchParams sParams;
+	//sParams = new()
+	//{
+	//	Scruffy = (1f, 1f),
+	//	HeadColorL = (0.5f, 1f),
+	//	HeadColorS = (1f, 1f),
+	//	ReactionSkill = (1f, 0.2f),
+	//	NumberOfSpines = (40, 0.25f),
+	//	IsColored = (true, 0.4f),
+	//};
+
+	// Green scup
+	sParams = new()
 	{
-		Scruffy = (1f, 1f),
-		HeadColorL = (0.5f, 1f),
-		HeadColorS = (1f, 1f),
-		ReactionSkill = (1f, 0.2f),
-		NumberOfSpines = (40, 0.25f),
-		IsColored = (true, 0.4f),
+		H = (0.4047619f, 1f),
+		S = (0.77777773f, 1f),
+		L = (0.91176474f, 1f),
 	};
+
+	// Purple scup
+	//sParams = new()
+	//{
+	//	H = (0.7515723f, 1f),
+	//	S = (0.84126985f, 1f),
+	//	L = (0.7529412f, 1f),
+	//};
 	
 	string json = JsonSerializer.Serialize(sParams, opt);
 	File.WriteAllText("finderdata/searchparams.json", json);
 
 	string exeName = AppDomain.CurrentDomain.FriendlyName;
 
-	int start = 0;
-	int stopIncl = int.MaxValue / 64;
+	int start = int.MinValue;
+	int stopIncl = int.MaxValue;
 	int numToStore = 32;
 	int threads = 12;
 
