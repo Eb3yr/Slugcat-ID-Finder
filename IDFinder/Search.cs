@@ -6,7 +6,7 @@ namespace IDFinder
 {
 	public static class Searcher
 	{
-		private static readonly IComparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
+		private static readonly Comparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
 
 		#region Weights
 		private static float PersonalityWeight(in Personality p, SearchParams sParams)
@@ -217,7 +217,7 @@ namespace IDFinder
 
 			List<KeyValuePair<float, int>> vals = new(numToStore + 1);
 			float weight;
-			bool saturated = false;
+			float prevLargestWeight = float.MaxValue;
 
 			Personality personality = default;
 			NPCStats npcStats = default;
@@ -246,73 +246,98 @@ namespace IDFinder
 			KeyValuePair<float, int> kvp;
 			for (long l = start; l <= stop; l++)
 			{
-				i = (int)l;
+				i = (int)l;	// Protect against overflows
 
 				#region scugs
 				weight = 0f;
 				if (boolPersonality)
 				{
 					personality = new(i, rng);
-					weight += PersonalityWeight(personality, SearchParams);
+					// Weight checks after each generation lets us exit an iteration early if it's out of range. Will incur performance loss for single trait object searches, but should improve performance otherwise
+					if ((weight += PersonalityWeight(personality, SearchParams)) > prevLargestWeight)
+						goto ExitWeight;
 				}
 				if (boolNpcStats)
 				{
 					npcStats = new(i, rng);
-					weight += NPCStatsWeight(npcStats, SearchParams);
+					if ((weight += NPCStatsWeight(npcStats, SearchParams)) > prevLargestWeight)
+						goto ExitWeight;
 				}
 				if (boolSlugcatStats)
 				{
-					if (!boolNpcStats) npcStats = new(i, rng);
+					if (!boolNpcStats)
+						npcStats = new(i, rng);
+
 					slugStats = new(npcStats);	// SlugcatStats makes no use of rng in its constructor
-					weight += SlugcatStatsWeight(slugStats, SearchParams);
+					if ((weight += SlugcatStatsWeight(slugStats, SearchParams)) > prevLargestWeight)
+						goto ExitWeight;
 				}
 				if (boolFoodPreferences)
 				{
-					if (!boolPersonality) personality = new(i, rng);
+					if (!boolPersonality)
+						personality = new(i, rng);
+
 					foodPref = new(i, personality, rng);
-					weight += FoodPreferencesWeight(foodPref, SearchParams);
+					if ((weight += FoodPreferencesWeight(foodPref, SearchParams)) > prevLargestWeight)
+						goto ExitWeight;
 				}
 				#endregion
 				#region scavs
 				if (boolScavSkills) 
 				{
-					if (!boolPersonality) personality = new(i, rng);
+					if (!boolPersonality) 
+						personality = new(i, rng);
+
 					scavSkills = new(i, personality, rng, isElite);
-					weight += ScavSkillsWeight(scavSkills, SearchParams);
+					if ((weight += ScavSkillsWeight(scavSkills, SearchParams)) > prevLargestWeight)
+						goto ExitWeight;
 				}
 				if (boolScavVariations || boolScavBack || boolScavColors)
 				{
-					if (!boolPersonality && !boolScavSkills) personality = new(i, rng);
+					if (!(boolPersonality || boolScavSkills))
+						personality = new(i, rng);
 
 					if (!(boolScavBack || boolScavColors))
 					{
-						weight += IndividualVariationsWeight(new IndividualVariations(personality, rng, isElite), SearchParams);
+						if ((weight += IndividualVariationsWeight(new IndividualVariations(personality, rng, isElite), SearchParams)) > prevLargestWeight)
+							goto ExitWeight;
 					}
 					else
 					{
-						(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) graphics = Scavenger.GetGraphicsRNGParam(i, rng, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
+						(IndividualVariations? variations, ScavColors? color, BackTuftsAndRidges? back) = Scavenger.GetGraphicsRNGParam(i, rng, isElite, boolScavVariations, boolScavColors, boolScavBack, (boolPersonality || boolScavSkills || boolScavVariations) ? personality : null);
 
 						if (boolScavVariations)
-							weight += IndividualVariationsWeight((IndividualVariations)graphics.variations!, SearchParams);
+						{
+							if ((weight += IndividualVariationsWeight((IndividualVariations)variations!, SearchParams)) > prevLargestWeight)
+								goto ExitWeight;
+						}
 						if (boolScavColors)
-							weight += ScavColorsWeight((ScavColors)graphics.color!, SearchParams);
+						{
+							if ((weight += ScavColorsWeight((ScavColors)color!, SearchParams)) > prevLargestWeight)
+								goto ExitWeight;
+						}
 						if (boolScavBack)
-							weight += ScavBackPatternsWeight(graphics.back!, SearchParams);
+						{
+							if ((weight += ScavBackPatternsWeight(back!, SearchParams)) > prevLargestWeight)
+								goto ExitWeight;
+						}
 					}
 				}
 				#endregion
-				if (!saturated && vals.Count < numToStore)
+
+				ExitWeight:
+				if (vals.Count < numToStore)
 				{
 					vals.Add(new(weight, i));
 					if (vals.Count == numToStore)
 					{
 						vals.Sort(comparer);
-						saturated = true;
 					}
+					// Ignore prevLargestWeight for now, since this is just gonna be filling it up regardless of how it ranks
 				}
 				else if (vals[^1].Key > weight)
 				{
-					// vals is certainly ordered at this point, as vals is sorted when vals.Count == numToStore. Therefore I can do a binary search ( log(n) ) to find the index of the next largest or equal weight, insert there ( O(n) where n is list.count - index ), and remove the final element ( O(1) ). Much faster than appending a value and sorting the whole list each time and significantly decreases search time with large numToStore.
+					// vals is certainly ordered at this point, as vals is sorted when vals.Count == numToStore. Therefore we can do a binary search ( log(n) ) to find the index of the next largest or equal weight, insert there ( O(n) ), and remove the final element ( O(1) )
 					kvp = new(weight, i);
 					largerThanIndex = vals.BinarySearch(kvp, comparer);
 					if (largerThanIndex < 0)
@@ -320,6 +345,7 @@ namespace IDFinder
 
 					vals.Insert(largerThanIndex, kvp);
 					vals.RemoveAt(numToStore);
+					prevLargestWeight = vals[^1].Key;
 				}
 			}
 

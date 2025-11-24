@@ -172,16 +172,7 @@ namespace IDFinder
 		public float Colored { get; protected set; }
 		public int NumberOfSpines
 		{
-			get	// I'm pretty sure I can just use BackDecals.Positions? 
-			{
-				if (ColorAlphas is not null)
-					return ColorAlphas.Length;
-				if (this is WobblyBackTufts tufts)
-					return tufts.Scales.Length;
-				if (this is HardBackSpikes spikes)
-					return spikes.Sizes.Length;
-				throw new Exception("NumberOfSpines failed to be counted.");
-			}
+			get => this.Positions.Length;
 		}
 		[JsonIgnore]
 		public float[] ColorAlphas { get; protected set; } = null!;
