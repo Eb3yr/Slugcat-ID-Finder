@@ -6,8 +6,6 @@ namespace IDFinder
 {
 	public static class Searcher
 	{
-		private static readonly Comparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
-
 		#region Weights
 		private static float PersonalityWeight(in Personality p, SearchParams sParams)
 		{
@@ -174,6 +172,7 @@ namespace IDFinder
 
 			Parallel.For(0, threads, i =>
 			{
+				Console.WriteLine($"Parallel.For num {i} is running on processorID {Thread.GetCurrentProcessorId()}");
 				var res = Search(chunks[i][0], chunks[i][1], numToStore, SearchParams.Clone(), progressEventHandler, workingValsEventHandler, progressInterval, workingValsInterval);
 				resultBag.Add(res);
 			});
@@ -203,6 +202,7 @@ namespace IDFinder
 		/// <remarks>A small workingValsInterval will cause slowdown due to excessive list copying with high numToStore. For this reason it is recommended only to be used with long-running searches or small numToStore.</remarks>
 		public static List<KeyValuePair<float, int>> Search(int start, int stop, int numToStore, SearchParams SearchParams, EventHandler<SearchProgressEventArgs>? progressEventHandler = null, EventHandler<SearchWorkingValsEventArgs>? workingValsEventHandler = null, int progressInterval = 1000, int workingValsInterval = 10000)
 		{
+			Comparer<KeyValuePair<float, int>> comparer = Comparer<KeyValuePair<float, int>>.Create((x, y) => x.Key.CompareTo(y.Key));
 			XORShift128 rng = new();
 
 			bool boolPersonality = !((IPersonalityParams)SearchParams).AllWeightless();
