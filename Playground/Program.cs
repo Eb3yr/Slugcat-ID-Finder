@@ -1,7 +1,6 @@
 ﻿using IDFinder;
 using System.Diagnostics;
 using System.IO;
-using ColourLib;
 using System.Text.Json;
 
 var opt = new JsonSerializerOptions()
