@@ -360,7 +360,7 @@ namespace IDFinder
 		/// <param name="stop"></param>
 		/// <param name="threads"></param>
 		/// <returns></returns>
-		private static int[][] Chunker(int start, int stop, int threads)
+		public static int[][] Chunker(int start, int stop, int threads)
 		{
 			int[][] chunks = new int[threads][];
 			long chunkSize = ((long)stop - start) / threads;
